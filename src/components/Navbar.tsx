@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import logoImg from "@/assets/logo-datasyslatam.png";
 
 const navLinks = [
   { label: "Inicio",    href: "#inicio"    },
@@ -11,22 +12,23 @@ const navLinks = [
 ];
 
 const Logo = () => (
-  <div className="flex items-center gap-2 min-w-0">
-    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/40">
-      <svg viewBox="0 0 36 36" width="20" height="20" fill="none" aria-label="logo">
-        <rect x="3"  y="8"  width="10" height="20" rx="2" fill="hsl(221 83% 53%)" />
-        <rect x="16" y="4"  width="10" height="24" rx="2" fill="hsl(292 84% 57%)" />
-        <rect x="23" y="14" width="10" height="14" rx="2" fill="hsl(221 83% 53%)" opacity="0.7" />
-      </svg>
-    </div>
-    <div className="flex flex-col leading-tight min-w-0">
-      <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-hero-foreground truncate">
-        DATASYSLATAM
-      </span>
-      <span className="text-[10px] text-hero-muted hidden sm:block truncate">
-        DataSys Latam Group S.A.S.
-      </span>
-    </div>
+  <div className="flex items-center">
+    <img
+      src={logoImg}
+      alt="Datasys Latam Group"
+      width={160}
+      height={52}
+      loading="eager"
+      style={{
+        height: 44,
+        width: "auto",
+        objectFit: "contain",
+        // mix-blend-mode elimina visualmente el fondo blanco del JPG sobre fondos oscuros
+        mixBlendMode: "screen",
+        // brightness y contrast para nitidez y contraste leve con el fondo
+        filter: "brightness(1.05) contrast(1.05) drop-shadow(0 0 6px rgba(96,165,250,0.25))",
+      }}
+    />
   </div>
 );
 
@@ -43,7 +45,7 @@ const Navbar = () => {
           <Logo />
         </a>
 
-        {/* Links desktop — se ocultan en mobile */}
+        {/* Links desktop */}
         <ul className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((link) => (
             <li key={link.href}>
@@ -65,7 +67,7 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* Botón hamburguesa — solo visible en mobile */}
+        {/* Botón hamburguesa mobile */}
         <button
           onClick={() => setOpen((prev) => !prev)}
           className="flex md:hidden items-center justify-center w-10 h-10 rounded-lg text-hero-foreground hover:bg-hero-foreground/10 transition-colors flex-shrink-0"
@@ -77,7 +79,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Menú desplegable mobile */}
+      {/* Menú mobile */}
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
