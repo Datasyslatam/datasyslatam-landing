@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>DATASYSLATAM — Transformación Digital e Innovación</title>
+    <meta
+      name="description"
+      content="DataSys Latam Group S.A.S. — consultoría tecnológica, software a la medida e infraestructura IT para organizaciones en Colombia y Latinoamérica."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#760f71",
+              accent: "#d630d3",
+              heroBg: "#020617",
+              heroMuted: "#94a3b8",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .gradient-text {
+        background: linear-gradient(90deg, #af22c5, #388bf8);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-overlay {
+        background: radial-gradient(circle at top left, rgba(192, 34, 197, 0.12), transparent 55%),
+          radial-gradient(circle at bottom right, rgba(56, 139, 248, 0.14), transparent 55%);
+      }
+
+      .card-shadow {
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.15);
+      }
+
+      .card-shadow-soft {
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      }
+    </style>
+  </head>
+
+  <body class="bg-slate-950 text-slate-50">
+    <!-- NAVBAR -->
+    <header
+      class="fixed inset-x-0 top-0 z-20 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur"
+    >
+      <nav
+        class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 text-sm md:text-base"
+      >
+        <a href="#inicio" class="flex items-center gap-2">
+          <div
+            class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-400/40"
+          >
+            <span class="text-xs font-semibold tracking-tight text-emerald-300">DS</span>
+          </div>
+          <div class="flex flex-col leading-tight">
+            <span class="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300"
+              >DATASYSLATAM</span
+            >
+            <span class="text-[11px] text-slate-400"
+              >DataSys Latam Group S.A.S.</span
+            >
+          </div>
+        </a>
+
+        <div class="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
+          <a href="#inicio" class="hover:text-emerald-300 transition-colors">Inicio</a>
+          <a href="#nosotros" class="hover:text-emerald-300 transition-colors">Nosotros</a>
+          <a href="#servicios" class="hover:text-emerald-300 transition-colors">Servicios</a>
+          <a href="#propuesta" class="hover:text-emerald-300 transition-colors">Valor</a>
+          <a href="#contacto" class="hover:text-emerald-300 transition-colors">Contacto</a>
+        </div>
+
+        <a
+          href="#contacto"
+          class="rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 md:text-sm"
+        >
+          Agenda una consultoría
+        </a>
+      </nav>
+    </header>
+
+    <main class="min-h-screen">
+      <!-- HERO -->
+      <section
+        id="inicio"
+        class="relative flex min-h-screen items-center justify-center overflow-hidden bg-heroBg"
+      >
+        <div
+          class="hero-overlay pointer-events-none absolute inset-0 opacity-80"
+          aria-hidden="true"
+        ></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-950 to-slate-950"></div>
+
+        <div class="relative z-10 mx-auto mt-20 flex max-w-5xl flex-col px-4 text-center">
+          <p class="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300">
+            Transformación digital · Gestión · IA
+          </p>
+
+          <h1
+            class="mt-4 text-4xl font-bold leading-tight md:text-5xl lg:text-6xl lg:leading-snug"
+          >
+            Impulsamos la
+            <span class="gradient-text">evolución digital</span>
+            de tu organización
+          </h1>
+
+          <p
+            class="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-heroMuted md:text-base"
+          >
+            Diseñamos soluciones tecnológicas, consultoría especializada e iniciativas de
+            inteligencia artificial para empresas en Colombia, Suramérica y Centroamérica que
+            quieren pasar de procesos tradicionales a operaciones digitales de alto desempeño.
+          </p>
+
+          <div
+            class="mt-8 flex flex-col items-center justify-center gap-3 text-sm md:flex-row md:gap-4"
+          >
+            <a
+              href="#contacto"
+              class="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 md:text-base"
+            >
+              Solicita tu consultoría
+            </a>
+            <a
+              href="#servicios"
+              class="rounded-lg border border-slate-700/70 px-6 py-3 text-sm font-medium text-slate-100 hover:bg-slate-800/70 md:text-base"
+            >
+              Ver portafolio de servicios
+            </a>
+          </div>
+
+          <dl
+            class="mx-auto mt-12 grid max-w-3xl grid-cols-2 gap-8 text-center text-xs text-slate-300 md:grid-cols-4"
+          >
+            <div>
+              <dt class="text-[11px] uppercase tracking-[0.25em] text-slate-500">Constitución</dt>
+              <dd class="mt-1 text-2xl font-semibold text-emerald-300">2026</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] uppercase tracking-[0.25em] text-slate-500">Cobertura</dt>
+              <dd class="mt-1 text-2xl font-semibold text-emerald-300">Latam</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] uppercase tracking-[0.25em] text-slate-500">Enfoque</dt>
+              <dd class="mt-1 text-2xl font-semibold text-emerald-300">IA</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] uppercase tracking-[0.25em] text-slate-500">Calidad</dt>
+              <dd class="mt-1 text-2xl font-semibold text-emerald-300">ISO</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- SOBRE NOSOTROS -->
+      <section id="nosotros" class="bg-slate-950 py-20">
+        <div class="mx-auto max-w-5xl px-4">
+          <div class="text-center">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300 md:text-sm"
+            >
+              Sobre nosotros
+            </p>
+            <h2 class="mt-3 text-3xl font-bold md:text-4xl">
+              Tecnología con
+              <span class="gradient-text">propósito empresarial</span>
+            </h2>
+            <p
+              class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base"
+            >
+              <strong>DataSys Latam Group S.A.S.</strong> es una compañía de base tecnológica
+              constituida en 2026, con sede en Barranquilla, Atlántico (Colombia). Combinamos
+              experiencia en sistemas de gestión, infraestructura IT e inteligencia artificial para
+              acompañar a las organizaciones en cada etapa de su transformación digital.
+            </p>
+          </div>
+
+          <div class="mt-12 grid gap-6 md:grid-cols-3">
+            <!-- Misión -->
+            <article class="card-shadow-soft rounded-xl bg-slate-900/60 p-7 ring-1 ring-slate-800">
+              <h3 class="text-lg font-semibold text-slate-50">Misión</h3>
+              <p class="mt-3 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Impulsar la modernización tecnológica de organizaciones en Colombia, Suramérica y
+                Centroamérica mediante soluciones innovadoras, consultoría de alto nivel y servicios
+                integrales que optimicen procesos, mitiguen riesgos y mejoren la toma de decisiones.
+              </p>
+            </article>
+
+            <!-- Visión -->
+            <article class="card-shadow-soft rounded-xl bg-slate-900/60 p-7 ring-1 ring-slate-800">
+              <h3 class="text-lg font-semibold text-slate-50">Visión</h3>
+              <p class="mt-3 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Ser un referente latinoamericano en consultoría tecnológica y transformación digital,
+                reconocidos por convertir organizaciones tradicionales en ecosistemas digitales
+                inteligentes a través de analítica de datos, automatización e inteligencia artificial.
+              </p>
+            </article>
+
+            <!-- Valores -->
+            <article class="card-shadow-soft rounded-xl bg-slate-900/60 p-7 ring-1 ring-slate-800">
+              <h3 class="text-lg font-semibold text-slate-50">Valores</h3>
+              <p class="mt-3 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Innovación, enfoque en el cliente, integridad, transparencia, excelencia operativa,
+                trabajo colaborativo, agilidad y compromiso real con los resultados de cada proyecto.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICIOS -->
+      <section id="servicios" class="bg-slate-900/40 py-20">
+        <div class="mx-auto max-w-5xl px-4">
+          <div class="text-center">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300 md:text-sm"
+            >
+              Portafolio
+            </p>
+            <h2 class="mt-3 text-3xl font-bold md:text-4xl">
+              Nuestros
+              <span class="gradient-text">servicios</span>
+            </h2>
+            <p
+              class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-300 md:text-base"
+            >
+              Acompañamos a tu organización desde la estrategia hasta la operación con servicios
+              diseñados para cada dimensión de tu plataforma tecnológica.
+            </p>
+          </div>
+
+          <div class="mt-12 grid gap-6 md:grid-cols-3">
+            <!-- Consultoría de Gestión -->
+            <article class="card-shadow rounded-xl bg-slate-900/70 p-6 ring-1 ring-slate-800">
+              <h3 class="text-lg font-semibold text-slate-50">Consultoría de Gestión</h3>
+              <p class="mt-3 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Acompañamiento técnico y formación empresarial para implementar sistemas de gestión,
+                normas de calidad (por ejemplo, ISO 9001) y esquemas de gobernanza corporativa.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-emerald-200">
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">ISO 9001</span>
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Gobernanza</span>
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Capacitación</span>
+              </div>
+            </article>
+
+            <!-- Desarrollo de Software -->
+            <article class="card-shadow rounded-xl bg-slate-900/70 p-6 ring-1 ring-slate-800">
+              <h3 class="text-lg font-semibold text-slate-50">Desarrollo de Software</h3>
+              <p class="mt-3 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Análisis, diseño, construcción, despliegue y soporte de software a la medida y
+                plataformas digitales escalables, alineadas con las necesidades de tu negocio.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-emerald-200">
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Aplicaciones web</span>
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Plataformas</span>
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Soporte</span>
+              </div>
+            </article>
+
+            <!-- Infraestructura IT -->
+            <article class="card-shadow rounded-xl bg-slate-900/70 p-6 ring-1 ring-slate-800">
+              <h3 class="text-lg font-semibold text-slate-50">
+                Consultoría e Infraestructura IT
+              </h3>
+              <p class="mt-3 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Diseño de arquitectura tecnológica, instalación y mantenimiento de redes, equipos de
+                cómputo, periféricos y soluciones en la nube para asegurar continuidad y rendimiento.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-emerald-200">
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Redes</span>
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Cloud</span>
+                <span class="rounded-full bg-emerald-500/10 px-3 py-1">Mantenimiento</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROPUESTA DE VALOR -->
+      <section id="propuesta" class="bg-slate-950 py-20">
+        <div class="mx-auto max-w-5xl px-4">
+          <div class="text-center">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300 md:text-sm"
+            >
+              Propuesta de valor
+            </p>
+            <h2 class="mt-3 text-3xl font-bold md:text-4xl">
+              ¿Por qué
+              <span class="gradient-text">DATASYSLATAM</span>?
+            </h2>
+          </div>
+
+          <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <article class="card-shadow rounded-xl bg-slate-900/70 p-6 ring-1 ring-slate-800">
+              <h3 class="text-sm font-semibold text-slate-50 md:text-base">
+                Seguridad de la información
+              </h3>
+              <p class="mt-2 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Enfoque en protección de datos, cumplimiento regulatorio y buenas prácticas para
+                resguardar tu operación digital.
+              </p>
+            </article>
+
+            <article class="card-shadow rounded-xl bg-slate-900/70 p-6 ring-1 ring-slate-800">
+              <h3 class="text-sm font-semibold text-slate-50 md:text-base">Escalabilidad</h3>
+              <p class="mt-2 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Diseñamos arquitecturas capaces de crecer contigo, desde emprendimientos hasta
+                organizaciones de alcance regional.
+              </p>
+            </article>
+
+            <article class="card-shadow rounded-xl bg-slate-900/70 p-6 ring-1 ring-slate-800">
+              <h3 class="text-sm font-semibold text-slate-50 md:text-base">
+                Inteligencia artificial
+              </h3>
+              <p class="mt-2 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Incorporamos IA y analítica avanzada para automatizar tareas críticas y fortalecer
+                la toma de decisiones basada en datos.
+              </p>
+            </article>
+
+            <article class="card-shadow rounded-xl bg-slate-900/70 p-6 ring-1 ring-slate-800">
+              <h3 class="text-sm font-semibold text-slate-50 md:text-base">Buenas prácticas</h3>
+              <p class="mt-2 text-xs leading-relaxed text-slate-300 md:text-sm">
+                Aplicamos marcos de gestión, normas de calidad y metodologías ágiles alineadas con
+                estándares internacionales.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACTO -->
+      <section id="contacto" class="bg-slate-900/40 py-20">
+        <div class="mx-auto max-w-5xl px-4">
+          <div class="text-center">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300 md:text-sm"
+            >
+              Contáctenos
+            </p>
+            <h2 class="mt-3 text-3xl font-bold md:text-4xl">
+              Hablemos de tu
+              <span class="gradient-text">próximo proyecto</span>
+            </h2>
+          </div>
+
+          <div class="mt-12 grid gap-10 lg:grid-cols-2">
+            <!-- Info -->
+            <div class="space-y-6 text-sm text-slate-300">
+              <div>
+                <h3 class="text-base font-semibold text-slate-50">
+                  DataSys Latam Group S.A.S.
+                </h3>
+                <p class="mt-3 text-xs leading-relaxed text-slate-300 md:text-sm">
+                  Empresa de tecnología enfocada en soluciones informáticas, asesoría en sistemas de
+                  gestión de calidad, infraestructura tecnológica y proyectos de transformación
+                  digital para organizaciones públicas y privadas.
+                </p>
+              </div>
+
+              <ul class="space-y-3 text-xs md:text-sm">
+                <li class="flex items-center gap-3">
+                  <span
+                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-300"
+                    >📍</span
+                  >
+                  <span>Barranquilla, Atlántico, Colombia</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <span
+                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-300"
+                    >✉️</span
+                  >
+                  <span>contacto@datasyslatam.com</span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <span
+                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-300"
+                    >📞</span
+                  >
+                  <span>+57 301-295-5981</span>
+                </li>
+              </ul>
+
+              <div class="rounded-xl bg-slate-900/70 p-5 text-[11px] leading-relaxed text-slate-400">
+                <strong class="text-slate-100">Nota legal:</strong>
+                DataSys Latam Group S.A.S. (sigla comercial DATASYSLATAM S.A.S.) es una Sociedad por
+                Acciones Simplificada constituida en 2026 bajo las leyes de la República de
+                Colombia. Los datos personales suministrados a través de este formulario se
+                tratarán conforme a la Ley 1581 de 2012 y al Decreto 1377 de 2013.
+              </div>
+            </div>
+
+            <!-- Formulario (front only) -->
+            <form
+              class="card-shadow-soft rounded-xl bg-slate-950 p-7 text-sm ring-1 ring-slate-800"
+            >
+              <div>
+                <label class="block text-xs font-medium text-slate-200" for="nombre">
+                  Nombre completo *
+                </label>
+                <input
+                  id="nombre"
+                  name="nombre"
+                  type="text"
+                  required
+                  class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 md:text-sm"
+                  placeholder="Tu nombre"
+                />
+              </div>
+
+              <div class="mt-4">
+                <label class="block text-xs font-medium text-slate-200" for="email">
+                  Correo electrónico *
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 md:text-sm"
+                  placeholder="correo@empresa.com"
+                />
+              </div>
+
+              <div class="mt-4">
+                <label class="block text-xs font-medium text-slate-200" for="empresa">
+                  Empresa
+                </label>
+                <input
+                  id="empresa"
+                  name="empresa"
+                  type="text"
+                  class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 md:text-sm"
+                  placeholder="Nombre de tu empresa"
+                />
+              </div>
+
+              <div class="mt-4">
+                <label class="block text-xs font-medium text-slate-200" for="mensaje">
+                  Mensaje *
+                </label>
+                <textarea
+                  id="mensaje"
+                  name="mensaje"
+                  rows="4"
+                  required
+                  class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 md:text-sm"
+                  placeholder="Cuéntanos brevemente qué necesitas…"
+                ></textarea>
+              </div>
+
+              <p class="mt-3 text-[11px] text-slate-500">
+                Al enviar este formulario aceptas el tratamiento de tus datos personales conforme a
+                nuestra política de privacidad.
+              </p>
+
+              <button
+                type="submit"
+                class="mt-5 w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 md:text-sm"
+              >
+                Enviar mensaje
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-8 text-center text-[11px] text-slate-500">
+      <p>DataSys Latam Group S.A.S. — Barranquilla, Colombia</p>
+      <p class="mt-2">
+        © <span id="anio"></span> DATASYSLATAM. Todos los derechos reservados.
+      </p>
+      <script>
+        document.getElementById("anio").textContent = new Date().getFullYear();
+      </script>
+    </footer>
+  </body>
+</html>
