@@ -90,11 +90,11 @@ const HeroSection = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55 }}
         style={{
-          fontSize: 12,
+          fontSize: 14,
           fontWeight: 600,
           letterSpacing: "0.32em",
           textTransform: "uppercase",
-          color: "hsl(292 84% 72%)",
+          color: "#e8711a",
           marginBottom: 24,
           fontFamily: "Inter, system-ui, sans-serif",
         }}
@@ -215,12 +215,12 @@ const HeroSection = () => (
             fontFamily: "Inter, system-ui, sans-serif",
             whiteSpace: "nowrap",
           }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "rgba(255,255,255,0.09)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "rgba(255,255,255,0.04)")
-          }
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.09)";
+            e.currentTarget.style.borderColor = "#e8711a";}}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+            e.currentTarget.style.borderColor = "rgba(203,213,225,0.30)";}}
         >
           Conoce Nuestros Servicios
         </a>

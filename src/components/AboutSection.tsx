@@ -26,7 +26,7 @@ const AboutSection = () => (
         initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
         className="text-center mb-16"
       >
-        <p className="text-sm font-semibold text-accent tracking-widest uppercase mb-3">Sobre Nosotros</p>
+        <p className="text-lm font-semibold uppercase tracking-widest mb-3" style={{ color: "#e8711a" }} >Sobre Nosotros</p>
         <h2 className="text-3xl md:text-4xl font-bold text-foreground">
           Tecnología con <span className="gradient-text">propósito</span>
         </h2>
