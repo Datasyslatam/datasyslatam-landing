@@ -149,7 +149,7 @@ const HeroSection = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.28 }}
         style={{
-          fontSize: 17,
+          fontSize: 20,
           lineHeight: 1.75,
           color: "#cbd5e1",
           maxWidth: 600,
