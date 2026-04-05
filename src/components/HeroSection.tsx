@@ -90,7 +90,7 @@ const HeroSection = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55 }}
         style={{
-          fontSize: 14,
+          fontSize: 16,
           fontWeight: 600,
           letterSpacing: "0.32em",
           textTransform: "uppercase",
@@ -149,7 +149,7 @@ const HeroSection = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.28 }}
         style={{
-          fontSize: 20,
+          fontSize: 17,
           lineHeight: 1.75,
           color: "#cbd5e1",
           maxWidth: 600,
