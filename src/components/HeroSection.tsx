@@ -158,7 +158,7 @@ const HeroSection = () => (
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
-        Soluciones tecnológicas, consultoría especializada e inteligencia artificial para
+        Soluciones tecnológicas, gobierno corporativo a través de estructuras normativas, consultoría especializada e inteligencia artificial para
         organizaciones en Colombia, Suramérica y Centroamérica.
       </motion.p>
 
