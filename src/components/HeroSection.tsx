@@ -159,7 +159,7 @@ const HeroSection = () => (
         }}
       >
         Soluciones tecnológicas, gobierno corporativo a través de estructuras normativas, consultoría especializada e inteligencia artificial para
-        organizaciones en Colombia, Suramérica y Centroamérica.
+        organizaciones en Colombia y Lantinoamérica.
       </motion.p>
 
       {/* Botones */}
