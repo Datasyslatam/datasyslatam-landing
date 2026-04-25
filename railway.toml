@@ -2,5 +2,8 @@
 builder = "NIXPACKS"
 buildCommand = "npm install && npm run build"
 
+[build.env]
+NIXPACKS_NODE_VERSION = "22"
+
 [deploy]
 startCommand = "npx serve dist"
