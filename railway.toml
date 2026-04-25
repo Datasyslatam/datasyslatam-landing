@@ -6,4 +6,4 @@ buildCommand = "npm install && npm run build"
 NIXPACKS_NODE_VERSION = "22"
 
 [deploy]
-startCommand = "npx serve dist"
+startCommand = "npx serve -s dist"
