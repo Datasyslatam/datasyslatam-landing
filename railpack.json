@@ -1,4 +1,3 @@
 {
-  "$schema": "https://schema.railpack.com",
-  "installCommand": "npm ci --include=dev"
+  "$schema": "https://schema.railpack.com"
 }

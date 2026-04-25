@@ -1,0 +1,2 @@
+[deploy.variables]
+RAILPACK_INSTALL_CMD = "npm ci --include=dev"
