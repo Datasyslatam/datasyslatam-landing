@@ -140,7 +140,7 @@ const HeroSection = () => (
         >
           digital
         </span>
-        <span style={{ color: "#f0f4ff" }}> de tu empresa</span>
+        <span style={{ color: "#f0f4ff" }}> de tu empr</span>
       </motion.h1>
 
       {/* Párrafo */}
