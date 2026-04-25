@@ -1,2 +1,6 @@
-[deploy.variables]
-RAILPACK_INSTALL_CMD = "npm ci --include=dev"
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install && npm run build"
+
+[deploy]
+startCommand = "npx serve dist"
