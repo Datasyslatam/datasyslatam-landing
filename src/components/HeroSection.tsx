@@ -28,15 +28,16 @@ const HeroSection = () => (
       alt=""
       aria-hidden="true"
       className="absolute inset-0 w-full h-full object-cover object-center"
-      style={{ zIndex: 0, scale: 1.1 }}
+      style={{ zIndex: 0, scale: 1.15 }}
       animate={{
-        scale: [1.1, 1.2, 1.1],
-        backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"]
+        scale: [1.1, 1.25, 1.15, 1.2, 1.1],
+        x: ["0%", "-3%", "2%", "-1%", "0%"],
+        y: ["0%", "2%", "-2%", "1%", "0%"],
       }}
       transition={{
-        duration: 30,
+        duration: 40,
         repeat: Infinity,
-        ease: "linear"
+        ease: "easeInOut"
       }}
     />
 
