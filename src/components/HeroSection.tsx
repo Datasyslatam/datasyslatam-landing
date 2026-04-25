@@ -23,16 +23,21 @@ const HeroSection = () => (
     className="relative min-h-screen flex items-center justify-center overflow-hidden"
   >
     {/* ── 1. Imagen de fondo ── */}
-    <img
+    <motion.img
       src={heroBg}
       alt=""
       aria-hidden="true"
-      width={1920}
-      height={1080}
-      loading="eager"
-      decoding="async"
       className="absolute inset-0 w-full h-full object-cover object-center"
-      style={{ zIndex: 0 }}
+      style={{ zIndex: 0, scale: 1.1 }}
+      animate={{
+        scale: [1.1, 1.2, 1.1],
+        backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"]
+      }}
+      transition={{
+        duration: 30,
+        repeat: Infinity,
+        ease: "linear"
+      }}
     />
 
     {/* ── 2. Overlay multi-capa para legibilidad total ── */}
