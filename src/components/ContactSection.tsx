@@ -21,22 +21,62 @@ const ContactSection = () => {
     return errs;
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const data = {
-      name: fd.get("name") as string,
-      email: fd.get("email") as string,
-      company: fd.get("company") as string,
-      message: fd.get("message") as string,
-    };
-    const errs = validate(data);
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    setErrors({});
-    setSubmitted(true);
-    (e.target as HTMLFormElement).reset();
-    setTimeout(() => setSubmitted(false), 5000);
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  
+  // 1. Obtener y validar datos como ya lo tienes
+  const fd = new FormData(e.currentTarget);
+  const data = {
+    name: fd.get("name") as string,
+    email: fd.get("email") as string,
+    company: fd.get("company") as string,
+    message: fd.get("message") as string,
   };
+  
+  const errs = validate(data);
+  if (Object.keys(errs).length > 0) { 
+    setErrors(errs); 
+    return; 
+  }
+  setErrors({});
+
+  // 2. Aquí preparamos los datos para Web3Forms (Añadiendo tu Access Key)
+  const web3FormsData = {
+    ...data, // Esparce los datos de tu formulario (name, email, company, message)
+    access_key: "1f0323a5-b6ce-48de-bb4a-edf80bfdc0d6", // Pega aquí el código que te llegó al correo
+    subject: "Nuevo Mensaje de Contacto - Sitio Web", // Opcional: El asunto del correo
+  };
+
+  // 3. Enviamos los datos usando la API nativa del navegador
+  try {
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(web3FormsData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Éxito: marcamos como enviado, limpiamos formulario y quitamos el éxito a los 5segs
+      setSubmitted(true);
+      (e.target as HTMLFormElement).reset();
+      setTimeout(() => setSubmitted(false), 5000);
+    } else {
+      // Hubo un error procesado por Web3Forms
+      console.log('Error de Web3Forms:', result);
+      alert("Hubo un problema al enviar el mensaje. Inténtalo de nuevo.");
+    }
+  } catch (error) {
+    // Error si se pierde la conexión a internet de la persona
+    console.error('Error de red:', error);
+    alert("Error de conexión. Por favor, revisa tu conexión a internet.");
+  }
+};
+
 
   const inputClass =
     "w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow";
