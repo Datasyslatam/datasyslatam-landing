@@ -5,7 +5,7 @@ import { Send, MapPin, Mail, Phone } from "lucide-react";
 const contactInfo = [
   { icon: MapPin, text: "Barranquilla, Atlántico, Colombia" },
   { icon: Mail, text: "contacto@datasyslatam.com" },
-  { icon: Phone, text: "+57 301-001-5252" },
+  { icon: Phone, text: "+57 324-624-9237" },
 ];
 
 const ContactSection = () => {
