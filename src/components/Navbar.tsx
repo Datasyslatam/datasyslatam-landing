@@ -62,7 +62,7 @@ const Navbar = () => {
               href="#contacto"
               className="gradient-bg text-primary-foreground text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
             >
-              Solicita tu Consultoría
+              Hablar con un experto
             </a>
           </li>
         </ul>
@@ -109,7 +109,7 @@ const Navbar = () => {
                   onClick={() => setOpen(false)}
                   className="flex items-center justify-center w-full gradient-bg text-primary-foreground text-sm font-semibold px-5 py-3 rounded-lg hover:opacity-90 transition-opacity"
                 >
-                  Solicita tu Consultoría
+                  Hablar con un experto
                 </a>
               </li>
             </ul>
