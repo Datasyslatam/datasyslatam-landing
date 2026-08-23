@@ -2,5 +2,5 @@
   "$schema": "https://schema.railpack.com",
   "installCommand": "npm ci --include=dev",
   "buildCommand": "npm run build",
-  "startCommand": "npx serve dist"
+  "startCommand": "npm run start"
 }
