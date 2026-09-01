@@ -1,50 +1,75 @@
 import logoImg from "@/assets/logo-datasyslatam.png";
 
-const navLinks = ["Inicio", "Nosotros", "Servicios", "Contacto"];
+const navLinks = [
+  { label: "Inicio",    href: "#inicio" },
+  { label: "Nosotros",  href: "#nosotros" },
+  { label: "Servicios", href: "#servicios" },
+  { label: "Propuesta", href: "#propuesta" },
+  { label: "Contacto",  href: "#contacto" },
+];
 
 const Footer = () => (
-  <footer className="bg-hero py-12 border-t border-primary/10">
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+  <footer className="bg-navy-950 border-t border-navy-800">
+    <div className="container mx-auto px-6 max-w-6xl">
 
-        <div className="flex items-center gap-3">
+      {/* Fila principal */}
+      <div className="py-10 flex flex-col md:flex-row items-center justify-between gap-8">
+
+        {/* Logo + tagline */}
+        <div className="flex flex-col items-center md:items-start gap-2">
           <img
             src={logoImg}
-            alt="Datasys Latam Group"
+            alt="DataSys Latam Group"
             width={130}
-            height={42}
+            height={40}
             loading="lazy"
             style={{
-              height: 36,
+              height: 34,
               width: "auto",
               objectFit: "contain",
-              mixBlendMode: "screen",
-              filter: "brightness(1.05) contrast(1.05) drop-shadow(0 0 4px rgba(96,165,250,0.20))",
+              filter: "brightness(1.05) saturate(1.1) drop-shadow(0 0 4px rgba(33,118,232,0.18))",
             }}
           />
-          <p className="text-xs text-hero-muted">
+          <p className="text-xs text-steel-500 tracking-wide">
             Barranquilla, Atlántico, Colombia
           </p>
         </div>
 
-        <div className="flex gap-6">
-          {navLinks.map((label) => (
-            <a
-              key={label}
-              href={`#${label.toLowerCase()}`}
-              className="text-xs text-hero-muted hover:text-hero-foreground transition-colors"
-            >
-              {label}
-            </a>
-          ))}
-        </div>
+        {/* Links */}
+        <nav aria-label="Footer navigation">
+          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            {navLinks.map(({ label, href }) => (
+              <li key={href}>
+                <a
+                  href={href}
+                  className="text-xs text-steel-400 hover:text-white transition-colors duration-200 tracking-wide"
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Contacto rápido */}
+        <a
+          href="mailto:contacto@datasyslatam.com"
+          className="text-xs text-steel-400 hover:text-white transition-colors duration-200 tracking-wide hidden lg:block"
+        >
+          contacto@datasyslatam.com
+        </a>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-hero-muted/20 text-center">
-        <p className="text-xs text-hero-muted">
+      {/* Divisor + copyright */}
+      <div className="border-t border-navy-800 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p className="text-xs text-steel-600">
           © {new Date().getFullYear()} DataSys Latam Group S.A.S. Todos los derechos reservados.
         </p>
+        <p className="text-xs text-steel-700 tracking-widest uppercase">
+          datasyslatam.com
+        </p>
       </div>
+
     </div>
   </footer>
 );

@@ -1,20 +1,32 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
 import ServicesSection from "@/components/ServicesSection";
-import ValueSection from "@/components/ValueSection";
+import ResultsSection from "@/components/ResultsSection";
+import ServicesGridSection from "@/components/ServicesGridSection";
+import CompanySection from "@/components/CompanySection";
+import TechCarouselSection from "@/components/TechCarouselSection";
+import MethodologySection from "@/components/MethodologySection";
+import SectoresSection from "@/components/SectoresSection";
+import ProductosSection from "@/components/ProductosSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const Index = () => (
-  <main className="min-h-screen">
+  <main className="min-h-screen pt-[72px]">
     <Navbar />
     <HeroSection />
-    <AboutSection />
     <ServicesSection />
-    <ValueSection />
+    <ResultsSection />
+    <ServicesGridSection />
+    <CompanySection />
+      <MethodologySection />
+      <SectoresSection />
+      <ProductosSection />
+      <TechCarouselSection />
     <ContactSection />
     <Footer />
+      <WhatsAppButton />
   </main>
 );
 

@@ -6,74 +6,204 @@
 
 @layer base {
   :root {
-    --background: 220 25% 97%;
-    --foreground: 220 30% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 30% 10%;
-    --primary: 221 83% 40%;
+    /* ── Light mode (corporativo claro) ── */
+    --background:       215 28% 97%;
+    --foreground:       215 35% 10%;
+
+    --card:             0 0% 100%;
+    --card-foreground:  215 35% 10%;
+
+    --primary:          213 85% 38%;        /* azul corporativo */
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 20% 94%;
-    --secondary-foreground: 220 30% 15%;
-    --muted: 220 15% 92%;
-    --muted-foreground: 220 10% 45%;
-    --accent: 292 84% 57%;
+
+    --secondary:        214 20% 93%;
+    --secondary-foreground: 215 30% 18%;
+
+    --muted:            214 18% 90%;
+    --muted-foreground: 214 14% 46%;
+
+    --accent:           213 85% 52%;        /* azul eléctrico */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+
+    --destructive:      0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 221 83% 40%;
-    --radius: 0.75rem;
-    --hero-bg: 222 47% 8%;
-    --hero-foreground: 220 20% 95%;
-    --hero-muted: 220 15% 70%;
-    --gradient-primary: linear-gradient(135deg, hsl(221 83% 40%), hsl(292 84% 57%));
-    --gradient-hero: linear-gradient(160deg, hsl(222 47% 6%), hsl(222 47% 12%), hsl(221 60% 18%));
-    --shadow-card: 0 4px 24px -4px hsl(221 83% 40% / 0.08);
-    --shadow-card-hover: 0 12px 40px -8px hsl(221 83% 40% / 0.15);
-    --shadow-glow: 0 0 40px hsl(292 84% 57% / 0.2);
+
+    --border:           214 20% 84%;
+    --input:            214 20% 84%;
+    --ring:             213 85% 38%;
+    --radius:           0.5rem;
+
+    /* ── Hero / dark sections ── */
+    --hero-bg:          215 48% 7%;         /* navy #0B1220 */
+    --hero-surface:     215 42% 11%;        /* navy medio #111E32 */
+    --hero-border:      215 30% 20%;        /* gris acero oscuro */
+    --hero-foreground:  214 22% 93%;
+    --hero-muted:       214 16% 55%;
+
+    /* ── Gradientes ── */
+    --gradient-primary: linear-gradient(135deg, hsl(213 85% 38%), hsl(213 85% 52%));
+    --gradient-hero:    linear-gradient(160deg, hsl(215 48% 5%), hsl(215 44% 10%), hsl(213 50% 16%));
+    --gradient-card:    linear-gradient(145deg, hsl(215 42% 11%), hsl(215 38% 14%));
+
+    /* ── Sombras ── */
+    --shadow-sm:    0 1px 3px hsl(215 48% 5% / 0.10), 0 1px 2px hsl(215 48% 5% / 0.06);
+    --shadow-card:  0 4px 24px -4px hsl(213 85% 38% / 0.10);
+    --shadow-hover: 0 8px 32px -6px hsl(213 85% 38% / 0.20);
+    --shadow-glow:  0 0 32px hsl(213 85% 52% / 0.18);
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 220 20% 95%;
-    --card: 222 40% 10%;
-    --card-foreground: 220 20% 95%;
-    --primary: 221 83% 53%;
+    --background:       215 48% 5%;
+    --foreground:       214 22% 93%;
+    --card:             215 42% 9%;
+    --card-foreground:  214 22% 93%;
+    --primary:          213 85% 52%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 222 30% 16%;
-    --secondary-foreground: 220 20% 90%;
-    --muted: 222 25% 14%;
-    --muted-foreground: 220 12% 55%;
-    --accent: 292 84% 57%;
+    --secondary:        215 30% 15%;
+    --secondary-foreground: 214 20% 88%;
+    --muted:            215 28% 13%;
+    --muted-foreground: 214 14% 52%;
+    --accent:           213 85% 62%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 62% 30%;
+    --destructive:      0 62% 38%;
     --destructive-foreground: 0 0% 100%;
-    --border: 222 25% 18%;
-    --input: 222 25% 18%;
-    --ring: 221 83% 53%;
-    --hero-bg: 222 47% 4%;
-    --hero-foreground: 220 20% 95%;
-    --hero-muted: 220 15% 60%;
+    --border:           215 28% 18%;
+    --input:            215 28% 18%;
+    --ring:             213 85% 52%;
   }
 }
 
 @layer base {
-  * { @apply border-border; }
-  body { @apply bg-background text-foreground font-body antialiased; }
-  h1, h2, h3, h4, h5, h6 { @apply font-heading; }
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
 }
 
 @layer utilities {
+  /* Gradiente de texto principal */
   .gradient-text {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .gradient-bg { background: var(--gradient-primary); }
-  .hero-gradient { background: var(--gradient-hero); }
-  .card-shadow { box-shadow: var(--shadow-card); }
-  .card-shadow-hover { box-shadow: var(--shadow-card-hover); }
-  .glow-shadow { box-shadow: var(--shadow-glow); }
+
+  /* Fondo degradado principal */
+  .gradient-bg {
+    background: var(--gradient-primary);
+  }
+
+  /* Fondo hero dark */
+  .hero-bg {
+    background: var(--gradient-hero);
+  }
+
+  /* Card glass style corporativo */
+  .glass-card {
+    background: hsl(var(--hero-surface));
+    border: 1px solid hsl(var(--hero-border));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Divisor line corporativo */
+  .corp-divider {
+    @apply border-t border-border/60;
+  }
+
+  /* Tag / badge corporativo */
+  .corp-tag {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
+           bg-primary/10 text-primary border border-primary/20 tracking-wide;
+  }
+
+  /* Borde acento izquierdo */
+  .border-accent-left {
+    border-left: 3px solid hsl(var(--primary));
+  }
+
+  /* Texto que respira (tracking corporativo) */
+  .label-corp {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground;
+  }
+}
+
+/* WhatsApp floating button */
+.whatsapp-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.45);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  animation: whatsapp-float 3s ease-in-out infinite;
+  text-decoration: none;
+}
+
+.whatsapp-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+}
+
+.whatsapp-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid #25D366;
+  opacity: 0;
+  animation: whatsapp-pulse-ring 2.5s ease-out infinite;
+}
+
+@keyframes whatsapp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes whatsapp-pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .whatsapp-btn {
+    bottom: 16px;
+    left: 16px;
+    width: 54px;
+    height: 54px;
+  }
+}
+
+/* === Frontend Security: Image Protection === */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Prevent text selection on UI elements that should not be copied */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
 }

@@ -4,112 +4,93 @@ import { Menu, X } from "lucide-react";
 import logoImg from "@/assets/logo-datasyslatam.png";
 
 const navLinks = [
-  { label: "Inicio",    href: "#inicio"    },
-  { label: "Nosotros",  href: "#nosotros"  },
+  { label: "Inicio",    href: "#inicio" },
+  { label: "Nosotros",  href: "#nosotros" },
   { label: "Servicios", href: "#servicios" },
   { label: "Propuesta", href: "#propuesta" },
-  { label: "Contacto",  href: "#contacto"  },
+  { label: "Contacto",  href: "#contacto" },
 ];
 
 const Logo = () => (
   <div className="flex items-center">
     <img
       src={logoImg}
-      alt="Datasys Latam Group"
-      width={160}
-      height={52}
+      alt="DataSys Latam Group"
+      width={150}
+      height={48}
       loading="eager"
       style={{
-        height: 44,
+        height: 40,
         width: "auto",
         objectFit: "contain",
-        // mix-blend-mode elimina visualmente el fondo blanco del JPG sobre fondos oscuros
-        mixBlendMode: "screen",
-        // brightness y contrast para nitidez y contraste leve con el fondo
-        filter: "brightness(1.05) contrast(1.05) drop-shadow(0 0 6px rgba(96,165,250,0.25))",
+        filter: "brightness(1.08) saturate(1.1) drop-shadow(0 0 6px rgba(33,118,232,0.25))",
       }}
     />
   </div>
 );
 
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-hero/90 backdrop-blur-md border-b border-primary/10">
-
-      {/* Barra principal */}
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+    <nav className="fixed top-0 left-0 right-0 z-[100] w-full bg-white/85 backdrop-blur-[12px] border-b border-gray-200/50">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
 
         <a href="#inicio" onClick={() => setOpen(false)} className="flex-shrink-0">
           <Logo />
         </a>
 
         {/* Links desktop */}
-        <ul className="hidden md:flex items-center gap-6 lg:gap-8">
+        <ul className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <li key={link.href}>
-              <a
-                href={link.href}
-                className="text-sm font-medium text-hero-muted hover:text-hero-foreground transition-colors duration-200"
-              >
+              <a href={link.href} className="px-4 py-2 rounded text-sm font-medium text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200 tracking-wide">
                 {link.label}
               </a>
             </li>
           ))}
-          <li>
-            <a
-              href="#contacto"
-              className="gradient-bg text-primary-foreground text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
-            >
-              Hablar con un experto
-            </a>
-          </li>
         </ul>
 
-        {/* Botón hamburguesa mobile */}
+        {/* CTA desktop */}
+        <div className="hidden md:flex items-center gap-3">
+          <a href="#contacto" className="px-5 py-2 rounded text-sm font-semibold bg-[#0052CC] text-white hover:bg-[#00B4D8] transition-all duration-200 tracking-wide shadow-sm">
+            Hablemos de su proyecto
+          </a>
+        </div>
+
+        {/* Boton menu movil */}
         <button
-          onClick={() => setOpen((prev) => !prev)}
-          className="flex md:hidden items-center justify-center w-10 h-10 rounded-lg text-hero-foreground hover:bg-hero-foreground/10 transition-colors flex-shrink-0"
-          aria-label={open ? "Cerrar menú" : "Abrir menú"}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
+          className="md:hidden p-2 rounded text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200"
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Cerrar menu" : "Abrir menu"}
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* Menú mobile */}
-      <AnimatePresence initial={false}>
+      {/* Menu movil */}
+      <AnimatePresence>
         {open && (
           <motion.div
-            id="mobile-menu"
             key="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden md:hidden bg-hero/95 backdrop-blur-md border-t border-primary/10"
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="md:hidden overflow-hidden border-t border-gray-200/50 bg-white/90 backdrop-blur-[12px]"
           >
-            <ul className="flex flex-col gap-1 px-4 py-4">
+            <ul className="px-6 py-4 flex flex-col gap-1">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <a
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium text-hero-muted hover:text-hero-foreground hover:bg-hero-foreground/5 transition-colors"
-                  >
+                  <a href={link.href} onClick={() => setOpen(false)} className="block px-4 py-3 rounded text-sm font-medium text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200 tracking-wide">
                     {link.label}
                   </a>
                 </li>
               ))}
-              <li className="mt-2 pb-2">
-                <a
-                  href="#contacto"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-center w-full gradient-bg text-primary-foreground text-sm font-semibold px-5 py-3 rounded-lg hover:opacity-90 transition-opacity"
-                >
-                  Hablar con un experto
+              <li className="pt-3 mt-1 border-t border-gray-200/50">
+                <a href="#contacto" onClick={() => setOpen(false)} className="block text-center px-4 py-3 rounded text-sm font-semibold bg-[#0052CC] text-white hover:bg-[#00B4D8] transition-all duration-200 tracking-wide">
+                  Hablemos de su proyecto
                 </a>
               </li>
             </ul>
