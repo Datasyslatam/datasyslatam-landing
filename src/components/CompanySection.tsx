@@ -51,7 +51,7 @@ const CompanySection = () => (
 
         <div className="overflow-hidden rounded-2xl shadow-md">
           <img
-            src="../public/assets/company-scene.jpg"
+            src="assets/company-scene.jpg"
             alt="Equipo de Datasys Latam en sala de juntas corporativa: presentador con traje azul marino y tableta PROYECTO DATASYS LATAM, equipo con uniformes y laptops"
             className="h-full min-h-[360px] w-full object-cover"
           />
