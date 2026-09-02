@@ -1,4 +1,5 @@
 import { Clock, ShieldCheck, User, Check } from "lucide-react";
+import companyScene from "../assets/company-scene.jpg";
 
 const points = [
   { title: "Governex:", desc: "Simplifica, acelera y asegura el Sistema de Gestión ISO con IA." },
@@ -50,11 +51,13 @@ const CompanySection = () => (
         </div>
 
         <div className="overflow-hidden rounded-2xl shadow-md">
+
           <img
-            src="../public/assets/company-scene.jpg"
-            alt="Equipo de Datasys Latam en sala de juntas corporativa: presentador con traje azul marino y tableta PROYECTO DATASYS LATAM, equipo con uniformes y laptops"
+            src={companyScene}
+            alt="Equipo de Datasys Latam en sala de juntas corporativa"
             className="h-full min-h-[360px] w-full object-cover"
           />
+           
         </div>
       </div>
     </div>
