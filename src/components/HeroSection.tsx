@@ -1,284 +1,152 @@
-import { motion } from "framer-motion";
-import heroBg from "@/assets/hero-bg.jpg";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import tecnologia from "@/assets/banners/tecnologia-corporativo.png";
+import inteligencia from "@/assets/banners/inteligencia-corporativo.png";
+import gestion from "@/assets/banners/gestion-corporativo.png";
+import transformacion from "@/assets/banners/transformacion-corporativo.png";
+import banner01 from "@/assets/banners/banner01.png";
+import HeroPremium from "./HeroPremium";
 
-const stats = [
-  { value: "2026",  label: "Fundada" },
-  { value: "Latam", label: "Alcance Regional" },
-  { value: "IA",    label: "Tecnología de Vanguardia" },
-  { value: "ISO",   label: "Gestión de Calidad" },
+
+const banners = [
+  {
+    title: "**Diseñamos e implementamos**",
+    eyebrow: "01 — Diseño de soluciones",
+    text: "soluciones de software, datos e inteligencia artificial que __optimizan procesos__, fortalecen la toma de decisiones y generan valor sostenible.",
+    image: banner01,
+  },
+  {
+    title: "**Tecnología**\nque __entiende__\ntu negocio",
+    eyebrow: "02 — Tecnología aplicada",
+    text: "En DatasysLatam Group Comprendemos primero el desafío para diseñar después la solución, integrando metodologías de innovación como Design Thinking.",
+    image: tecnologia,
+  },
+  {
+    title: "**Gestión proactiva**\n__asistida__\ncon IA",
+    eyebrow: "03 — Gestión asistida",
+    text: "Transita de una administración reactiva a una gestión proactiva asistida con IA, vive la experiencia de formular y definir los requerimientos de la norma ISO con IA generativa.",
+    image: inteligencia,
+  },
+  {
+    title: "**Gestión**\nque __construye__\nexcelencia",
+    eyebrow: "04 — Gestión de excelencia",
+    text: "Nuestra plataforma convierte la gestión diaria en evidencia de excelencia, garantizando el cumplimiento y la mejora continua de tu empresa.",
+    image: gestion,
+  },
+  {
+    title: "**Transformación**\n__digital__ con\npropósito",
+    eyebrow: "05 — Transformación digital",
+    text: "Convertimos procesos tradicionales en ecosistemas digitales inteligentes, preparados para evolucionar junto con las organizaciones.",
+    image: transformacion,
+  },
 ];
 
-// Gradiente reutilizable para texto
-const gradientStyle: React.CSSProperties = {
-  display: "inline-block",
-  background: "linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #c084fc 100%)",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
+const INTERVAL_MS = 8000;
+
+const hl = (str: string): ReactNode[] => {
+ const out: ReactNode[] = [];
+  str.split("**").forEach((np, a) => {
+    if (a % 2 === 1) {
+      out.push(<span key={"n" + a} className="text-navy-200">{np}</span>);
+    } else {
+      np.split("__").forEach((op, b) => {
+        if (b % 2 === 1) {
+          out.push(<span key={"o" + a + "_" + b} className="text-[#FF8024]">{op}</span>);
+        } else if (op !== "") {
+          out.push(<span key={"t" + a + "_" + b}>{op}</span>);
+        }
+      });
+    }
+  });
+  return out;
 };
+const HeroSection = () => {
+  const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState(1);
 
-const HeroSection = () => (
-  <section
-    id="inicio"
-    className="relative min-h-screen flex items-center justify-center overflow-hidden"
-  >
-    {/* ── 1. Imagen de fondo ── */}
-    <motion.img
-      src={heroBg}
-      alt=""
-      aria-hidden="true"
-      className="absolute inset-0 w-full h-full object-cover object-center"
-      style={{ zIndex: 0, scale: 1.15 }}
-      animate={{
-        scale: [1.1, 1.25, 1.15, 1.2, 1.1],
-        x: ["0%", "-3%", "2%", "-1%", "0%"],
-        y: ["0%", "2%", "-2%", "1%", "0%"],
-      }}
-      transition={{
-        duration: 40,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
-    />
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setDirection(1);
+      setActive((c) => (c + 1) % banners.length);
+    }, INTERVAL_MS);
+    return () => window.clearInterval(timer);
+  }, []);
 
-    {/* ── 2. Overlay multi-capa para legibilidad total ── */}
-    {/* Capa base: oscurece uniformemente toda la imagen */}
-    <div
-      className="absolute inset-0"
-      style={{
-        zIndex: 1,
-        background: "rgba(8, 10, 24, 0.72)",
-      }}
-    />
-    {/* Capa gradiente: más oscuro arriba (navbar) y abajo (stats) */}
-    <div
-      className="absolute inset-0"
-      style={{
-        zIndex: 2,
-        background:
-          "linear-gradient(to bottom, rgba(8,10,24,0.60) 0%, rgba(8,10,24,0.15) 35%, rgba(8,10,24,0.15) 65%, rgba(8,10,24,0.70) 100%)",
-      }}
-    />
+  const go = (dir: number) => {
+    setDirection(dir);
+    setActive((c) => (c + dir + banners.length) % banners.length);
+  };
 
-    {/* ── 3. Glows decorativos encima del overlay ── */}
-    <div
-      className="absolute pointer-events-none animate-pulse-glow"
-      style={{
-        zIndex: 3,
-        top: "30%", left: "15%",
-        width: 420, height: 420,
-        borderRadius: "50%",
-        background: "hsl(221 83% 55% / 0.14)",
-        filter: "blur(110px)",
-      }}
-    />
-    <div
-      className="absolute pointer-events-none animate-pulse-glow"
-      style={{
-        zIndex: 3,
-        bottom: "20%", right: "12%",
-        width: 340, height: 340,
-        borderRadius: "50%",
-        background: "hsl(292 84% 57% / 0.14)",
-        filter: "blur(95px)",
-      }}
-    />
+  const banner = banners[active];
 
-    {/* ── 4. Contenido ── */}
-    <div
-      className="relative w-full mx-auto px-4 sm:px-6 text-center"
-      style={{ zIndex: 10, maxWidth: 900, paddingTop: 100, paddingBottom: 56 }}
-    >
+  const variants = {
+    enter: (d: number) => ({
+      opacity: 0,
+      x: d > 0 ? 40 : -40,
+    }),
+    center: {
+      opacity: 1,
+      x: 0,
+    },
+    exit: (d: number) => ({
+      opacity: 0,
+      x: d > 0 ? -40 : 40,
+    }),
+  };
 
-      {/* Subtítulo superior */}
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55 }}
-        style={{
-          fontSize: 16,
-          fontWeight: 600,
-          letterSpacing: "0.32em",
-          textTransform: "uppercase",
-          color: "#e8711a",
-          marginBottom: 24,
-          fontFamily: "Inter, system-ui, sans-serif",
-        }}
-      >
-        Transformación Digital · Innovación · IA
-      </motion.p>
-
-      {/* H1 */}
-      <motion.h1
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.1 }}
-        style={{
-          fontFamily: '"Space Grotesk", system-ui, sans-serif',
-          fontWeight: 700,
-          lineHeight: 1.12,
-          color: "#f0f4ff",
-          marginBottom: 24,
-        }}
-        className="text-[40px] sm:text-[54px] lg:text-[72px]"
-      >
-        <span style={{ color: "#f0f4ff" }}>Impulsamos la </span>
-        <span
-          style={{
-            ...gradientStyle,
-            background: "linear-gradient(90deg, #818cf8 0%, #a78bfa 60%, #c084fc 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          evolución
-        </span>
-        <br />
-        <span
-          style={{
-            ...gradientStyle,
-            background: "linear-gradient(90deg, #a78bfa 0%, #c084fc 55%, #d946ef 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          digital
-        </span>
-        <span style={{ color: "#f0f4ff" }}> de tu empresa</span>
-      </motion.h1>
-
-      {/* Párrafo */}
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.28 }}
-        style={{
-          fontSize: 17,
-          lineHeight: 1.75,
-          color: "#cbd5e1",
-          maxWidth: 600,
-          margin: "0 auto",
-          marginBottom: 40,
-          fontFamily: "Inter, system-ui, sans-serif",
-        }}
-      >
-        Soluciones tecnológicas, gobierno corporativo a través de estructuras normativas, consultoría especializada e inteligencia artificial para
-        organizaciones en Colombia y Latinoamérica.
-      </motion.p>
-
-      {/* Botones */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.44 }}
-        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-      >
-        <a
-          href="#contacto"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 52,
-            minWidth: 240,
-            paddingInline: 32,
-            borderRadius: 10,
-            background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%)",
-            color: "#ffffff",
-            fontWeight: 700,
-            fontSize: 15,
-            textDecoration: "none",
-            boxShadow: "0 0 28px hsl(262 83% 58% / 0.50)",
-            transition: "opacity 180ms",
-            fontFamily: "Inter, system-ui, sans-serif",
-            whiteSpace: "nowrap",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-        >
-          Hablar con un experto
-        </a>
-
-        <a
-          href="#servicios"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 52,
-            minWidth: 240,
-            paddingInline: 32,
-            borderRadius: 10,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(203,213,225,0.30)",
-            color: "#e2e8f0",
-            fontWeight: 500,
-            fontSize: 15,
-            textDecoration: "none",
-            transition: "background 180ms",
-            fontFamily: "Inter, system-ui, sans-serif",
-            whiteSpace: "nowrap",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.09)";
-            e.currentTarget.style.borderColor = "#e8711a";}}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-            e.currentTarget.style.borderColor = "rgba(203,213,225,0.30)";}}
-        >
-          Conoce Nuestros Servicios
-        </a>
-      </motion.div>
-
-      {/* Stats */}
-      <motion.dl
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.62 }}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-y-8"
-        style={{
-          maxWidth: 680,
-          margin: "72px auto 0",
-        }}
-      >
-        {stats.map((stat) => (
-          <div key={stat.label} style={{ textAlign: "center" }}>
-            <dd
-              style={{
-                display: "inline-block",
-                fontSize: 34,
-                fontWeight: 700,
-                fontFamily: '"Space Grotesk", system-ui, sans-serif',
-                lineHeight: 1.1,
-                marginBottom: 6,
-                background:
-                  "linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #c084fc 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              {stat.value}
-            </dd>
-            <dt
-              style={{
-                display: "block",
-                fontSize: 12,
-                fontWeight: 400,
-                color: "#94a3b8",
-                fontFamily: "Inter, system-ui, sans-serif",
-              }}
-            >
-              {stat.label}
-            </dt>
+  return (
+    active === 0 ? <HeroPremium active={active} total={banners.length} go={go} /> : (
+    <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900">
+      <AnimatePresence mode="sync">
+        <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }}>
+          <img src={banner.image} alt="" aria-hidden className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-900/95 via-navy-900/75 to-navy-900/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-navy-900/20" />
+        </motion.div>
+      </AnimatePresence>
+      <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/40 to-transparent hidden lg:block" />
+      <div className="relative z-10 container mx-auto px-4 max-w-6xl pt-32 pb-24">
+        <div className="max-w-2xl">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.p key={active + "-eyebrow"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.4, ease: "easeOut" }} className="label-corp text-electric-400 mb-4">
+              {banner.eyebrow}
+            </motion.p>
+            <motion.h1 key={active + "-title"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }} className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl text-white leading-none tracking-tight mb-6">
+              {banner.title.split("\n").map((line, i) => (<span key={i} className="block">{hl(line)}</span>))}
+            </motion.h1>
+            <motion.p key={active + "-text"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }} className="text-base md:text-lg text-steel-200 leading-relaxed max-w-lg">
+              {hl(banner.text)}
+            </motion.p>
+          </AnimatePresence>
+          <motion.div className="flex flex-wrap gap-4 mt-10" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}>
+            <a href="#servicios" className="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-white font-semibold text-sm tracking-wide hover:bg-electric-400 transition-colors duration-200 shadow-card">
+              Ver servicios
+              <ChevronRight size={16} />
+            </a>
+            <a href="#contacto" className="inline-flex items-center gap-2 px-6 py-3 rounded border border-steel-400/50 text-steel-200 font-semibold text-sm tracking-wide hover:border-electric-400 hover:text-white transition-all duration-200">
+              Hablar con un experto
+            </a>
+          </motion.div>
+        </div>
+        <div className="flex items-center gap-4 mt-12">
+          <button onClick={() => go(-1)} aria-label="Anterior" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+            <div className="h-1.5 rounded-full bg-[#FF8024]" style={{ width: ((active + 1) / banners.length) * 100 + "%" }} />
           </div>
-        ))}
-      </motion.dl>
-
-    </div>
-  </section>
-);
+          <button onClick={() => go(1)} aria-label="Siguiente" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
+            <ArrowRight className="h-4 w-4" />
+          </button>
+          <span className="text-sm font-semibold text-white/80">{String(active + 1).padStart(2, "0")} / {String(banners.length).padStart(2, "0")}</span>
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-navy-700 to-transparent" />
+    </section>
+  )
+  );
+};
 
 export default HeroSection;
