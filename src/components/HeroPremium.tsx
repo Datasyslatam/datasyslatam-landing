@@ -1,6 +1,11 @@
 import { ArrowLeft, ArrowRight, Brain, Handshake, Target, Network, Shield } from "lucide-react";
+interface HeroPremiumProps {
+  active: number;
+  total: number;
+  go: (direction: number) => void;
+}
 
-const HeroPremium = ({ active, total, go }) => {
+const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
   return (
     <section className="relative overflow-hidden bg-navy-900 text-white">
       <div className="pointer-events-none absolute inset-0 opacity-[0.18]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)", backgroundSize: "44px 44px" }} />

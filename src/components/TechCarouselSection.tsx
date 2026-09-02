@@ -11,7 +11,12 @@ const techs = [
   { name: "OpenAI",      color: "#412991",  logo: "openai" },
 ];
 
-function Logo({ type, color }) {
+interface LogoProps {
+  type: string;
+  color: string;
+}
+
+function Logo({ type, color }: LogoProps) {
   const s = { width: 32, height: 32 };
   switch (type) {
     case "react": return (

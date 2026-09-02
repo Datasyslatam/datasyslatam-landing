@@ -1,12 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.png";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.png";
 import gestion from "@/assets/banners/gestion-corporativo.png";
 import transformacion from "@/assets/banners/transformacion-corporativo.png";
 import banner01 from "@/assets/banners/banner01.png";
 import HeroPremium from "./HeroPremium";
+
 
 const banners = [
   {
@@ -43,8 +45,8 @@ const banners = [
 
 const INTERVAL_MS = 8000;
 
-const hl = (str) => {
-  const out = [];
+const hl = (str: string): ReactNode[] => {
+ const out: ReactNode[] = [];
   str.split("**").forEach((np, a) => {
     if (a % 2 === 1) {
       out.push(<span key={"n" + a} className="text-navy-200">{np}</span>);
@@ -72,7 +74,7 @@ const HeroSection = () => {
     return () => window.clearInterval(timer);
   }, []);
 
-  const go = (dir) => {
+  const go = (dir: number) => {
     setDirection(dir);
     setActive((c) => (c + dir + banners.length) % banners.length);
   };
@@ -80,9 +82,18 @@ const HeroSection = () => {
   const banner = banners[active];
 
   const variants = {
-    enter: (d) => ({ opacity: 0, x: d > 0 ? 40 : -40 }),
-    center: { opacity: 1, x: 0 },
-    exit: (d) => ({ opacity: 0, x: d > 0 ? -40 : 40 }),
+    enter: (d: number) => ({
+      opacity: 0,
+      x: d > 0 ? 40 : -40,
+    }),
+    center: {
+      opacity: 1,
+      x: 0,
+    },
+    exit: (d: number) => ({
+      opacity: 0,
+      x: d > 0 ? -40 : 40,
+    }),
   };
 
   return (
