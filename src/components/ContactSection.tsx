@@ -1,14 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { Send, MapPin, Mail, Phone, CheckCircle2, AlertCircle } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 
-const contactInfo = [
-  { icon: MapPin, label: "Oficina",  text: "Barranquilla, Atlántico, Colombia" },
-  { icon: Mail,   label: "Email",    text: "contacto@datasyslatam.com" },
-  { icon: Phone,  label: "Teléfono", text: "+57 324-624-9237" },
-];
+const WEB3FORMS_KEY = "1f0323a5-b6ce-48de-bb4a-edf80bfdc0d6";
 
-const web3FormsAccessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -40,39 +35,44 @@ const ContactSection = () => {
       company: String(formData.get("company") ?? ""),
       message: String(formData.get("message") ?? ""),
     };
-
     const validationErrors = validate(data);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
     setErrors({});
-
-    if (!web3FormsAccessKey) {
-      setSubmitError("El servicio de mensajería no está configurado. Contáctenos directamente por email.");
-      return;
-    }
-
     setIsSubmitting(true);
     setSubmitError("");
-
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ access_key: web3FormsAccessKey, ...data }),
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: "Nuevo mensaje de contacto - DatasysLatam Group",
+          ...data,
+        }),
       });
       const json = await res.json();
       if (json.success) {
         setSubmitted(true);
+        form.reset();
       } else {
-        setSubmitError("No se pudo enviar el mensaje. Inténtalo de nuevo.");
+        console.error("[Web3Forms] API error:", json);
+        setSubmitError("No se pudo enviar el mensaje. Intíntalo de nuevo.");
       }
-    } catch {
-      setSubmitError("Error de red. Revisa tu conexión e inténtalo de nuevo.");
+    } catch (err) {
+      console.error("[Web3Forms] Error de red:", err);
+      setSubmitError("Error de red. Revisa tu conexión e intíntalo de nuevo.");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const resetForm = () => {
+    setSubmitted(false);
+    setSubmitError("");
+    setErrors({});
   };
 
   const inputBase =
@@ -117,7 +117,7 @@ const ContactSection = () => {
           <p className="label-corp text-electric-400 mb-3">Contacto</p>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-              Hablemos de su <span className="gradient-text">proximo</span>{" "}
+              Hablemos de su <span className="gradient-text">próximo</span>{" "}
               proyecto
             </h2>
             <p className="text-steel-300 text-sm leading-relaxed max-w-sm">
@@ -166,6 +166,13 @@ const ContactSection = () => {
                 <p className="text-sm text-steel-300 max-w-xs leading-relaxed">
                   Gracias por contactarnos. Nos pondremos en contacto con usted a la brevedad.
                 </p>
+              <button
+                type="button"
+                onClick={resetForm}
+                className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded border border-white/30 text-sm font-semibold text-white/80 hover:bg-white/10 transition-all duration-200"
+              >
+                Enviar otro mensaje
+              </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
