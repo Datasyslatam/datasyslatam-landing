@@ -7,11 +7,11 @@ interface HeroPremiumProps {
 
 const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
   return (
-    <section className="relative overflow-hidden bg-navy-900 text-white">
+    <section id="inicio" className="relative overflow-hidden bg-navy-900 text-white">
       <div className="pointer-events-none absolute inset-0 opacity-[0.18]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)", backgroundSize: "44px 44px" }} />
       <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-[#1a63c8] opacity-30 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 top-24 h-[420px] w-[420px] rounded-full bg-[#FF8024] opacity-20 blur-3xl" />
-      <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1200 600">
+      <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1200 600" aria-hidden="true">
         <g stroke="rgba(120,180,255,0.25)" strokeWidth="1" fill="none">
           <path d="M0 120 L300 200 L560 140 L820 260 L1200 180" />
           <path d="M0 420 L260 360 L520 440 L840 360 L1200 460" />
@@ -36,11 +36,12 @@ const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
               Creemos que la transformación digital no consiste simplemente en incorporar nuevas tecnologías. Comienza por comprender las necesidades reales de cada organización y convertirlas en soluciones que generen valor.
             </p>
             <div className="mb-10 flex flex-wrap gap-4">
-              <button className="rounded-full bg-[#FF8024] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110">Conocer nuestras soluciones</button>
-              <button className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10">Hablemos de su proyecto</button>
+              <a href="#servicios" className="rounded-full bg-[#FF8024] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110">Conocer nuestras soluciones</a>
+              <a href="#contacto" className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10">Hablemos de su proyecto</a>
             </div>
           </div>
 
+          <figure aria-label="Ejemplo de tablero de indicadores con datos ilustrativos">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
               <p className="mb-3 text-xs font-semibold tracking-wide text-white/60">KPIs Globales</p>
@@ -58,8 +59,8 @@ const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
               <p className="mb-2 text-xs font-semibold tracking-wide text-white/60">Evolución de ventas</p>
               <svg viewBox="0 0 200 80" className="h-20 w-full">
-                <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF8024" stop-opacity="0.5" /><stop offset="1" stop-color="#FF8024" stop-opacity="0" /></linearGradient></defs>
-                <path d="M0 60 L40 50 L80 55 L120 30 L160 35 L200 12 L200 80 L0 80 Z" fill="url(#g1)" />
+                <defs><linearGradient id="heroSalesGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FF8024" stopOpacity="0.5" /><stop offset="1" stopColor="#FF8024" stopOpacity="0" /></linearGradient></defs>
+                <path d="M0 60 L40 50 L80 55 L120 30 L160 35 L200 12 L200 80 L0 80 Z" fill="url(#heroSalesGradient)" />
                 <path d="M0 60 L40 50 L80 55 L120 30 L160 35 L200 12" fill="none" stroke="#FF8024" strokeWidth="2" />
               </svg>
             </div>
@@ -90,15 +91,19 @@ const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
               </svg>
             </div>
           </div>
+          <figcaption className="mt-3 text-right text-[11px] tracking-wide text-white/45">
+            Tablero de ejemplo · datos ilustrativos
+          </figcaption>
+          </figure>
         </div>
         <div className="mt-12 flex items-center gap-4">
-          <button onClick={() => go(-1)} className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10"><ArrowLeft className="h-4 w-4" /></button>
+          <button type="button" onClick={() => go(-1)} aria-label="Diapositiva anterior" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10"><ArrowLeft className="h-4 w-4" /></button>
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10"><div className="h-1.5 rounded-full bg-[#FF8024]" style={{ width: ((active + 1) / total) * 100 + "%" }} /></div>
-          <button onClick={() => go(1)} className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10"><ArrowRight className="h-4 w-4" /></button>
+          <button type="button" onClick={() => go(1)} aria-label="Diapositiva siguiente" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10"><ArrowRight className="h-4 w-4" /></button>
           <span className="text-sm font-semibold text-white/80">{String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
         </div>
         <div className="mt-10 grid gap-4 rounded-2xl bg-white p-6 text-navy-900 sm:grid-cols-4">
-          <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-white"><Target className="h-5 w-5" /></span><div><p className="text-xl font-extrabold">+10 años</p><p className="text-xs text-navy-900/70">Años Impulsando</p></div></div>
+          <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-white"><Target className="h-5 w-5" /></span><div><p className="text-xl font-extrabold">+10 años</p><p className="text-xs text-navy-900/70">Años de experiencia</p></div></div>
           <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-white"><Network className="h-5 w-5" /></span><div><p className="text-xl font-extrabold">+50</p><p className="text-xs text-navy-900/70">Proyectos Implementados</p></div></div>
           <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-white"><Shield className="h-5 w-5" /></span><div><p className="text-xl font-extrabold">100% Calidad</p><p className="text-xs text-navy-900/70">Enfoque Integral</p></div></div>
           <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-white"><Handshake className="h-5 w-5" /></span><div><p className="text-xl font-extrabold">Socios Aliados</p><p className="text-xs text-navy-900/70">Acompañamiento Estratégico</p></div></div>

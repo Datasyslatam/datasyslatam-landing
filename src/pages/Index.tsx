@@ -13,21 +13,23 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 const Index = () => (
-  <main className="min-h-screen pt-[72px]">
+  <>
     <Navbar />
-    <HeroSection />
-    <ServicesSection />
-    <ResultsSection />
-    <ServicesGridSection />
-    <CompanySection />
+    <main className="min-h-screen pt-[72px]">
+      <HeroSection />
+      <ServicesSection />
+      <ResultsSection />
+      <ServicesGridSection />
+      <CompanySection />
       <MethodologySection />
       <SectoresSection />
       <ProductosSection />
       <TechCarouselSection />
-    <ContactSection />
+      <ContactSection />
+    </main>
     <Footer />
-      <WhatsAppButton />
-  </main>
+    <WhatsAppButton />
+  </>
 );
 
 export default Index;

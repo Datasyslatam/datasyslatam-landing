@@ -2,21 +2,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import tecnologia from "@/assets/banners/tecnologia-corporativo.png";
-import inteligencia from "@/assets/banners/inteligencia-corporativo.png";
-import gestion from "@/assets/banners/gestion-corporativo.png";
-import transformacion from "@/assets/banners/transformacion-corporativo.png";
-import banner01 from "@/assets/banners/banner01.png";
+import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
+import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
+import gestion from "@/assets/banners/gestion-corporativo.webp";
+import transformacion from "@/assets/banners/transformacion-corporativo.webp";
 import HeroPremium from "./HeroPremium";
 
 
+// La diapositiva 0 es <HeroPremium />; estas son las diapositivas 1..N.
 const banners = [
-  {
-    title: "**Diseñamos e implementamos**",
-    eyebrow: "01 — Diseño de soluciones",
-    text: "soluciones de software, datos e inteligencia artificial que __optimizan procesos__, fortalecen la toma de decisiones y generan valor sostenible.",
-    image: banner01,
-  },
   {
     title: "**Tecnología**\nque __entiende__\ntu negocio",
     eyebrow: "02 — Tecnología aplicada",
@@ -43,6 +37,7 @@ const banners = [
   },
 ];
 
+const TOTAL_SLIDES = banners.length + 1;
 const INTERVAL_MS = 8000;
 
 const hl = (str: string): ReactNode[] => {
@@ -69,17 +64,17 @@ const HeroSection = () => {
   useEffect(() => {
     const timer = window.setInterval(() => {
       setDirection(1);
-      setActive((c) => (c + 1) % banners.length);
+      setActive((c) => (c + 1) % TOTAL_SLIDES);
     }, INTERVAL_MS);
     return () => window.clearInterval(timer);
   }, []);
 
   const go = (dir: number) => {
     setDirection(dir);
-    setActive((c) => (c + dir + banners.length) % banners.length);
+    setActive((c) => (c + dir + TOTAL_SLIDES) % TOTAL_SLIDES);
   };
 
-  const banner = banners[active];
+  const banner = banners[Math.max(active - 1, 0)];
 
   const variants = {
     enter: (d: number) => ({
@@ -97,11 +92,11 @@ const HeroSection = () => {
   };
 
   return (
-    active === 0 ? <HeroPremium active={active} total={banners.length} go={go} /> : (
+    active === 0 ? <HeroPremium active={active} total={TOTAL_SLIDES} go={go} /> : (
     <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900">
       <AnimatePresence mode="sync">
         <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }}>
-          <img src={banner.image} alt="" aria-hidden className="w-full h-full object-cover object-center" />
+          <img src={banner.image} alt="" aria-hidden decoding="async" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-navy-900/95 via-navy-900/75 to-navy-900/30" />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-navy-900/20" />
         </motion.div>
@@ -131,16 +126,16 @@ const HeroSection = () => {
           </motion.div>
         </div>
         <div className="flex items-center gap-4 mt-12">
-          <button onClick={() => go(-1)} aria-label="Anterior" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
+          <button type="button" onClick={() => go(-1)} aria-label="Anterior" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-            <div className="h-1.5 rounded-full bg-[#FF8024]" style={{ width: ((active + 1) / banners.length) * 100 + "%" }} />
+            <div className="h-1.5 rounded-full bg-[#FF8024]" style={{ width: ((active + 1) / TOTAL_SLIDES) * 100 + "%" }} />
           </div>
-          <button onClick={() => go(1)} aria-label="Siguiente" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
+          <button type="button" onClick={() => go(1)} aria-label="Siguiente" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
             <ArrowRight className="h-4 w-4" />
           </button>
-          <span className="text-sm font-semibold text-white/80">{String(active + 1).padStart(2, "0")} / {String(banners.length).padStart(2, "0")}</span>
+          <span className="text-sm font-semibold text-white/80">{String(active + 1).padStart(2, "0")} / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-navy-700 to-transparent" />

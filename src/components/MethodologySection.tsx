@@ -51,22 +51,22 @@ const MethodologySection = () => (
     {/* node-network background overlay */}
     <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1000 600" aria-hidden="true" style={{ opacity: 0.22 }}>
       <defs>
-        <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#00B4D8" stop-opacity="0.45"/>
-          <stop offset="100%" stop-color="#00B4D8" stop-opacity="0"/>
+        <radialGradient id="methodologyGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#00B4D8" stopOpacity="0.45"/>
+          <stop offset="100%" stopColor="#00B4D8" stopOpacity="0"/>
         </radialGradient>
       </defs>
-      <polyline points="80,150 220,180 360,120 500,200 640,150 780,210 920,160" fill="none" stroke="#00B4D8" stroke-width="1.5" opacity="0.5"/>
-      <polyline points="40,350 180,300 320,380 460,320 600,390 740,310 880,370" fill="none" stroke="#0052CC" stroke-width="1.5" opacity="0.4"/>
-      <polyline points="100,480 260,420 400,500 540,430 680,490 820,400 960,460" fill="none" stroke="#00B4D8" stroke-width="1" opacity="0.3"/>
+      <polyline points="80,150 220,180 360,120 500,200 640,150 780,210 920,160" fill="none" stroke="#00B4D8" strokeWidth="1.5" opacity="0.5"/>
+      <polyline points="40,350 180,300 320,380 460,320 600,390 740,310 880,370" fill="none" stroke="#0052CC" strokeWidth="1.5" opacity="0.4"/>
+      <polyline points="100,480 260,420 400,500 540,430 680,490 820,400 960,460" fill="none" stroke="#00B4D8" strokeWidth="1" opacity="0.3"/>
       <g fill="#00B4D8">
         <circle cx="220" cy="180" r="3"/><circle cx="500" cy="200" r="4"/><circle cx="780" cy="210" r="3"/>
         <circle cx="180" cy="300" r="3"/><circle cx="460" cy="320" r="4"/><circle cx="740" cy="310" r="3"/>
         <circle cx="260" cy="420" r="3"/><circle cx="540" cy="430" r="4"/><circle cx="820" cy="400" r="3"/>
       </g>
-      <circle cx="200" cy="120" r="60" fill="url(#nodeGlow)"/>
-      <circle cx="650" cy="280" r="80" fill="url(#nodeGlow)"/>
-      <circle cx="850" cy="480" r="50" fill="url(#nodeGlow)"/>
+      <circle cx="200" cy="120" r="60" fill="url(#methodologyGlow)"/>
+      <circle cx="650" cy="280" r="80" fill="url(#methodologyGlow)"/>
+      <circle cx="850" cy="480" r="50" fill="url(#methodologyGlow)"/>
     </svg>
 
     <div className="relative z-10 container mx-auto px-4 max-w-7xl">
