@@ -7,37 +7,41 @@ import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
 import transformacion from "@/assets/banners/transformacion-corporativo.webp";
 import HeroPremium from "./HeroPremium";
+import HeroPyme from "./HeroPyme";
+import { heroBtnBlue, heroBtnOutline } from "./heroButtons";
 
+// Diapositivas propias antes de los banners: 0 = <HeroPyme />, 1 = <HeroPremium />.
+const CUSTOM_SLIDES = 2;
 
-// La diapositiva 0 es <HeroPremium />; estas son las diapositivas 1..N.
+// Estas son las diapositivas CUSTOM_SLIDES..N.
 const banners = [
   {
     title: "**Tecnología**\nque __entiende__\ntu negocio",
-    eyebrow: "02 — Tecnología aplicada",
+    eyebrow: "03 — Tecnología aplicada",
     text: "En DatasysLatam Group Comprendemos primero el desafío para diseñar después la solución, integrando metodologías de innovación como Design Thinking.",
     image: tecnologia,
   },
   {
     title: "**Gestión proactiva**\n__asistida__\ncon IA",
-    eyebrow: "03 — Gestión asistida",
+    eyebrow: "04 — Gestión asistida",
     text: "Transita de una administración reactiva a una gestión proactiva asistida con IA, vive la experiencia de formular y definir los requerimientos de la norma ISO con IA generativa.",
     image: inteligencia,
   },
   {
     title: "**Gestión**\nque __construye__\nexcelencia",
-    eyebrow: "04 — Gestión de excelencia",
+    eyebrow: "05 — Gestión de excelencia",
     text: "Nuestra plataforma convierte la gestión diaria en evidencia de excelencia, garantizando el cumplimiento y la mejora continua de tu empresa.",
     image: gestion,
   },
   {
     title: "**Transformación**\n__digital__ con\npropósito",
-    eyebrow: "05 — Transformación digital",
+    eyebrow: "06 — Transformación digital",
     text: "Convertimos procesos tradicionales en ecosistemas digitales inteligentes, preparados para evolucionar junto con las organizaciones.",
     image: transformacion,
   },
 ];
 
-const TOTAL_SLIDES = banners.length + 1;
+const TOTAL_SLIDES = banners.length + CUSTOM_SLIDES;
 const INTERVAL_MS = 8000;
 
 const hl = (str: string): ReactNode[] => {
@@ -61,20 +65,21 @@ const HeroSection = () => {
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(1);
 
+  // Se reinicia en cada cambio de diapositiva para que la navegación manual tenga el intervalo completo.
   useEffect(() => {
-    const timer = window.setInterval(() => {
+    const timer = window.setTimeout(() => {
       setDirection(1);
       setActive((c) => (c + 1) % TOTAL_SLIDES);
     }, INTERVAL_MS);
-    return () => window.clearInterval(timer);
-  }, []);
+    return () => window.clearTimeout(timer);
+  }, [active]);
 
   const go = (dir: number) => {
     setDirection(dir);
     setActive((c) => (c + dir + TOTAL_SLIDES) % TOTAL_SLIDES);
   };
 
-  const banner = banners[Math.max(active - 1, 0)];
+  const banner = banners[Math.max(active - CUSTOM_SLIDES, 0)];
 
   const variants = {
     enter: (d: number) => ({
@@ -91,8 +96,10 @@ const HeroSection = () => {
     }),
   };
 
+  if (active === 0) return <HeroPyme active={active} total={TOTAL_SLIDES} go={go} />;
+  if (active === 1) return <HeroPremium active={active} total={TOTAL_SLIDES} go={go} />;
+
   return (
-    active === 0 ? <HeroPremium active={active} total={TOTAL_SLIDES} go={go} /> : (
     <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900">
       <AnimatePresence mode="sync">
         <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }}>
@@ -116,11 +123,11 @@ const HeroSection = () => {
             </motion.p>
           </AnimatePresence>
           <motion.div className="flex flex-wrap gap-4 mt-10" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}>
-            <a href="#servicios" className="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-white font-semibold text-sm tracking-wide hover:bg-electric-400 transition-colors duration-200 shadow-card">
+            <a href="#servicios" className={heroBtnBlue}>
               Ver servicios
               <ChevronRight size={16} />
             </a>
-            <a href="#contacto" className="inline-flex items-center gap-2 px-6 py-3 rounded border border-steel-400/50 text-steel-200 font-semibold text-sm tracking-wide hover:border-electric-400 hover:text-white transition-all duration-200">
+            <a href="#contacto" className={heroBtnOutline}>
               Hablar con un experto
             </a>
           </motion.div>
@@ -140,7 +147,6 @@ const HeroSection = () => {
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-navy-700 to-transparent" />
     </section>
-  )
   );
 };
 

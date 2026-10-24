@@ -96,6 +96,8 @@ export default {
         "slide-up":     "slideUp 0.6s ease-out both",
         "border-pulse": "borderPulse 3s ease-in-out infinite",
         "marquee":      "marquee 30s linear infinite",
+        "cta-pulse":    "ctaPulse 2.4s ease-in-out infinite",
+        "cta-glow":     "ctaGlow 2.4s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -113,6 +115,17 @@ export default {
         marquee: {
           "0%":   { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
+        },
+        /* Pulsación suave del CTA principal: leve crecimiento + halo naranja que se expande */
+        ctaPulse: {
+          "0%":   { transform: "scale(1)",    boxShadow: "0 0 0 0 rgba(255, 128, 36, 0.55)" },
+          "50%":  { transform: "scale(1.03)", boxShadow: "0 0 0 12px rgba(255, 128, 36, 0)" },
+          "100%": { transform: "scale(1)",    boxShadow: "0 0 0 0 rgba(255, 128, 36, 0)" },
+        },
+        /* Variante sin movimiento (prefers-reduced-motion): solo el halo se ilumina y se apaga */
+        ctaGlow: {
+          "0%, 100%": { boxShadow: "0 0 0 3px rgba(255, 128, 36, 0.25)" },
+          "50%":      { boxShadow: "0 0 18px 6px rgba(255, 128, 36, 0.6)" },
         },
       },
     },
