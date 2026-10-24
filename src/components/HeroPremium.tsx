@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, Handshake, Target, Network, Shield } from "lucide-react";
-import heroBg from "@/assets/hero-evolucion-digital.webp";
+import empresario from "@/assets/hero-empresario.webp";
+import { heroBtnBlue, heroBtnOutline } from "./heroButtons";
 
 interface HeroPremiumProps {
   active: number;
@@ -10,12 +11,16 @@ interface HeroPremiumProps {
 const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
   return (
     <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900 text-white">
-      <img src={heroBg} alt="" aria-hidden="true" width={1920} height={1080} decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy-900/95 via-navy-900/70 to-navy-900/10" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-900/80 via-transparent to-navy-900/30" />
+      {/* La imagen es pequeña (508×576): en escritorio ocupa solo el lado derecho para no ampliarla demasiado. */}
+      <div className="absolute inset-0 lg:left-[40%]" aria-hidden="true">
+        <img src={empresario} alt="" width={508} height={576} decoding="async" className="h-full w-full object-cover object-[75%_20%]" />
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-navy-900/85 lg:bg-transparent lg:bg-gradient-to-r lg:from-navy-900 lg:via-navy-900/85 lg:to-navy-900/20" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-navy-900/20" />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-14 lg:py-20">
         <div className="max-w-2xl">
+          <p className="label-corp text-electric-400 mb-4">02 — Evolución digital</p>
           <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl text-white leading-none tracking-tight mb-6">
             Impulsamos la evolución <span className="text-[#FF8024]">digital de tu empresa.</span>
           </h1>
@@ -23,8 +28,8 @@ const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
             Creemos que la transformación digital no consiste simplemente en incorporar nuevas tecnologías. Comienza por comprender las necesidades reales de cada organización y convertirlas en soluciones que generen valor.
           </p>
           <div className="flex flex-wrap gap-4">
-            <a href="#servicios" className="rounded-full bg-[#FF8024] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110">Conocer nuestras soluciones</a>
-            <a href="#contacto" className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10">Hablemos de su proyecto</a>
+            <a href="#servicios" className={heroBtnBlue}>Conocer nuestras soluciones</a>
+            <a href="#contacto" className={heroBtnOutline}>Hablemos de su proyecto</a>
           </div>
         </div>
         <div className="mt-12 flex items-center gap-4">
