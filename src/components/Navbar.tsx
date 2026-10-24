@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import logoImg from "@/assets/logo-datasyslatam.png";
+import logoImg from "@/assets/logo-datasyslatam.webp";
 
 const navLinks = [
   { label: "Inicio",    href: "#inicio" },
@@ -16,8 +16,8 @@ const Logo = () => (
     <img
       src={logoImg}
       alt="DataSys Latam Group"
-      width={150}
-      height={48}
+      width={130}
+      height={40}
       loading="eager"
       style={{
         height: 40,

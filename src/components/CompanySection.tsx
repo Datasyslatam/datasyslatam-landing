@@ -1,5 +1,5 @@
 import { Clock, ShieldCheck, User, Check } from "lucide-react";
-import companyScene from "../assets/company-scene.jpg";
+import companyScene from "@/assets/company-scene.webp";
 
 const points = [
   { title: "Governex:", desc: "Simplifica, acelera y asegura el Sistema de Gestión ISO con IA." },
@@ -12,13 +12,13 @@ const points = [
 
 const metrics = [
   { icon: Clock,       value: "+10",  label: "Años de experiencia" },
-  { icon: ShieldCheck, value: "+50",  label: "Proyectos exitosos" },
+  { icon: ShieldCheck, value: "+50",  label: "Proyectos implementados" },
   { icon: User,        value: "+30",  label: "Clientes satisfechos" },
   { icon: ShieldCheck, value: "100%", label: "Comprometidos con su crecimiento" },
 ];
 
 const CompanySection = () => (
-  <section className="bg-white py-16">
+  <section id="nosotros" className="bg-white py-16">
     <div className="container mx-auto px-4 max-w-7xl">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="flex flex-col">
@@ -55,6 +55,10 @@ const CompanySection = () => (
           <img
             src={companyScene}
             alt="Equipo de Datasys Latam en sala de juntas corporativa"
+            width={900}
+            height={1101}
+            loading="lazy"
+            decoding="async"
             className="h-full min-h-[360px] w-full object-cover"
           />
            

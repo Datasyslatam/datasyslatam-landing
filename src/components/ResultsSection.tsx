@@ -41,10 +41,10 @@ const metrics = [
 ];
 
 const ResultsSection = () => (
-  <section className="relative overflow-hidden py-10" style={{ background: "linear-gradient(135deg, #061224 0%, #0A192F 100%)" }}>
-    <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1200 200" style={{ opacity: 0.22 }}>
+  <section id="propuesta" className="relative overflow-hidden py-10" style={{ background: "linear-gradient(135deg, #061224 0%, #0A192F 100%)" }}>
+    <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1200 200" aria-hidden="true" style={{ opacity: 0.22 }}>
       <defs>
-        <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+        <radialGradient id="resultsGlow" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#00B4D8" stopOpacity="0.9" />
           <stop offset="100%" stopColor="#00B4D8" stopOpacity="0" />
         </radialGradient>
@@ -60,7 +60,7 @@ const ResultsSection = () => (
         <circle cx="80" cy="70" r="2.5" /><circle cx="260" cy="45" r="2.5" /><circle cx="430" cy="95" r="2.5" /><circle cx="600" cy="55" r="2.5" /><circle cx="780" cy="90" r="2.5" /><circle cx="960" cy="50" r="2.5" /><circle cx="1140" cy="100" r="2.5" />
         <circle cx="150" cy="150" r="2.5" /><circle cx="340" cy="125" r="2.5" /><circle cx="520" cy="160" r="2.5" /><circle cx="700" cy="130" r="2.5" /><circle cx="900" cy="155" r="2.5" /><circle cx="1080" cy="125" r="2.5" />
       </g>
-      <g fill="url(#nodeGlow)">
+      <g fill="url(#resultsGlow)">
         <circle cx="260" cy="45" r="16" />
         <circle cx="600" cy="55" r="16" />
         <circle cx="960" cy="50" r="16" />

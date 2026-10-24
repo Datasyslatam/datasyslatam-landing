@@ -1,9 +1,7 @@
 [build]
-builder = "NIXPACKS"
+builder = "RAILPACK"
 buildCommand = "npm run build"
-
-[build.env]
-NIXPACKS_NODE_VERSION = "22"
 
 [deploy]
 startCommand = "npm run start"
+healthcheckPath = "/"

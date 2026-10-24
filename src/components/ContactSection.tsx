@@ -2,8 +2,8 @@ import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 
-const WEB3FORMS_KEY = "1f0323a5-b6ce-48de-bb4a-edf80bfdc0d6";
-
+// Se define en .env.local (local) o como variable del servicio en Railway. Ver .env.example.
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY?.trim() ?? "";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -20,7 +20,7 @@ const ContactSection = () => {
     const errs: Record<string, string> = {};
     if (!data.name.trim())    errs.name    = "El nombre es obligatorio.";
     if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
-                               errs.email   = "Ingresa un correo válido.";
+                               errs.email   = "Ingrese un correo válido.";
     if (!data.message.trim()) errs.message = "El mensaje es obligatorio.";
     return errs;
   };
@@ -41,8 +41,19 @@ const ContactSection = () => {
       return;
     }
     setErrors({});
-    setIsSubmitting(true);
     setSubmitError("");
+    // Honeypot: los bots suelen marcar el campo oculto; se descarta sin enviar.
+    if (formData.get("botcheck")) {
+      setSubmitted(true);
+      form.reset();
+      return;
+    }
+    if (!WEB3FORMS_KEY) {
+      console.error("[Web3Forms] Falta VITE_WEB3FORMS_ACCESS_KEY en la configuración del build.");
+      setSubmitError("El formulario no está disponible en este momento. Escríbanos a contacto@datasyslatam.com.");
+      return;
+    }
+    setIsSubmitting(true);
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
@@ -50,6 +61,7 @@ const ContactSection = () => {
         body: JSON.stringify({
           access_key: WEB3FORMS_KEY,
           subject: "Nuevo mensaje de contacto - DatasysLatam Group",
+          botcheck: false,
           ...data,
         }),
       });
@@ -59,11 +71,11 @@ const ContactSection = () => {
         form.reset();
       } else {
         console.error("[Web3Forms] API error:", json);
-        setSubmitError("No se pudo enviar el mensaje. Intíntalo de nuevo.");
+        setSubmitError("No se pudo enviar el mensaje. Inténtelo de nuevo.");
       }
     } catch (err) {
       console.error("[Web3Forms] Error de red:", err);
-      setSubmitError("Error de red. Revisa tu conexión e intíntalo de nuevo.");
+      setSubmitError("Error de red. Revise su conexión e inténtelo de nuevo.");
     } finally {
       setIsSubmitting(false);
     }
@@ -86,13 +98,13 @@ const ContactSection = () => {
       <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1000 600" aria-hidden="true" style={{ opacity: 0.22 }}>
         <defs>
           <radialGradient id="cng" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#00B4D8" stop-opacity="0.45"/>
-            <stop offset="100%" stop-color="#00B4D8" stop-opacity="0"/>
+            <stop offset="0%" stopColor="#00B4D8" stopOpacity="0.45"/>
+            <stop offset="100%" stopColor="#00B4D8" stopOpacity="0"/>
           </radialGradient>
         </defs>
-        <polyline points="80,150 220,180 360,120 500,200 640,150 780,210 920,160" fill="none" stroke="#00B4D8" stroke-width="1.5" opacity="0.5"/>
-        <polyline points="40,350 180,300 320,380 460,320 600,390 740,310 880,370" fill="none" stroke="#0052CC" stroke-width="1.5" opacity="0.4"/>
-        <polyline points="100,480 260,420 400,500 540,430 680,490 820,400 960,460" fill="none" stroke="#00B4D8" stroke-width="1" opacity="0.3"/>
+        <polyline points="80,150 220,180 360,120 500,200 640,150 780,210 920,160" fill="none" stroke="#00B4D8" strokeWidth="1.5" opacity="0.5"/>
+        <polyline points="40,350 180,300 320,380 460,320 600,390 740,310 880,370" fill="none" stroke="#0052CC" strokeWidth="1.5" opacity="0.4"/>
+        <polyline points="100,480 260,420 400,500 540,430 680,490 820,400 960,460" fill="none" stroke="#00B4D8" strokeWidth="1" opacity="0.3"/>
         <g fill="#00B4D8">
           <circle cx="220" cy="180" r="3"/><circle cx="500" cy="200" r="4"/><circle cx="780" cy="210" r="3"/>
           <circle cx="180" cy="300" r="3"/><circle cx="460" cy="320" r="4"/><circle cx="740" cy="310" r="3"/>
@@ -142,7 +154,7 @@ const ContactSection = () => {
           >
             <div className="flex flex-col gap-5">
               <h3 className="text-2xl font-bold text-white">
-                ¿Tiene en mente un desafío tecnológico.?
+                ¿Tiene en mente un desafío tecnológico?
               </h3>
               <p className="text-sm leading-relaxed text-white/70">
                 Cuéntenos qué necesita transformar. Nuestro equipo puede ayudarle a convertir su necesidad empresarial en una solución tecnológica que genere resultados positivos.
@@ -176,15 +188,22 @@ const ContactSection = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+                {/* Honeypot anti-spam (Web3Forms) */}
+                <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+
                 {/* Nombre + Email */}
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                    <label htmlFor="contact-name" className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
                       Nombre <span className="text-destructive">*</span>
                     </label>
                     <input
+                      id="contact-name"
                       type="text"
                       name="name"
+                      autoComplete="name"
+                      maxLength={100}
+                      aria-invalid={!!errors.name}
                       placeholder="Su nombre completo"
                       className={`${inputBase} ${errors.name ? inputErr : inputOk}`}
                     />
@@ -195,12 +214,16 @@ const ContactSection = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                    <label htmlFor="contact-email" className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
                       Correo electrónico <span className="text-destructive">*</span>
                     </label>
                     <input
+                      id="contact-email"
                       type="email"
                       name="email"
+                      autoComplete="email"
+                      maxLength={150}
+                      aria-invalid={!!errors.email}
                       placeholder="correo@empresa.com"
                       className={`${inputBase} ${errors.email ? inputErr : inputOk}`}
                     />
@@ -214,12 +237,15 @@ const ContactSection = () => {
 
                 {/* Empresa */}
                 <div>
-                  <label className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                  <label htmlFor="contact-company" className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
                     Empresa <span className="text-steel-500 font-normal">(opcional)</span>
                   </label>
                   <input
+                    id="contact-company"
                     type="text"
                     name="company"
+                    autoComplete="organization"
+                    maxLength={150}
                     placeholder="Nombre de su organización"
                     className={`${inputBase} ${inputOk}`}
                   />
@@ -227,11 +253,14 @@ const ContactSection = () => {
 
                 {/* Mensaje */}
                 <div>
-                  <label className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                  <label htmlFor="contact-message" className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
                     Mensaje <span className="text-destructive">*</span>
                   </label>
                   <textarea
+                    id="contact-message"
                     name="message"
+                    maxLength={5000}
+                    aria-invalid={!!errors.message}
                     rows={5}
                     placeholder="Cuéntenos sobre su proyecto o necesidad…"
                     className={`${inputBase} resize-none ${errors.message ? inputErr : inputOk}`}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/* Fuentes (Space Grotesk, Inter): se cargan con <link> + preconnect en index.html. */
 
 @tailwind base;
 @tailwind components;
@@ -80,6 +80,14 @@
 
   html {
     scroll-behavior: smooth;
+    /* Compensa la barra de navegación fija al saltar a #anclas */
+    scroll-padding-top: 72px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
@@ -193,17 +201,9 @@
   }
 }
 
-/* === Frontend Security: Image Protection === */
-img {
-  -webkit-user-drag: none;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-/* Prevent text selection on UI elements that should not be copied */
-.no-select {
-  user-select: none;
-  -webkit-user-select: none;
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-btn,
+  .whatsapp-pulse {
+    animation: none;
+  }
 }

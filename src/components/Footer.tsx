@@ -1,4 +1,4 @@
-import logoImg from "@/assets/logo-datasyslatam.png";
+import logoImg from "@/assets/logo-datasyslatam.webp";
 
 const navLinks = [
   { label: "Inicio",    href: "#inicio" },
@@ -20,8 +20,8 @@ const Footer = () => (
           <img
             src={logoImg}
             alt="DataSys Latam Group"
-            width={130}
-            height={40}
+            width={110}
+            height={34}
             loading="lazy"
             style={{
               height: 34,

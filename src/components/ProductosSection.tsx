@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
-import appGovernex from "@/assets/banners/app_governex.jpg";
-import appSoft from "@/assets/banners/app_producto_soft.jpg";
+import appGovernex from "@/assets/banners/app-governex.webp";
+import appSoft from "@/assets/banners/app-producto-soft.webp";
+import logoGovernex from "@/assets/logo-governex.webp";
 
 const ProductosSection = () => (
   <section className="bg-white py-12">
@@ -13,7 +14,7 @@ const ProductosSection = () => (
 
           {/* Governex logo */}
           <div className="mb-5 flex items-center gap-3">
-            <img src="/assets/logo_governex.png" alt="Governex logo" width="36" height="36" className="h-9 w-9 object-contain" />
+            <img src={logoGovernex} alt="" width={30} height={36} loading="lazy" decoding="async" className="h-9 w-auto object-contain" />
             <span className="text-2xl font-bold tracking-tight">
               <span className="text-navy-900">Govern</span><span className="text-orange-500">ex</span>
             </span>
@@ -23,7 +24,7 @@ const ProductosSection = () => (
 
           {/* left: product image */}
           <div className="flex-1">
-            <img src={appGovernex} alt="Governex - Gobernanza corporativa inteligente" className="h-auto w-full rounded-lg object-cover" />
+            <img src={appGovernex} alt="Governex - Gobernanza corporativa inteligente" width={1000} height={915} loading="lazy" decoding="async" className="h-auto w-full rounded-lg object-cover" />
           </div>
 
             {/* right: text */}
@@ -48,7 +49,7 @@ const ProductosSection = () => (
 
             {/* left: product image */}
             <div className="flex-1">
-              <img src={appSoft} alt="Caso de exito - Plataforma de gestion empresarial" className="h-auto w-full rounded-lg object-cover" />
+              <img src={appSoft} alt="Caso de éxito - Plataforma de gestión empresarial" width={1000} height={656} loading="lazy" decoding="async" className="h-auto w-full rounded-lg object-cover" />
             </div>
 
             {/* right: case info */}
