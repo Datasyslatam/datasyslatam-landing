@@ -11,6 +11,7 @@ import ProductosSection from "@/components/ProductosSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import AutodiagnosticoDialog from "@/components/autodiagnostico/AutodiagnosticoDialog";
 
 const Index = () => (
   <>
@@ -29,6 +30,7 @@ const Index = () => (
     </main>
     <Footer />
     <WhatsAppButton />
+    <AutodiagnosticoDialog />
   </>
 );
 

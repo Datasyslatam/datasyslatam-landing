@@ -1,9 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
-
-// Se define en .env.local (local) o como variable del servicio en Railway. Ver .env.example.
-const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY?.trim() ?? "";
+import { SUBMIT_ERROR_MESSAGES, submitWeb3Forms } from "@/lib/web3forms";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -48,36 +46,14 @@ const ContactSection = () => {
       form.reset();
       return;
     }
-    if (!WEB3FORMS_KEY) {
-      console.error("[Web3Forms] Falta VITE_WEB3FORMS_ACCESS_KEY en la configuración del build.");
-      setSubmitError("El formulario no está disponible en este momento. Escríbanos a contacto@datasyslatam.com.");
-      return;
-    }
     setIsSubmitting(true);
-    try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: "Nuevo mensaje de contacto - DatasysLatam Group",
-          botcheck: false,
-          ...data,
-        }),
-      });
-      const json = await res.json();
-      if (json.success) {
-        setSubmitted(true);
-        form.reset();
-      } else {
-        console.error("[Web3Forms] API error:", json);
-        setSubmitError("No se pudo enviar el mensaje. Inténtelo de nuevo.");
-      }
-    } catch (err) {
-      console.error("[Web3Forms] Error de red:", err);
-      setSubmitError("Error de red. Revise su conexión e inténtelo de nuevo.");
-    } finally {
-      setIsSubmitting(false);
+    const result = await submitWeb3Forms({ subject: "Nuevo mensaje de contacto - DatasysLatam Group", ...data });
+    setIsSubmitting(false);
+    if (result.ok) {
+      setSubmitted(true);
+      form.reset();
+    } else {
+      setSubmitError(SUBMIT_ERROR_MESSAGES[result.reason]);
     }
   };
 
