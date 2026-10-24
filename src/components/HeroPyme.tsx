@@ -1,6 +1,8 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import heroBg from "@/assets/hero-evolucion-digital.webp";
 import { heroBtnBlue, heroBtnOrange } from "./heroButtons";
+import { whatsappUrl } from "@/lib/whatsapp";
+import { AUTODIAGNOSTICO_HASH } from "./autodiagnostico/data";
 
 interface HeroPymeProps {
   active: number;
@@ -8,9 +10,7 @@ interface HeroPymeProps {
   go: (direction: number) => void;
 }
 
-const WHATSAPP_URL =
-  "https://wa.me/573246249237?text=" +
-  encodeURIComponent("Hola, quisiera ordenar y automatizar los procesos de mi empresa.");
+const WHATSAPP_URL = whatsappUrl("Hola, quisiera ordenar y automatizar los procesos de mi empresa.");
 
 const risks = [
   "Procesos clave sin documentar: dependen de 2 o 3 personas.",
@@ -40,7 +40,7 @@ const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
           </p>
           <div className="flex flex-col items-start gap-4">
             {/* CTA principal: pulsa suavemente para llamar la atención (solo halo, sin movimiento, si el usuario lo prefiere); se detiene al pasar el cursor. */}
-            <a href="#contacto" className={`${heroBtnOrange} animate-cta-pulse motion-reduce:animate-cta-glow hover:animate-none`}>
+            <a href={AUTODIAGNOSTICO_HASH} className={`${heroBtnOrange} animate-cta-pulse motion-reduce:animate-cta-glow hover:animate-none`}>
               Descubra en 10 minutos qué tan ordenada está su empresa
             </a>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={heroBtnBlue}>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 const WhatsAppButton = () => {
   const [visible, setVisible] = useState(false);
@@ -12,7 +13,7 @@ const WhatsAppButton = () => {
 
   return (
     <a
-      href="https://wa.me/573246249237?text=Hola%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20servicios"
+      href={whatsappUrl("Hola, quisiera más información sobre sus servicios")}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contactenos por WhatsApp y conversemos sobre su proximo proyecto"
