@@ -51,13 +51,21 @@ const Footer = () => (
           </ul>
         </nav>
 
-        {/* Contacto rápido */}
-        <a
-          href="mailto:contacto@datasyslatam.com"
-          className="text-xs text-steel-400 hover:text-white transition-colors duration-200 tracking-wide hidden lg:block"
-        >
-          contacto@datasyslatam.com
-        </a>
+        {/* Contacto: visible en todos los tamaños y coherente con los datos estructurados (SEO local) */}
+        <address className="flex flex-col items-center gap-1 not-italic md:items-end">
+          <a
+            href="mailto:contacto@datasyslatam.com"
+            className="text-xs text-steel-400 hover:text-white transition-colors duration-200 tracking-wide"
+          >
+            contacto@datasyslatam.com
+          </a>
+          <a
+            href="tel:+573246249237"
+            className="text-xs text-steel-400 hover:text-white transition-colors duration-200 tracking-wide"
+          >
+            +57 324 624 9237
+          </a>
+        </address>
       </div>
 
       {/* Divisor + copyright */}
