@@ -1,8 +1,10 @@
 // Asistente de blog de DataSys Latam Group (todo con la API de Gemini de Google).
 // 1) Elige el siguiente tema del calendario (topics.json) que aún no tenga artículo.
 // 2) Investiga con Gemini + Búsqueda de Google y redacta el artículo con salida JSON estructurada.
-// 3) Verifica los enlaces: solo quedan fuentes citadas en la investigación que responden.
-// 4) Genera la portada con Gemini y escribe content/blog/<slug>.md.
+// 3) Otra llamada abre cada fuente y comprueba cifras y ediciones de normas; si algo no coincide, se corrige y se
+//    vuelve a comprobar. Lo que siga sin confirmarse queda señalado en el PR.
+// 4) Verifica los enlaces: solo quedan fuentes investigadas que responden, sin competidores ni copias de normas.
+// 5) Genera la portada con Gemini y escribe content/blog/<slug>.md.
 // El flujo .github/workflows/blog-agent.yml abre un PR con el resultado para revisión humana.
 import { appendFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -90,6 +92,29 @@ export const normalizeUrl = (url) => {
 const MARKDOWN_LINK = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
 const USER_AGENT = "Mozilla/5.0 (compatible; DataSysBlogAgent/1.0; +https://datasyslatam.com)";
 
+const EXCLUDED_DOMAINS = JSON.parse(await readFile(new URL("./excluded-domains.json", import.meta.url), "utf8")).dominios;
+// Solo los organismos de normalización publican el texto de sus normas; un PDF en otro sitio suele ser una copia no autorizada.
+const STANDARD_PUBLISHERS = ["iso.org", "icontec.org", "iec.ch"];
+const STANDARD_CODE = /(?:^|[^a-z])(?:(?:iso|iec|ntc|gtc)[\s_-]*\d{3,5}|norma[\s_-]+(?:iso|ntc|t[eé]cnica))/i;
+
+const hostMatches = (host, domain) => host === domain || host.endsWith(`.${domain}`);
+
+/** Motivo por el que una URL no se puede citar, o null si se puede. */
+export const excludedReason = (url) => {
+  let u;
+  try {
+    u = new URL(url);
+  } catch {
+    return "URL inválida";
+  }
+  const host = u.hostname.toLowerCase();
+  if (EXCLUDED_DOMAINS.some((d) => hostMatches(host, d))) return "competidor (consultora o software de gestión)";
+  const path = decodeURIComponent(u.pathname);
+  const file = path.split("/").pop();
+  if (/\.pdf$/i.test(file) && STANDARD_CODE.test(file) && !STANDARD_PUBLISHERS.some((d) => hostMatches(host, d))) return "posible copia de una norma";
+  return null;
+};
+
 /** "ok" si responde; "bloqueado" si existe pero rechaza robots (401/403/405/429); "error ..." si no. */
 export const checkUrl = async (url) => {
   try {
@@ -119,7 +144,9 @@ export const verifyLinks = async (article, researchedUrls) => {
   const status = new Map();
   await Promise.all(
     [...urls].map(async (url) => {
-      if (!researchedUrls.has(normalizeUrl(url))) status.set(url, "no salió de la investigación");
+      const excluded = excludedReason(url);
+      if (excluded) status.set(url, `excluida: ${excluded}`);
+      else if (!researchedUrls.has(normalizeUrl(url))) status.set(url, "no salió de la investigación");
       else status.set(url, await checkUrl(url));
     }),
   );
@@ -218,16 +245,28 @@ const addUsage = (total, interaction) => ({
 // ---------------------------------------------------------------------------
 
 const RESEARCH_SYSTEM = `Eres un investigador para el blog de una consultora colombiana. Buscas información actual y
-verificable en fuentes confiables: organismos oficiales (iso.org, icontec.org, mintrabajo.gov.co, mintic.gov.co, dane.gov.co,
-dian.gov.co, supersociedades.gov.co, confecamaras.org.co), universidades, gremios y medios económicos reconocidos.
-Evitas blogs comerciales de competidores y contenido sin autor.`;
+verificable en fuentes confiables: organismos oficiales (iso.org, icontec.org, onac.org.co, mintrabajo.gov.co, mintic.gov.co,
+dane.gov.co, dian.gov.co, supersociedades.gov.co, confecamaras.org.co), universidades, gremios y medios económicos reconocidos.
 
-const researchPrompt = (topic) => `Investiga con la Búsqueda de Google para un artículo de blog sobre: "${topic.tema}".
+Nunca usas como fuente:
+- consultoras, firmas de capacitación o proveedores de software de sistemas de gestión (son competencia de la empresa);
+- copias de normas técnicas (PDF de una norma ISO o NTC alojados fuera de iso.org o icontec.org); para una norma, cita su
+  página oficial en iso.org o icontec.org;
+- contenido sin autor o sin fecha.
+
+Siempre confirmas en iso.org o icontec.org cuál es la edición vigente de cada norma que mencionas: las normas se revisan
+y una edición anterior puede estar retirada.`;
+
+const researchPrompt = (topic) => `Fecha de hoy: ${today()}.
+Investiga con la Búsqueda de Google para un artículo de blog sobre: "${topic.tema}".
 Palabra clave principal: "${topic.palabraClave}". Público: dueños y gerentes de pymes en Colombia.
 
 Entrega un informe en español con:
+- La edición vigente de cada norma relacionada con el tema (por ejemplo, ISO 9001:2026), su fecha de publicación y si hay
+  un periodo de transición, según iso.org o icontec.org.
 - 6 a 10 hechos clave, cada uno respaldado por la fuente donde lo encontraste y quién la publica.
-- Datos o cifras solo si aparecen en una fuente; indica el año del dato.
+- Datos o cifras solo si aparecen en una fuente: cópialos tal como los da la fuente, con su año y su base
+  (por ejemplo, "94,3 % de las empresas formales activas, RUES primer semestre de 2025").
 - Normativa colombiana aplicable, si la hay, con su fuente oficial.
 - Preguntas frecuentes que se hace el público sobre el tema.
 No inventes fuentes ni cifras: si algo no lo encontraste en una fuente, no lo incluyas.`;
@@ -247,7 +286,10 @@ const ArticleSchema = z.object({
 });
 
 // Gemini acepta un subconjunto de JSON Schema; la clave $schema no forma parte de él.
-const { $schema, ...ARTICLE_JSON_SCHEMA } = z.toJSONSchema(ArticleSchema);
+const jsonSchema = (schema) => {
+  const { $schema, ...rest } = z.toJSONSchema(schema);
+  return rest;
+};
 
 const WRITER_SYSTEM = `Eres redactor del blog de DataSys Latam Group. Escribes en español de Colombia, tratando de "usted",
 con un tono profesional, cercano y práctico, sin exageraciones ni frases vacías.
@@ -261,11 +303,17 @@ Reglas del artículo:
 - Estructura con ## y ###, listas cuando ayuden y una sección final "## En resumen" con 3 a 5 viñetas.
 - Toda cifra, dato o norma lleva un enlace Markdown a su fuente, usando SOLO URLs de la lista de fuentes investigadas.
   Si un dato no tiene fuente en esa lista, no lo uses.
+- Las cifras se copian tal como las da la fuente, con su año y su base. No redondees, no combines datos de fuentes
+  distintas en una sola cifra y no uses "se estima" para datos sin fuente.
+- Cita cada norma con su edición vigente según el informe (por ejemplo, ISO 9001:2026), nunca una edición retirada.
+- Los plazos y costos de implementación varían en cada empresa: no los cuantifiques salvo que una fuente oficial lo haga.
+- Nunca cites consultoras, firmas de capacitación ni proveedores de software de gestión, ni copias de normas.
 - Incluye 2 o 3 enlaces internos naturales, entre ellos /#autodiagnostico, y el enlace indicado para el tema.
 - Cierra con un párrafo que invite a hacer el autodiagnóstico gratuito, sin sonar a anuncio.
 - No incluyas el título como encabezado, ni HTML, ni imágenes dentro del cuerpo.`;
 
-const writerPrompt = (topic, brief, sources) => `Tema: "${topic.tema}"
+const writerPrompt = (topic, brief, sources) => `Fecha de hoy: ${today()}.
+Tema: "${topic.tema}"
 Palabra clave principal: "${topic.palabraClave}"
 Enlace interno prioritario: ${topic.enlace}
 
@@ -276,6 +324,20 @@ Fuentes investigadas (las únicas URLs externas permitidas):
 ${sources.map((s) => `- ${s.title} — ${s.url}`).join("\n")}
 
 Redacta el artículo completo siguiendo las reglas.`;
+
+/** Fuentes citadas por Gemini, con la URL real y sin competidores ni copias de normas. */
+const usableSources = async (interaction) => {
+  const sources = new Map();
+  const excluded = [];
+  for (const cited of citedSources(interaction)) {
+    const url = await resolveUrl(cited.url);
+    if (!url) continue;
+    const reason = excludedReason(url);
+    if (reason) excluded.push({ url, result: `excluida: ${reason}` });
+    else sources.set(normalizeUrl(url), { url, title: cited.title });
+  }
+  return { sources: [...sources.values()], excluded };
+};
 
 const research = async (topic) => {
   const interaction = await gemini(
@@ -290,36 +352,120 @@ const research = async (topic) => {
   );
   const brief = outputText(interaction);
   if (!brief) throw new Error("Investigación: no se obtuvo informe.");
-
-  const sources = new Map();
-  for (const cited of citedSources(interaction)) {
-    const url = await resolveUrl(cited.url);
-    if (url) sources.set(normalizeUrl(url), { url, title: cited.title });
-  }
-  return { brief, sources: [...sources.values()], interaction };
+  return { brief, ...(await usableSources(interaction)), interaction };
 };
 
-const write = async (topic, brief, sources) => {
-  const interaction = await gemini(
-    {
-      model: TEXT_MODEL,
-      system_instruction: WRITER_SYSTEM,
-      input: writerPrompt(topic, brief, sources),
-      response_format: { type: "text", mime_type: "application/json", schema: ARTICLE_JSON_SCHEMA },
-      generation_config: { thinking_level: "high", max_output_tokens: 16000 },
-    },
-    "Redacción",
-  );
+const parseJson = (interaction, schema, step) => {
   let json;
   try {
     json = JSON.parse(outputText(interaction));
   } catch {
-    throw new Error("Redacción: Gemini no devolvió un JSON válido.");
+    throw new Error(`${step}: Gemini no devolvió un JSON válido.`);
   }
-  const parsed = ArticleSchema.safeParse(json);
-  if (!parsed.success) throw new Error(`Redacción: la respuesta no cumple el formato esperado (${parsed.error.message.slice(0, 300)}).`);
-  return { article: parsed.data, interaction };
+  const parsed = schema.safeParse(json);
+  if (!parsed.success) throw new Error(`${step}: la respuesta no cumple el formato esperado (${parsed.error.message.slice(0, 300)}).`);
+  return parsed.data;
 };
+
+const writeArticle = async (input, step) => {
+  const interaction = await gemini(
+    {
+      model: TEXT_MODEL,
+      system_instruction: WRITER_SYSTEM,
+      input,
+      response_format: { type: "text", mime_type: "application/json", schema: jsonSchema(ArticleSchema) },
+      generation_config: { thinking_level: "high", max_output_tokens: 16000 },
+    },
+    step,
+  );
+  return { article: parseJson(interaction, ArticleSchema, step), interaction };
+};
+
+// ---------------------------------------------------------------------------
+// Verificación de cifras y normas
+// ---------------------------------------------------------------------------
+
+const VerificationSchema = z.object({
+  figures: z
+    .array(
+      z.object({
+        claim: z.string().describe("Frase del artículo que contiene la cifra o el dato, copiada textualmente"),
+        url: z.string().describe("URL citada para ese dato; cadena vacía si no tiene enlace"),
+        status: z.enum(["coincide", "no_coincide", "no_encontrada", "sin_fuente"]),
+        source_says: z.string().describe("Lo que dice la fuente sobre ese dato, con su año; cadena vacía si no aparece"),
+      }),
+    )
+    .describe("Una entrada por cada cifra, porcentaje, plazo o dato cuantitativo del artículo y de sus preguntas frecuentes"),
+  standards: z
+    .array(
+      z.object({
+        cited: z.string().describe("Norma tal como aparece en el artículo, p. ej. ISO 9001:2015"),
+        current: z.string().describe("Edición vigente según iso.org o icontec.org, p. ej. ISO 9001:2026"),
+        is_current: z.boolean(),
+        evidence_url: z.string().describe("Página oficial que lo confirma"),
+      }),
+    )
+    .describe("Una entrada por cada norma técnica citada con su edición o año"),
+});
+
+const VERIFIER_SYSTEM = `Eres verificador de datos de un blog empresarial. No reescribes el artículo: compruebas cada dato
+contra la página que lo respalda y reportas el resultado con precisión. Un dato "coincide" solo si la fuente dice lo mismo
+(mismo valor, mismo año y misma base). Si la fuente da otro valor es "no_coincide"; si la página no lo menciona es
+"no_encontrada"; si el dato no tiene enlace es "sin_fuente". Para las normas, confirmas la edición vigente en iso.org o
+icontec.org con la Búsqueda de Google.`;
+
+const verifierPrompt = (article) => {
+  const urls = [...new Set([...article.body_markdown.matchAll(MARKDOWN_LINK)].map((m) => m[2]))].slice(0, 20);
+  return `Fecha de hoy: ${today()}.
+Abre cada URL citada con la herramienta de contexto de URL y verifica el artículo.
+
+URLs citadas:
+${urls.map((u) => `- ${u}`).join("\n")}
+
+Artículo (Markdown):
+${article.body_markdown}
+
+Preguntas frecuentes:
+${article.faq.map((f) => `- ${f.q} ${f.a}`).join("\n")}`;
+};
+
+const verify = async (article, step) => {
+  const interaction = await gemini(
+    {
+      model: TEXT_MODEL,
+      system_instruction: VERIFIER_SYSTEM,
+      input: verifierPrompt(article),
+      tools: [{ type: "url_context" }, { type: "google_search" }],
+      response_format: { type: "text", mime_type: "application/json", schema: jsonSchema(VerificationSchema) },
+      generation_config: { thinking_level: "high" },
+    },
+    step,
+  );
+  const report = parseJson(interaction, VerificationSchema, step);
+  const issues = [...report.figures.filter((f) => f.status !== "coincide"), ...report.standards.filter((s) => !s.is_current)];
+  return { report, issues, ...(await usableSources(interaction)), interaction };
+};
+
+export const describeIssue = (issue) =>
+  "status" in issue
+    ? `«${issue.claim}» — ${issue.status.replace("_", " ")}${issue.source_says ? `; la fuente dice: ${issue.source_says}` : ""}${issue.url ? ` (${issue.url})` : ""}`
+    : `${issue.cited} no es la edición vigente; la vigente es ${issue.current}${issue.evidence_url ? ` (${issue.evidence_url})` : ""}`;
+
+const revisionPrompt = (article, issues, sources) => `Fecha de hoy: ${today()}.
+Un verificador revisó este artículo contra sus fuentes y encontró estos problemas:
+${issues.map((i) => `- ${describeIssue(i)}`).join("\n")}
+
+Corrige el artículo:
+- Si una cifra no coincide, usa exactamente lo que dice la fuente.
+- Si una cifra no se encontró en la fuente o no tiene fuente, elimínala o reformula la frase sin ella.
+- Si una norma no es la edición vigente, actualízala a la vigente y ajusta lo que dependa de ella.
+- Mantén todo lo demás (estructura, tono, enlaces internos) y sigue las reglas.
+
+Fuentes permitidas (las únicas URLs externas que puede usar):
+${sources.map((s) => `- ${s.title} — ${s.url}`).join("\n")}
+
+Artículo actual (JSON):
+${JSON.stringify(article)}`;
 
 // ---------------------------------------------------------------------------
 // Imagen de portada
@@ -382,15 +528,43 @@ const main = async () => {
   const topic = await pickTopic(existing);
   console.log(`Tema: ${topic.tema} (modelo ${TEXT_MODEL})`);
 
-  const { brief, sources: researched, interaction: researchRun } = await research(topic);
-  console.log(`Investigación lista: ${researched.length} fuentes citadas`);
+  const { brief, sources: researched, excluded, interaction: researchRun } = await research(topic);
+  console.log(`Investigación lista: ${researched.length} fuentes citadas (${excluded.length} excluidas)`);
   if (researched.length < MIN_SOURCES) {
     throw new Error(`La investigación solo citó ${researched.length} fuentes (mínimo ${MIN_SOURCES}); no se redacta un artículo sin respaldo.`);
   }
 
-  const { article, interaction: writeRun } = await write(topic, brief, researched);
-  const researchedUrls = new Set(researched.map((s) => normalizeUrl(s.url)));
-  const { body, sources, report } = await verifyLinks(article, researchedUrls);
+  const runs = [researchRun];
+  let { article, interaction: run } = await writeArticle(writerPrompt(topic, brief, researched), "Redacción");
+  runs.push(run);
+
+  // Las páginas oficiales que consulta el verificador (p. ej. la edición vigente en iso.org) también se pueden citar.
+  const allowed = new Map(researched.map((s) => [normalizeUrl(s.url), s]));
+  const check = async (step) => {
+    const result = await verify(article, step);
+    runs.push(result.interaction);
+    excluded.push(...result.excluded);
+    for (const s of result.sources) allowed.set(normalizeUrl(s.url), s);
+    for (const s of result.report.standards) {
+      const url = s.evidence_url && (await resolveUrl(s.evidence_url));
+      const host = url ? new URL(url).hostname : "";
+      if (STANDARD_PUBLISHERS.some((d) => hostMatches(host, d))) allowed.set(normalizeUrl(url), { url, title: s.current });
+    }
+    return result;
+  };
+
+  let verification = await check("Verificación");
+  const corrected = verification.issues;
+  if (corrected.length) {
+    console.log(`Verificación: ${corrected.length} problemas; se corrige el artículo`);
+    ({ article, interaction: run } = await writeArticle(revisionPrompt(article, corrected, [...allowed.values()]), "Corrección"));
+    runs.push(run);
+    verification = await check("Segunda verificación");
+  }
+  const pending = verification.issues;
+  console.log(`Verificación final: ${verification.report.figures.length} datos revisados, ${pending.length} pendientes`);
+
+  const { body, sources, report } = await verifyLinks(article, new Set(allowed.keys()));
   if (sources.length < MIN_SOURCES) {
     throw new Error(`Solo ${sources.length} fuentes verificadas (mínimo ${MIN_SOURCES}); no se publica un artículo sin respaldo.`);
   }
@@ -400,6 +574,7 @@ const main = async () => {
   if (takenSlugs.has(slug) || existsSync(`${CONTENT_DIR}/${slug}.md`)) slug = `${slug}-${today()}`;
 
   const { image, interaction: imageRun } = await generateImage(article.image_prompt, slug);
+  runs.push(imageRun);
 
   const frontmatter = {
     title: article.title.trim(),
@@ -419,7 +594,7 @@ const main = async () => {
   const repo = process.env.GITHUB_REPOSITORY ?? "Datasyslatam/datasyslatam-landing";
   const imageUrl = `https://github.com/${repo}/blob/blog/${slug}/public${image}?raw=true`;
   const words = body.split(/\s+/).filter(Boolean).length;
-  const removed = report.filter((r) => !r.kept);
+  const removed = [...new Map([...excluded, ...report.filter((r) => !r.kept)].map((r) => [r.url, r])).values()];
   const blocked = report.filter((r) => r.result === "bloqueado");
   const prBody = [
     `## ${frontmatter.title}`,
@@ -439,6 +614,12 @@ const main = async () => {
       ? ["", "### Enlaces descartados automáticamente", ...removed.map((r) => `- ${r.url} — ${r.result}`)]
       : []),
     "",
+    "### Verificación automática de cifras y normas",
+    `- ${verification.report.figures.length} datos y ${verification.report.standards.length} normas comprobados contra sus fuentes${corrected.length ? `; se corrigieron ${corrected.length} problemas encontrados en la primera revisión` : ""}.`,
+    ...(pending.length
+      ? ["", "⚠️ **Revise a mano** (el verificador no pudo confirmarlos):", ...pending.map((i) => `- ${describeIssue(i)}`)]
+      : ["- Sin problemas pendientes."]),
+    "",
     "### Antes de aprobar",
     "- [ ] El contenido es correcto y coherente con lo que hacemos.",
     "- [ ] Las cifras y normas citadas coinciden con sus fuentes.",
@@ -450,7 +631,7 @@ const main = async () => {
   ].join("\n");
   await writeFile(`${OUT_DIR}/pr-body.md`, prBody);
 
-  const tokens = [researchRun, writeRun, imageRun].reduce(addUsage, { input: 0, output: 0 });
+  const tokens = runs.reduce(addUsage, { input: 0, output: 0 });
   console.log(`Artículo listo: content/blog/${slug}.md (${words} palabras, ${sources.length} fuentes)`);
   console.log(`Tokens: ${tokens.input} de entrada, ${tokens.output} de salida`);
 

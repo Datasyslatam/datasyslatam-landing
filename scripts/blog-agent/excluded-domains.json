@@ -1,0 +1,20 @@
+{
+  "_nota": "Dominios que el asistente nunca cita: consultoras, firmas de formación y proveedores de software de sistemas de gestión que compiten con DataSys. Se excluyen también sus subdominios. Agregue aquí los que aparezcan en los PR.",
+  "dominios": [
+    "kawak.net",
+    "lurconsultores.com",
+    "implementandosgi.com",
+    "globalstd.com",
+    "isotools.us",
+    "isotools.org",
+    "isotools.com.co",
+    "nueva-iso-9001-2015.com",
+    "nueva-iso-14001-2015.com",
+    "nueva-iso-45001.com",
+    "normas-iso.com",
+    "escuelaeuropeaexcelencia.com",
+    "pmg-ssi.com",
+    "isotools.cl",
+    "safetya.co"
+  ]
+}
