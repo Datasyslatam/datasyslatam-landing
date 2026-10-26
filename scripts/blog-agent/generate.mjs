@@ -1,22 +1,19 @@
-// Asistente de blog de DataSys Latam Group.
+// Asistente de blog de DataSys Latam Group (todo con la API de Gemini de Google).
 // 1) Elige el siguiente tema del calendario (topics.json) que aún no tenga artículo.
-// 2) Investiga con Claude + búsqueda web y redacta el artículo con salida estructurada.
-// 3) Verifica los enlaces: solo quedan fuentes encontradas en la investigación que responden.
-// 4) Genera la portada con Gemini (API de Google) y escribe content/blog/<slug>.md.
+// 2) Investiga con Gemini + Búsqueda de Google y redacta el artículo con salida JSON estructurada.
+// 3) Verifica los enlaces: solo quedan fuentes citadas en la investigación que responden.
+// 4) Genera la portada con Gemini y escribe content/blog/<slug>.md.
 // El flujo .github/workflows/blog-agent.yml abre un PR con el resultado para revisión humana.
 import { appendFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import Anthropic from "@anthropic-ai/sdk";
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import { parse as parseYaml, stringify as toYaml } from "yaml";
 
-const MODEL = "claude-opus-5-5";
-const FALLBACK_BETA = "server-side-fallback-2026-07-01";
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
+const TEXT_MODEL = process.env.BLOG_TEXT_MODEL || "gemini-3.8-flash";
 const IMAGE_MODEL = process.env.BLOG_IMAGE_MODEL || "gemini-nano-banana-2.1";
 const AUTHOR = "Armando José López González";
-const MAX_CONTINUATIONS = 5;
 const MIN_SOURCES = 2;
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -91,6 +88,7 @@ export const normalizeUrl = (url) => {
 };
 
 const MARKDOWN_LINK = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
+const USER_AGENT = "Mozilla/5.0 (compatible; DataSysBlogAgent/1.0; +https://datasyslatam.com)";
 
 /** "ok" si responde; "bloqueado" si existe pero rechaza robots (401/403/405/429); "error ..." si no. */
 export const checkUrl = async (url) => {
@@ -99,7 +97,7 @@ export const checkUrl = async (url) => {
       method: "GET",
       redirect: "follow",
       signal: AbortSignal.timeout(15_000),
-      headers: { "user-agent": "Mozilla/5.0 (compatible; DataSysBlogAgent/1.0; +https://datasyslatam.com)", accept: "text/html,*/*" },
+      headers: { "user-agent": USER_AGENT, accept: "text/html,*/*" },
     });
     await res.body?.cancel();
     if (res.ok) return "ok";
@@ -133,8 +131,90 @@ export const verifyLinks = async (article, researchedUrls) => {
   return { body, sources, report };
 };
 
+/** Las citas de la Búsqueda de Google pueden llegar como enlaces de redirección; se usa la página real. */
+const isGroundingRedirect = (url) => {
+  try {
+    return new URL(url).hostname.endsWith("vertexaisearch.cloud.google.com");
+  } catch {
+    return false;
+  }
+};
+
+const resolveUrl = async (url) => {
+  if (!isGroundingRedirect(url)) return url;
+  try {
+    const res = await fetch(url, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(15_000),
+      headers: { "user-agent": USER_AGENT },
+    });
+    await res.body?.cancel();
+    return isGroundingRedirect(res.url) ? null : res.url;
+  } catch {
+    return null;
+  }
+};
+
 // ---------------------------------------------------------------------------
-// Claude: investigación y redacción
+// Gemini (Interactions API)
+// ---------------------------------------------------------------------------
+
+export class GeminiError extends Error {}
+
+/** Llama a la Interactions API. Reintenta una vez si el servicio está saturado o falla de forma temporal. */
+const gemini = async (body, step) => {
+  let lastError;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const res = await fetch(GEMINI_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(600_000),
+    });
+    if (res.ok) {
+      const interaction = await res.json();
+      if (interaction.status === "failed") {
+        const detail = interaction.errors?.map((e) => e.message).join("; ") || "sin detalle";
+        throw new GeminiError(`${step}: Gemini no completó la solicitud (${detail}).`);
+      }
+      if (interaction.status === "incomplete") throw new GeminiError(`${step}: la respuesta de Gemini quedó incompleta (límite de tokens).`);
+      return interaction;
+    }
+    lastError = `${step} (Gemini ${res.status}): ${(await res.text()).slice(0, 400)}`;
+    // Clave inválida, sin permisos, sin facturación o solicitud mal formada: reintentar no sirve.
+    if (![429, 500, 502, 503, 504].includes(res.status)) break;
+    if (attempt === 1) await new Promise((r) => setTimeout(r, 20_000));
+  }
+  throw new GeminiError(lastError);
+};
+
+const textBlocks = (interaction) =>
+  (interaction.steps ?? [])
+    .filter((s) => s.type === "model_output")
+    .flatMap((s) => s.content ?? [])
+    .filter((c) => c.type === "text" && typeof c.text === "string");
+
+export const outputText = (interaction) =>
+  interaction.output_text ?? textBlocks(interaction).map((c) => c.text).join("").trim();
+
+/** Fuentes que el modelo citó al responder con la Búsqueda de Google (anotaciones url_citation). */
+export const citedSources = (interaction) => {
+  const found = new Map();
+  for (const block of textBlocks(interaction)) {
+    for (const a of block.annotations ?? []) {
+      if (a.type === "url_citation" && a.url) found.set(a.url, { url: a.url, title: a.title ?? a.url });
+    }
+  }
+  return [...found.values()];
+};
+
+const addUsage = (total, interaction) => ({
+  input: total.input + (interaction.usage?.total_input_tokens ?? 0),
+  output: total.output + (interaction.usage?.total_output_tokens ?? 0) + (interaction.usage?.total_thought_tokens ?? 0),
+});
+
+// ---------------------------------------------------------------------------
+// Investigación y redacción
 // ---------------------------------------------------------------------------
 
 const RESEARCH_SYSTEM = `Eres un investigador para el blog de una consultora colombiana. Buscas información actual y
@@ -142,15 +222,15 @@ verificable en fuentes confiables: organismos oficiales (iso.org, icontec.org, m
 dian.gov.co, supersociedades.gov.co, confecamaras.org.co), universidades, gremios y medios económicos reconocidos.
 Evitas blogs comerciales de competidores y contenido sin autor.`;
 
-const researchPrompt = (topic) => `Investiga para un artículo de blog sobre: "${topic.tema}".
+const researchPrompt = (topic) => `Investiga con la Búsqueda de Google para un artículo de blog sobre: "${topic.tema}".
 Palabra clave principal: "${topic.palabraClave}". Público: dueños y gerentes de pymes en Colombia.
 
 Entrega un informe en español con:
-- 6 a 10 hechos clave, cada uno con la URL exacta de la fuente donde lo encontraste y quién la publica.
+- 6 a 10 hechos clave, cada uno respaldado por la fuente donde lo encontraste y quién la publica.
 - Datos o cifras solo si aparecen en una fuente; indica el año del dato.
 - Normativa colombiana aplicable, si la hay, con su fuente oficial.
 - Preguntas frecuentes que se hace el público sobre el tema.
-No inventes URLs ni cifras: si algo no lo encontraste en una fuente, no lo incluyas.`;
+No inventes fuentes ni cifras: si algo no lo encontraste en una fuente, no lo incluyas.`;
 
 const ArticleSchema = z.object({
   title: z.string().describe("Título en español, máximo 65 caracteres, con la palabra clave al inicio si suena natural"),
@@ -165,6 +245,9 @@ const ArticleSchema = z.object({
   image_prompt: z.string().describe("Descripción en inglés de una fotografía editorial para la portada, sin texto ni logotipos"),
   image_alt: z.string().describe("Texto alternativo de la portada en español, una frase"),
 });
+
+// Gemini acepta un subconjunto de JSON Schema; la clave $schema no forma parte de él.
+const { $schema, ...ARTICLE_JSON_SCHEMA } = z.toJSONSchema(ArticleSchema);
 
 const WRITER_SYSTEM = `Eres redactor del blog de DataSys Latam Group. Escribes en español de Colombia, tratando de "usted",
 con un tono profesional, cercano y práctico, sin exageraciones ni frases vacías.
@@ -194,81 +277,48 @@ ${sources.map((s) => `- ${s.title} — ${s.url}`).join("\n")}
 
 Redacta el artículo completo siguiendo las reglas.`;
 
-const assertUsable = (response, step) => {
-  if (response.stop_reason === "refusal") {
-    throw new Error(`${step}: el modelo rechazó la solicitud (${response.stop_details?.category ?? "sin categoría"}).`);
-  }
-  if (response.stop_reason === "max_tokens") throw new Error(`${step}: la respuesta se cortó por max_tokens.`);
-};
-
-const collectSources = (content, found) => {
-  for (const block of content) {
-    if (block.type === "web_search_tool_result" && Array.isArray(block.content)) {
-      for (const r of block.content) if (r.type === "web_search_result") found.set(normalizeUrl(r.url), { url: r.url, title: r.title });
-    }
-    if (block.type === "web_fetch_tool_result" && block.content?.type === "web_fetch_result") {
-      const url = block.content.url;
-      if (url) found.set(normalizeUrl(url), { url, title: block.content.content?.title ?? url });
-    }
-    if (block.type === "text" && Array.isArray(block.citations)) {
-      for (const c of block.citations) if (c.url) found.set(normalizeUrl(c.url), { url: c.url, title: c.title ?? c.url });
-    }
-  }
-};
-
-const research = async (client, topic) => {
-  const messages = [{ role: "user", content: researchPrompt(topic) }];
-  const found = new Map();
-  const usage = [];
-  let response;
-  for (let i = 0; i <= MAX_CONTINUATIONS; i++) {
-    response = await client.beta.messages
-      .stream({
-        model: MODEL,
-        max_tokens: 32000,
-        betas: [FALLBACK_BETA],
-        fallbacks: "default",
-        output_config: { effort: "high" },
-        system: RESEARCH_SYSTEM,
-        tools: [
-          {
-            type: "web_search_20260209",
-            name: "web_search",
-            max_uses: 8,
-            user_location: { type: "approximate", city: "Barranquilla", region: "Atlántico", country: "CO", timezone: "America/Bogota" },
-          },
-          { type: "web_fetch_20260209", name: "web_fetch", max_uses: 6 },
-        ],
-        messages,
-      })
-      .finalMessage();
-    usage.push(response.usage);
-    collectSources(response.content, found);
-    if (response.stop_reason !== "pause_turn") break;
-    // La búsqueda en el servidor pausó el turno: se reenvía para que continúe.
-    messages.push({ role: "assistant", content: response.content });
-  }
-  assertUsable(response, "Investigación");
-  const brief = response.content
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
+const research = async (topic) => {
+  const interaction = await gemini(
+    {
+      model: TEXT_MODEL,
+      system_instruction: RESEARCH_SYSTEM,
+      input: researchPrompt(topic),
+      tools: [{ type: "google_search" }],
+      generation_config: { thinking_level: "high" },
+    },
+    "Investigación",
+  );
+  const brief = outputText(interaction);
   if (!brief) throw new Error("Investigación: no se obtuvo informe.");
-  return { brief, sources: [...found.values()], usage };
+
+  const sources = new Map();
+  for (const cited of citedSources(interaction)) {
+    const url = await resolveUrl(cited.url);
+    if (url) sources.set(normalizeUrl(url), { url, title: cited.title });
+  }
+  return { brief, sources: [...sources.values()], interaction };
 };
 
-const write = async (client, topic, brief, sources) => {
-  const response = await client.messages.parse({
-    model: MODEL,
-    max_tokens: 16000,
-    output_config: { effort: "high", format: zodOutputFormat(ArticleSchema) },
-    system: WRITER_SYSTEM,
-    messages: [{ role: "user", content: writerPrompt(topic, brief, sources) }],
-  });
-  assertUsable(response, "Redacción");
-  if (!response.parsed_output) throw new Error("Redacción: la respuesta no cumple el formato esperado.");
-  return { article: response.parsed_output, usage: response.usage };
+const write = async (topic, brief, sources) => {
+  const interaction = await gemini(
+    {
+      model: TEXT_MODEL,
+      system_instruction: WRITER_SYSTEM,
+      input: writerPrompt(topic, brief, sources),
+      response_format: { type: "text", mime_type: "application/json", schema: ARTICLE_JSON_SCHEMA },
+      generation_config: { thinking_level: "high", max_output_tokens: 16000 },
+    },
+    "Redacción",
+  );
+  let json;
+  try {
+    json = JSON.parse(outputText(interaction));
+  } catch {
+    throw new Error("Redacción: Gemini no devolvió un JSON válido.");
+  }
+  const parsed = ArticleSchema.safeParse(json);
+  if (!parsed.success) throw new Error(`Redacción: la respuesta no cumple el formato esperado (${parsed.error.message.slice(0, 300)}).`);
+  return { article: parsed.data, interaction };
 };
 
 // ---------------------------------------------------------------------------
@@ -298,31 +348,20 @@ const EXTENSIONS = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "web
 
 /** Genera la portada con Gemini y devuelve su ruta pública (p. ej. /blog/<slug>.jpg). */
 const generateImage = async (prompt, slug) => {
-  let lastError;
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/interactions", {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
-      body: JSON.stringify({
-        model: IMAGE_MODEL,
-        input: [{ type: "text", text: `${prompt}. ${IMAGE_STYLE}` }],
-        // JPEG a 1K mantiene la portada liviana para la web.
-        response_format: { type: "image", mime_type: "image/jpeg", aspect_ratio: "3:2", image_size: "1K" },
-      }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      const block = findImageBlock(json);
-      if (!block) throw new Error(`Imagen: la respuesta de Gemini no trae ninguna imagen (campos: ${Object.keys(json).join(", ")}).`);
-      const extension = EXTENSIONS[block.mime_type ?? block.mimeType] ?? "jpg";
-      await writeFile(`${IMAGE_DIR}/${slug}.${extension}`, Buffer.from(block.data, "base64"));
-      return `/blog/${slug}.${extension}`;
-    }
-    lastError = `Imagen (Gemini ${res.status}): ${(await res.text()).slice(0, 400)}`;
-    // Clave inválida, sin permisos o sin facturación: reintentar no sirve.
-    if ([400, 401, 403, 404].includes(res.status)) break;
-  }
-  throw new Error(lastError);
+  const interaction = await gemini(
+    {
+      model: IMAGE_MODEL,
+      input: [{ type: "text", text: `${prompt}. ${IMAGE_STYLE}` }],
+      // JPEG a 1K mantiene la portada liviana para la web.
+      response_format: { type: "image", mime_type: "image/jpeg", aspect_ratio: "3:2", image_size: "1K" },
+    },
+    "Imagen",
+  );
+  const block = findImageBlock(interaction);
+  if (!block) throw new Error(`Imagen: la respuesta de Gemini no trae ninguna imagen (campos: ${Object.keys(interaction).join(", ")}).`);
+  const extension = EXTENSIONS[block.mime_type ?? block.mimeType] ?? "jpg";
+  await writeFile(`${IMAGE_DIR}/${slug}.${extension}`, Buffer.from(block.data, "base64"));
+  return { image: `/blog/${slug}.${extension}`, interaction };
 };
 
 // ---------------------------------------------------------------------------
@@ -334,7 +373,6 @@ const requireEnv = (name) => {
 };
 
 const main = async () => {
-  requireEnv("ANTHROPIC_API_KEY");
   requireEnv("GEMINI_API_KEY");
   await mkdir(CONTENT_DIR, { recursive: true });
   await mkdir(IMAGE_DIR, { recursive: true });
@@ -342,13 +380,15 @@ const main = async () => {
 
   const existing = await readExistingPosts();
   const topic = await pickTopic(existing);
-  console.log(`Tema: ${topic.tema}`);
+  console.log(`Tema: ${topic.tema} (modelo ${TEXT_MODEL})`);
 
-  const client = new Anthropic();
-  const { brief, sources: researched, usage: researchUsage } = await research(client, topic);
-  console.log(`Investigación lista: ${researched.length} fuentes encontradas`);
+  const { brief, sources: researched, interaction: researchRun } = await research(topic);
+  console.log(`Investigación lista: ${researched.length} fuentes citadas`);
+  if (researched.length < MIN_SOURCES) {
+    throw new Error(`La investigación solo citó ${researched.length} fuentes (mínimo ${MIN_SOURCES}); no se redacta un artículo sin respaldo.`);
+  }
 
-  const { article, usage: writeUsage } = await write(client, topic, brief, researched);
+  const { article, interaction: writeRun } = await write(topic, brief, researched);
   const researchedUrls = new Set(researched.map((s) => normalizeUrl(s.url)));
   const { body, sources, report } = await verifyLinks(article, researchedUrls);
   if (sources.length < MIN_SOURCES) {
@@ -359,7 +399,7 @@ const main = async () => {
   let slug = slugify(article.slug || article.title);
   if (takenSlugs.has(slug) || existsSync(`${CONTENT_DIR}/${slug}.md`)) slug = `${slug}-${today()}`;
 
-  const image = await generateImage(article.image_prompt, slug);
+  const { image, interaction: imageRun } = await generateImage(article.image_prompt, slug);
 
   const frontmatter = {
     title: article.title.trim(),
@@ -406,14 +446,11 @@ const main = async () => {
     "",
     "Al hacer **Merge**, Railway publica el artículo en unos minutos. Para descartarlo, cierre el PR.",
     "",
-    "🤖 Generado por el asistente de blog (`scripts/blog-agent`) con Claude y revisión humana obligatoria.",
+    `🤖 Generado por el asistente de blog (\`scripts/blog-agent\`) con Gemini (${TEXT_MODEL}) y revisión humana obligatoria.`,
   ].join("\n");
   await writeFile(`${OUT_DIR}/pr-body.md`, prBody);
 
-  const tokens = [...researchUsage, writeUsage].reduce(
-    (acc, u) => ({ input: acc.input + (u?.input_tokens ?? 0), output: acc.output + (u?.output_tokens ?? 0) }),
-    { input: 0, output: 0 },
-  );
+  const tokens = [researchRun, writeRun, imageRun].reduce(addUsage, { input: 0, output: 0 });
   console.log(`Artículo listo: content/blog/${slug}.md (${words} palabras, ${sources.length} fuentes)`);
   console.log(`Tokens: ${tokens.input} de entrada, ${tokens.output} de salida`);
 
@@ -424,11 +461,7 @@ const main = async () => {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
-    if (err instanceof Anthropic.APIError) {
-      console.error(`Error de la API de Claude (${err.status}): ${err.message}`);
-    } else {
-      console.error(err instanceof Error ? err.message : err);
-    }
+    console.error(err instanceof Error ? err.message : err);
     process.exit(1);
   });
 }
