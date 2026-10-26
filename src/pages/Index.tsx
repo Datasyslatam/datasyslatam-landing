@@ -1,4 +1,4 @@
-import Navbar from "@/components/Navbar";
+import SiteChrome from "@/components/SiteChrome";
 import HeroSection from "@/components/HeroSection";
 import FamiliarSection from "@/components/FamiliarSection";
 import ConsultoriaSection from "@/components/ConsultoriaSection";
@@ -12,32 +12,23 @@ import SectoresSection from "@/components/SectoresSection";
 import ProductosSection from "@/components/ProductosSection";
 import FaqSection from "@/components/FaqSection";
 import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import AutodiagnosticoDialog from "@/components/autodiagnostico/AutodiagnosticoDialog";
 
 const Index = () => (
-  <>
-    <Navbar />
-    <main className="min-h-screen pt-[72px]">
-      <HeroSection />
-      <FamiliarSection />
-      <ConsultoriaSection />
-      <ServicesSection />
-      <ResultsSection />
-      <ServicesGridSection />
-      <CompanySection />
-      <MethodologySection />
-      <SectoresSection />
-      <ProductosSection />
-      <TechCarouselSection />
-      <FaqSection />
-      <ContactSection />
-    </main>
-    <Footer />
-    <WhatsAppButton />
-    <AutodiagnosticoDialog />
-  </>
+  <SiteChrome>
+    <HeroSection />
+    <FamiliarSection />
+    <ConsultoriaSection />
+    <ServicesSection />
+    <ResultsSection />
+    <ServicesGridSection />
+    <CompanySection />
+    <MethodologySection />
+    <SectoresSection />
+    <ProductosSection />
+    <TechCarouselSection />
+    <FaqSection />
+    <ContactSection />
+  </SiteChrome>
 );
 
 export default Index;

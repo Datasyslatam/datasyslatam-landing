@@ -1,12 +1,6 @@
 import logoImg from "@/assets/logo-datasyslatam.webp";
+import { NAV_LINKS } from "./navLinks";
 
-const navLinks = [
-  { label: "Inicio",    href: "#inicio" },
-  { label: "Nosotros",  href: "#nosotros" },
-  { label: "Servicios", href: "#servicios" },
-  { label: "Propuesta", href: "#propuesta" },
-  { label: "Contacto",  href: "#contacto" },
-];
 
 const Footer = () => (
   <footer className="bg-navy-950 border-t border-navy-800">
@@ -38,7 +32,7 @@ const Footer = () => (
         {/* Links */}
         <nav aria-label="Footer navigation">
           <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-            {navLinks.map(({ label, href }) => (
+            {NAV_LINKS.map(({ label, href }) => (
               <li key={href}>
                 <a
                   href={href}

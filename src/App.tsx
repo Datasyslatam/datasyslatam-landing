@@ -1,16 +1,28 @@
 import { MotionConfig } from "framer-motion";
 import Index from "./pages/Index.tsx";
+import BlogIndex from "./pages/BlogIndex.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import type { Route } from "./routes.ts";
+import type { BlogPost as BlogPostData } from "./blog/types.ts";
 
-/** Landing de una sola página: cualquier ruta distinta de "/" muestra el 404. */
-export const isHomePath = (pathname: string) => ["/", "/index.html"].includes(pathname);
+interface AppProps {
+  route: Route;
+  /** Artículo ya cargado cuando la ruta es /blog/<slug>; null si no existe. */
+  post: BlogPostData | null;
+}
 
-// En el prerender (Node) no hay window: se genera siempre la página de inicio.
-const isHome = typeof window === "undefined" || isHomePath(window.location.pathname);
-
-const App = () => (
+const App = ({ route, post }: AppProps) => (
   <MotionConfig reducedMotion="user">
-    {isHome ? <Index /> : <NotFound />}
+    {route.type === "home" ? (
+      <Index />
+    ) : route.type === "blog-index" ? (
+      <BlogIndex />
+    ) : route.type === "blog-post" && post ? (
+      <BlogPost post={post} />
+    ) : (
+      <NotFound />
+    )}
   </MotionConfig>
 );
 
