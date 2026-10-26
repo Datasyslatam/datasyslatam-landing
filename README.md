@@ -27,13 +27,13 @@ npm run start                # http://localhost:3000
 
 ## Blog
 
-- Cada artículo es `content/blog/<slug>.md` (frontmatter YAML + Markdown) con portada en `public/blog/<slug>.webp`. `vite-plugin-blog.ts` los convierte en HTML al compilar.
+- Cada artículo es `content/blog/<slug>.md` (frontmatter YAML + Markdown) con portada en `public/blog/<slug>.jpg`. `vite-plugin-blog.ts` los convierte en HTML al compilar.
 - **Asistente** (`scripts/blog-agent/generate.mjs`): toma el siguiente tema de `scripts/blog-agent/topics.json`, investiga con Claude y búsqueda web, redacta, conserva solo enlaces encontrados en la investigación que responden y genera la portada.
 - **Programación** (`.github/workflows/blog-agent.yml`): lunes, miércoles y viernes a las 6:00 a. m. (Colombia) abre un PR `Blog: ...`. Se publica al hacer **Merge**; para descartarlo, se cierra el PR. También se puede lanzar a mano desde *Actions → Blog — artículo para revisión → Run workflow*, con un tema opcional.
 
 Configuración necesaria en GitHub (una sola vez):
 
-1. *Settings → Secrets and variables → Actions*: secretos `ANTHROPIC_API_KEY` y `OPENAI_API_KEY` (portadas con `gpt-image-2`; se puede cambiar con la variable `BLOG_IMAGE_MODEL`).
+1. *Settings → Secrets and variables → Actions*: secretos `ANTHROPIC_API_KEY` (redacción con Claude) y `GEMINI_API_KEY` (portadas con `gemini-nano-banana-2.1` desde Google AI Studio; puede requerir facturación activa en el proyecto de Google; el modelo se puede cambiar con la variable `BLOG_IMAGE_MODEL`).
 2. *Settings → Actions → General → Workflow permissions*: activar **Allow GitHub Actions to create and approve pull requests**.
 
 ## Despliegue (Railway)
