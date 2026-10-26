@@ -11,6 +11,8 @@ node_modules/
 dist/
 *.tsbuildinfo
 dist-ssr/
+# Salidas temporales del asistente de blog (cuerpo del PR)
+.blog-agent/
 .env
 .env.*
 !.env.example

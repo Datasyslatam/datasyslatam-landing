@@ -1,0 +1,64 @@
+name: Blog — artículo para revisión
+
+# Lunes, miércoles y viernes a las 6:00 a. m. (hora de Colombia, UTC-5) el asistente redacta un
+# artículo y abre un PR. Nada se publica hasta que alguien revisa y hace Merge.
+on:
+  schedule:
+    - cron: "0 11 * * 1,3,5"
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Tema opcional. Si se deja vacío, toma el siguiente del calendario (scripts/blog-agent/topics.json)."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: blog-agent
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Investigar y redactar el artículo
+        id: article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BLOG_TOPIC: ${{ inputs.topic }}
+        run: node scripts/blog-agent/generate.mjs
+
+      - name: Comprobar que el sitio compila con el artículo
+        run: npm run build
+
+      # Los textos generados se pasan por variables de entorno, nunca interpolados en el script.
+      - name: Abrir PR para revisión
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SLUG: ${{ steps.article.outputs.slug }}
+          TITLE: ${{ steps.article.outputs.title }}
+        run: |
+          branch="blog/$SLUG"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add content/blog public/blog
+          git commit -m "blog: $TITLE"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" --title "Blog: $TITLE" --body-file .blog-agent/pr-body.md

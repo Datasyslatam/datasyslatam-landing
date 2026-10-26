@@ -130,5 +130,6 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // typography: estilos "prose" para el cuerpo de los artículos del blog
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;

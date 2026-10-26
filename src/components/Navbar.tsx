@@ -2,14 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import logoImg from "@/assets/logo-datasyslatam.webp";
+import { NAV_LINKS } from "./navLinks";
 
-const navLinks = [
-  { label: "Inicio",    href: "#inicio" },
-  { label: "Nosotros",  href: "#nosotros" },
-  { label: "Servicios", href: "#servicios" },
-  { label: "Propuesta", href: "#propuesta" },
-  { label: "Contacto",  href: "#contacto" },
-];
 
 const Logo = () => (
   <div className="flex items-center">
@@ -37,13 +31,13 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-[100] w-full bg-white/85 backdrop-blur-[12px] border-b border-gray-200/50">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
 
-        <a href="#inicio" onClick={() => setOpen(false)} className="flex-shrink-0">
+        <a href="/" onClick={() => setOpen(false)} className="flex-shrink-0">
           <Logo />
         </a>
 
         {/* Links desktop */}
         <ul className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
+          {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <a href={link.href} className="px-4 py-2 rounded text-sm font-medium text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200 tracking-wide">
                 {link.label}
@@ -54,7 +48,7 @@ const Navbar = () => {
 
         {/* CTA desktop */}
         <div className="hidden md:flex items-center gap-3">
-          <a href="#contacto" className="px-5 py-2 rounded text-sm font-semibold bg-[#0052CC] text-white hover:bg-[#00B4D8] transition-all duration-200 tracking-wide shadow-sm">
+          <a href="/#contacto" className="px-5 py-2 rounded text-sm font-semibold bg-[#0052CC] text-white hover:bg-[#00B4D8] transition-all duration-200 tracking-wide shadow-sm">
             Hablemos de su proyecto
           </a>
         </div>
@@ -81,7 +75,7 @@ const Navbar = () => {
             className="md:hidden overflow-hidden border-t border-gray-200/50 bg-white/90 backdrop-blur-[12px]"
           >
             <ul className="px-6 py-4 flex flex-col gap-1">
-              {navLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <li key={link.href}>
                   <a href={link.href} onClick={() => setOpen(false)} className="block px-4 py-3 rounded text-sm font-medium text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200 tracking-wide">
                     {link.label}
@@ -89,7 +83,7 @@ const Navbar = () => {
                 </li>
               ))}
               <li className="pt-3 mt-1 border-t border-gray-200/50">
-                <a href="#contacto" onClick={() => setOpen(false)} className="block text-center px-4 py-3 rounded text-sm font-semibold bg-[#0052CC] text-white hover:bg-[#00B4D8] transition-all duration-200 tracking-wide">
+                <a href="/#contacto" onClick={() => setOpen(false)} className="block text-center px-4 py-3 rounded text-sm font-semibold bg-[#0052CC] text-white hover:bg-[#00B4D8] transition-all duration-200 tracking-wide">
                   Hablemos de su proyecto
                 </a>
               </li>
