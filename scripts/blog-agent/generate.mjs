@@ -2,7 +2,7 @@
 // 1) Elige el siguiente tema del calendario (topics.json) que aún no tenga artículo.
 // 2) Investiga con Claude + búsqueda web y redacta el artículo con salida estructurada.
 // 3) Verifica los enlaces: solo quedan fuentes encontradas en la investigación que responden.
-// 4) Genera la portada con un modelo de imágenes y escribe content/blog/<slug>.md.
+// 4) Genera la portada con Gemini (API de Google) y escribe content/blog/<slug>.md.
 // El flujo .github/workflows/blog-agent.yml abre un PR con el resultado para revisión humana.
 import { appendFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -14,7 +14,7 @@ import { parse as parseYaml, stringify as toYaml } from "yaml";
 
 const MODEL = "claude-opus-5-5";
 const FALLBACK_BETA = "server-side-fallback-2026-07-01";
-const IMAGE_MODEL = process.env.BLOG_IMAGE_MODEL || "gpt-image-2";
+const IMAGE_MODEL = process.env.BLOG_IMAGE_MODEL || "gemini-nano-banana-2.1";
 const AUTHOR = "Armando José López González";
 const MAX_CONTINUATIONS = 5;
 const MIN_SOURCES = 2;
@@ -279,29 +279,48 @@ const IMAGE_STYLE =
   "Editorial photograph for a business blog in Colombia, natural light, realistic, modern professional setting, " +
   "Latin American professionals, calm and trustworthy mood, 3:2 composition. No text, no letters, no numbers, no logos, no watermarks.";
 
-const generateImage = async (prompt, file) => {
+/**
+ * Busca la imagen generada en la respuesta de la Interactions API de Gemini: un bloque
+ * { type: "image", data: <base64>, mime_type } en cualquier nivel (steps → content), o output_image.
+ */
+export const findImageBlock = (node) => {
+  if (!node || typeof node !== "object") return null;
+  if (node.output_image?.data) return node.output_image;
+  if (node.type === "image" && typeof node.data === "string" && node.data.length > 100) return node;
+  for (const value of Object.values(node)) {
+    const found = findImageBlock(value);
+    if (found) return found;
+  }
+  return null;
+};
+
+const EXTENSIONS = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+
+/** Genera la portada con Gemini y devuelve su ruta pública (p. ej. /blog/<slug>.jpg). */
+const generateImage = async (prompt, slug) => {
   let lastError;
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const res = await fetch("https://api.openai.com/v1/images/generations", {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/interactions", {
       method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+      headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
       body: JSON.stringify({
         model: IMAGE_MODEL,
-        prompt: `${prompt}. ${IMAGE_STYLE}`,
-        size: "1536x1024",
-        quality: "medium",
-        output_format: "webp",
-        output_compression: 80,
-        n: 1,
+        input: [{ type: "text", text: `${prompt}. ${IMAGE_STYLE}` }],
+        // JPEG a 1K mantiene la portada liviana para la web.
+        response_format: { type: "image", mime_type: "image/jpeg", aspect_ratio: "3:2", image_size: "1K" },
       }),
     });
     if (res.ok) {
-      const b64 = (await res.json()).data?.[0]?.b64_json;
-      if (!b64) throw new Error("Imagen: la respuesta no trae b64_json.");
-      await writeFile(file, Buffer.from(b64, "base64"));
-      return;
+      const json = await res.json();
+      const block = findImageBlock(json);
+      if (!block) throw new Error(`Imagen: la respuesta de Gemini no trae ninguna imagen (campos: ${Object.keys(json).join(", ")}).`);
+      const extension = EXTENSIONS[block.mime_type ?? block.mimeType] ?? "jpg";
+      await writeFile(`${IMAGE_DIR}/${slug}.${extension}`, Buffer.from(block.data, "base64"));
+      return `/blog/${slug}.${extension}`;
     }
-    lastError = `Imagen: ${res.status} ${(await res.text()).slice(0, 300)}`;
+    lastError = `Imagen (Gemini ${res.status}): ${(await res.text()).slice(0, 400)}`;
+    // Clave inválida, sin permisos o sin facturación: reintentar no sirve.
+    if ([400, 401, 403, 404].includes(res.status)) break;
   }
   throw new Error(lastError);
 };
@@ -316,7 +335,7 @@ const requireEnv = (name) => {
 
 const main = async () => {
   requireEnv("ANTHROPIC_API_KEY");
-  requireEnv("OPENAI_API_KEY");
+  requireEnv("GEMINI_API_KEY");
   await mkdir(CONTENT_DIR, { recursive: true });
   await mkdir(IMAGE_DIR, { recursive: true });
   await mkdir(OUT_DIR, { recursive: true });
@@ -340,7 +359,7 @@ const main = async () => {
   let slug = slugify(article.slug || article.title);
   if (takenSlugs.has(slug) || existsSync(`${CONTENT_DIR}/${slug}.md`)) slug = `${slug}-${today()}`;
 
-  await generateImage(article.image_prompt, `${IMAGE_DIR}/${slug}.webp`);
+  const image = await generateImage(article.image_prompt, slug);
 
   const frontmatter = {
     title: article.title.trim(),
@@ -350,7 +369,7 @@ const main = async () => {
     author: AUTHOR,
     topic: topic.id,
     keywords: article.keywords,
-    image: `/blog/${slug}.webp`,
+    image,
     imageAlt: article.image_alt.trim(),
     faq: article.faq,
     sources,
@@ -358,7 +377,7 @@ const main = async () => {
   await writeFile(`${CONTENT_DIR}/${slug}.md`, `---\n${toYaml(frontmatter, { lineWidth: 0 })}---\n\n${body.trim()}\n`);
 
   const repo = process.env.GITHUB_REPOSITORY ?? "Datasyslatam/datasyslatam-landing";
-  const imageUrl = `https://github.com/${repo}/blob/blog/${slug}/public/blog/${slug}.webp?raw=true`;
+  const imageUrl = `https://github.com/${repo}/blob/blog/${slug}/public${image}?raw=true`;
   const words = body.split(/\s+/).filter(Boolean).length;
   const removed = report.filter((r) => !r.kept);
   const blocked = report.filter((r) => r.result === "bloqueado");
