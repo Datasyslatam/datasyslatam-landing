@@ -10,6 +10,7 @@ import TechCarouselSection from "@/components/TechCarouselSection";
 import MethodologySection from "@/components/MethodologySection";
 import SectoresSection from "@/components/SectoresSection";
 import ProductosSection from "@/components/ProductosSection";
+import FaqSection from "@/components/FaqSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -30,6 +31,7 @@ const Index = () => (
       <SectoresSection />
       <ProductosSection />
       <TechCarouselSection />
+      <FaqSection />
       <ContactSection />
     </main>
     <Footer />
