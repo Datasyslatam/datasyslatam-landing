@@ -570,8 +570,29 @@ export const findImageBlock = (node) => {
 };
 
 const EXTENSIONS = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+// Ancho de la portada en el sitio: Gemini la entrega a ~1264 px y unos 750 KB; a 1200 px y calidad 78 queda en ~140 KB.
+const COVER_WIDTH = 1200;
+const COVER_QUALITY = 78;
 
-/** Genera la portada con Gemini y devuelve su ruta pública (p. ej. /blog/<slug>.jpg). */
+/**
+ * Reduce la portada a COVER_WIDTH px en JPEG progresivo. Si sharp no se puede cargar o no logra procesarla,
+ * devuelve null y se usa la imagen original: una portada pesada no debe impedir el artículo.
+ */
+export const compressCover = async (buffer) => {
+  try {
+    const { default: sharp } = await import("sharp");
+    return await sharp(buffer)
+      .rotate()
+      .resize({ width: COVER_WIDTH, withoutEnlargement: true })
+      .jpeg({ quality: COVER_QUALITY, progressive: true, mozjpeg: true })
+      .toBuffer();
+  } catch (err) {
+    console.log(`Portada: no se pudo comprimir (${err?.message ?? err}); se usa la imagen original.`);
+    return null;
+  }
+};
+
+/** Genera la portada con Gemini, la comprime y devuelve su ruta pública (p. ej. /blog/<slug>.jpg). */
 const generateImage = async (prompt, slug) => {
   const interaction = await gemini(
     {
@@ -586,8 +607,12 @@ const generateImage = async (prompt, slug) => {
   );
   const block = findImageBlock(interaction);
   if (!block) throw new Error(`Imagen: la respuesta de Gemini no trae ninguna imagen (campos: ${Object.keys(interaction).join(", ")}).`);
-  const extension = EXTENSIONS[block.mime_type ?? block.mimeType] ?? "jpg";
-  await writeFile(`${IMAGE_DIR}/${slug}.${extension}`, Buffer.from(block.data, "base64"));
+  const original = Buffer.from(block.data, "base64");
+  const compressed = await compressCover(original);
+  const extension = compressed ? "jpg" : (EXTENSIONS[block.mime_type ?? block.mimeType] ?? "jpg");
+  const data = compressed ?? original;
+  await writeFile(`${IMAGE_DIR}/${slug}.${extension}`, data);
+  console.log(`Portada: ${Math.round(original.length / 1024)} KB → ${Math.round(data.length / 1024)} KB`);
   return { image: `/blog/${slug}.${extension}`, interaction };
 };
 
