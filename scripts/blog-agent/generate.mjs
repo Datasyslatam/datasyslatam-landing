@@ -15,7 +15,15 @@ import { parse as parseYaml, stringify as toYaml } from "yaml";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
 const TEXT_MODEL = process.env.BLOG_TEXT_MODEL || "gemini-3.8-flash";
 const IMAGE_MODEL = process.env.BLOG_IMAGE_MODEL || "gemini-nano-banana-2.1";
-const AUTHOR = "Armando José López González";
+// Autor según el área del tema (campo "area" de topics.json).
+export const AUTHORS = {
+  gestion: "Armando José López González",
+  tecnologia: "Fabián Florián",
+  analitica: "Agustín Robledo",
+};
+// Lectura máxima de 5 minutos a 200 palabras por minuto, el mismo cálculo que muestra el sitio (vite-plugin-blog.ts).
+export const MAX_WORDS = 1000;
+export const countWords = (text) => text.split(/\s+/).filter(Boolean).length;
 const MIN_SOURCES = 2;
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -63,9 +71,21 @@ const readExistingPosts = async () => {
   );
 };
 
+/** Área de un tema escrito a mano (BLOG_TOPIC): analítica, tecnología o, por defecto, gestión. */
+export const areaFor = (text) => {
+  const t = ` ${text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()} `;
+  // Los temas sobre una norma (ISO, NTC, SG-SST) son de consultoría en gestión aunque mencionen tecnología.
+  if (/\biso\b|\bntc\b|sg-sst/.test(t)) return "gestion";
+  if (/integracion|integrar|\bapis?\b|desarrollo|sitio web|pagina web|\bweb\b|movil|\bapps?\b|aplicacion|inteligencia artificial|\bia\b|ciberseguridad|cloud|\bnube\b|devops|software|\berp\b|automatiza|\bseo\b|digital/.test(t)) {
+    return "tecnologia";
+  }
+  if (/analitica|tablero|dashboard|indicador|kpi|power bi|\bdatos\b|\breportes?\b|inteligencia de negocios/.test(t)) return "analitica";
+  return "gestion";
+};
+
 const pickTopic = async (existing) => {
   const custom = process.env.BLOG_TOPIC?.trim();
-  if (custom) return { id: slugify(custom), tema: custom, palabraClave: custom, enlace: "/#autodiagnostico" };
+  if (custom) return { id: slugify(custom), tema: custom, palabraClave: custom, enlace: "/#autodiagnostico", area: areaFor(custom) };
   const topics = JSON.parse(await readFile(new URL("./topics.json", import.meta.url), "utf8"));
   const used = new Set(existing.map((p) => p.topic).filter(Boolean));
   const next = topics.find((t) => !used.has(t.id));
@@ -276,8 +296,8 @@ const ArticleSchema = z.object({
   slug: z.string().describe("URL corta en minúsculas con guiones, sin tildes, 3 a 7 palabras"),
   description: z.string().describe("Meta descripción de 140 a 160 caracteres que invite a leer"),
   keywords: z.array(z.string()).describe("4 a 8 palabras clave"),
-  body_markdown: z.string().describe("Cuerpo en Markdown, sin título H1, con secciones ##"),
-  faq: z.array(z.object({ q: z.string(), a: z.string() })).describe("3 o 4 preguntas frecuentes con respuestas de 2 a 4 frases"),
+  body_markdown: z.string().describe(`Cuerpo en Markdown, sin título H1, con secciones ##, de 700 a 950 palabras (máximo ${MAX_WORDS})`),
+  faq: z.array(z.object({ q: z.string(), a: z.string() })).describe("3 preguntas frecuentes con respuestas de 2 o 3 frases"),
   sources: z
     .array(z.object({ title: z.string(), url: z.string(), publisher: z.string() }))
     .describe("Fuentes citadas en el artículo, tomadas solo de la lista de fuentes investigadas"),
@@ -299,8 +319,10 @@ casos de éxito, precios ni plazos):
 ${COMPANY_CONTEXT}
 
 Reglas del artículo:
-- 900 a 1.400 palabras. El primer párrafo responde directamente la pregunta principal (así lo citan Google y los asistentes de IA).
-- Estructura con ## y ###, listas cuando ayuden y una sección final "## En resumen" con 3 a 5 viñetas.
+- 700 a 950 palabras en el cuerpo, nunca más de ${MAX_WORDS}: el artículo se lee en 5 minutos como máximo.
+  Prioriza lo esencial y lo práctico; si sobra material, deja fuera lo secundario en lugar de resumirlo todo.
+- El primer párrafo responde directamente la pregunta principal (así lo citan Google y los asistentes de IA).
+- Estructura con 3 o 4 secciones ##, párrafos cortos, listas cuando ayuden y una sección final "## En resumen" con 3 o 4 viñetas.
 - Toda cifra, dato o norma lleva un enlace Markdown a su fuente, usando SOLO URLs de la lista de fuentes investigadas.
   Si un dato no tiene fuente en esa lista, no lo uses.
 - Las cifras se copian tal como las da la fuente, con su año y su base. No redondees, no combines datos de fuentes
@@ -446,8 +468,16 @@ const verify = async (article, step) => {
   return { report, issues, ...(await usableSources(interaction)), interaction };
 };
 
+/** El cuerpo como problema a corregir si supera los 5 minutos de lectura. */
+const lengthIssues = (article) => {
+  const words = countWords(article.body_markdown);
+  return words > MAX_WORDS ? [{ words }] : [];
+};
+
 export const describeIssue = (issue) =>
-  "status" in issue
+  "words" in issue
+    ? `El cuerpo tiene ${issue.words} palabras; el máximo es ${MAX_WORDS} (5 minutos de lectura)`
+    : "status" in issue
     ? `«${issue.claim}» — ${issue.status.replace("_", " ")}${issue.source_says ? `; la fuente dice: ${issue.source_says}` : ""}${issue.url ? ` (${issue.url})` : ""}`
     : `${issue.cited} no es la edición vigente; la vigente es ${issue.current}${issue.evidence_url ? ` (${issue.evidence_url})` : ""}`;
 
@@ -459,6 +489,7 @@ Corrige el artículo:
 - Si una cifra no coincide, usa exactamente lo que dice la fuente.
 - Si una cifra no se encontró en la fuente o no tiene fuente, elimínala o reformula la frase sin ella.
 - Si una norma no es la edición vigente, actualízala a la vigente y ajusta lo que dependa de ella.
+- Si el artículo es demasiado largo, déjalo en 700 a 950 palabras quitando lo secundario.
 - Mantén todo lo demás (estructura, tono, enlaces internos) y sigue las reglas.
 
 Fuentes permitidas (las únicas URLs externas que puede usar):
@@ -554,14 +585,14 @@ const main = async () => {
   };
 
   let verification = await check("Verificación");
-  const corrected = verification.issues;
+  const corrected = [...verification.issues, ...lengthIssues(article)];
   if (corrected.length) {
     console.log(`Verificación: ${corrected.length} problemas; se corrige el artículo`);
     ({ article, interaction: run } = await writeArticle(revisionPrompt(article, corrected, [...allowed.values()]), "Corrección"));
     runs.push(run);
     verification = await check("Segunda verificación");
   }
-  const pending = verification.issues;
+  const pending = [...verification.issues, ...lengthIssues(article)];
   console.log(`Verificación final: ${verification.report.figures.length} datos revisados, ${pending.length} pendientes`);
 
   const { body, sources, report } = await verifyLinks(article, new Set(allowed.keys()));
@@ -581,7 +612,7 @@ const main = async () => {
     slug,
     description: article.description.trim(),
     date: today(),
-    author: AUTHOR,
+    author: AUTHORS[topic.area] ?? AUTHORS.gestion,
     topic: topic.id,
     keywords: article.keywords,
     image,
@@ -593,7 +624,7 @@ const main = async () => {
 
   const repo = process.env.GITHUB_REPOSITORY ?? "Datasyslatam/datasyslatam-landing";
   const imageUrl = `https://github.com/${repo}/blob/blog/${slug}/public${image}?raw=true`;
-  const words = body.split(/\s+/).filter(Boolean).length;
+  const words = countWords(body);
   const removed = [...new Map([...excluded, ...report.filter((r) => !r.kept)].map((r) => [r.url, r])).values()];
   const blocked = report.filter((r) => r.result === "bloqueado");
   const prBody = [
@@ -605,7 +636,8 @@ const main = async () => {
     "",
     `- **Tema del calendario:** ${topic.tema}`,
     `- **Palabra clave:** ${topic.palabraClave}`,
-    `- **Extensión:** ${words} palabras · ${article.faq.length} preguntas frecuentes · ${sources.length} fuentes verificadas`,
+    `- **Autor:** ${frontmatter.author}`,
+    `- **Extensión:** ${words} palabras (${Math.max(1, Math.round(words / 200))} min de lectura) · ${article.faq.length} preguntas frecuentes · ${sources.length} fuentes verificadas`,
     `- **URL al publicar:** https://datasyslatam.com/blog/${slug}`,
     "",
     "### Fuentes",
