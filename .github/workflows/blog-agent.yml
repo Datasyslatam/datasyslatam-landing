@@ -1,10 +1,13 @@
 name: Blog — artículo para revisión
 
-# Martes y viernes a las 6:00 a. m. (hora de Colombia, UTC-5) el asistente redacta un
-# artículo y abre un PR. Nada se publica hasta que alguien revisa y hace Merge.
+# Martes y viernes (hora de Colombia, UTC-5) el asistente redacta un artículo y abre un PR antes de las 8:00 a. m.
+# Nada se publica hasta que alguien revisa y hace Merge.
+# GitHub a veces retrasa u omite ejecuciones programadas, sobre todo en punto: por eso hay dos horarios con minutos
+# impares (5:17 y 6:47 a. m.) y la segunda solo trabaja si la primera no dejó artículo.
 on:
   schedule:
-    - cron: "0 11 * * 2,5"
+    - cron: "17 10 * * 2,5"
+    - cron: "47 11 * * 2,5"
   workflow_dispatch:
     inputs:
       topic:
@@ -23,31 +26,55 @@ concurrency:
 jobs:
   draft:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
 
+      # Solo para las ejecuciones programadas: si hoy ya hay artículo publicado o un PR de artículo reciente, no se repite.
+      - name: Comprobar si ya hay artículo de hoy
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          skip=false
+          if [ "$EVENT" = "schedule" ]; then
+            today=$(TZ=America/Bogota date +%F)
+            recent=$(gh pr list --state all --limit 30 --json headRefName,createdAt \
+              --jq '[.[] | select((.headRefName | startswith("blog/")) and ((.createdAt | fromdateiso8601) > (now - 43200)))] | length')
+            if grep -qsE "^date: \"?$today" content/blog/*.md || [ "$recent" != "0" ]; then
+              skip=true
+              echo "Ya hay un artículo de hoy; esta ejecución no genera otro."
+            fi
+          fi
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
+
       - uses: actions/setup-node@v4
+        if: steps.guard.outputs.skip != 'true'
         with:
           node-version-file: .nvmrc
           cache: npm
 
-      - run: npm ci
+      - if: steps.guard.outputs.skip != 'true'
+        run: npm ci
 
       - name: Investigar y redactar el artículo
         id: article
+        if: steps.guard.outputs.skip != 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BLOG_TOPIC: ${{ inputs.topic }}
         run: node scripts/blog-agent/generate.mjs
 
       - name: Comprobar que el sitio compila con el artículo
+        if: steps.guard.outputs.skip != 'true'
         run: npm run build
 
       # Los textos generados se pasan por variables de entorno, nunca interpolados en el script.
       - name: Abrir PR para revisión
+        if: steps.guard.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           SLUG: ${{ steps.article.outputs.slug }}

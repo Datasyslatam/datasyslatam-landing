@@ -208,29 +208,61 @@ const resolveUrl = async (url) => {
 
 export class GeminiError extends Error {}
 
-/** Llama a la Interactions API. Reintenta una vez si el servicio está saturado o falla de forma temporal. */
-const gemini = async (body, step) => {
+const RETRYABLE = [429, 500, 502, 503, 504];
+const POLL_MS = Number(process.env.BLOG_POLL_MS) || 10_000;
+const MAX_WAIT_MS = 20 * 60_000;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const geminiHeaders = () => ({ "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY });
+const networkError = (err) => `error de red (${err?.cause?.code ?? err?.name ?? "sin detalle"})`;
+
+/** Espera a que una interacción en segundo plano termine, consultándola cada POLL_MS. */
+const waitFor = async (interaction, step) => {
+  const deadline = Date.now() + MAX_WAIT_MS;
+  while (interaction.status === "in_progress") {
+    if (Date.now() > deadline) throw new GeminiError(`${step}: Gemini no terminó en ${MAX_WAIT_MS / 60_000} minutos.`);
+    await sleep(POLL_MS);
+    try {
+      const res = await fetch(`${GEMINI_URL}/${interaction.id}`, { headers: geminiHeaders(), signal: AbortSignal.timeout(60_000) });
+      if (res.ok) interaction = await res.json();
+      else if (!RETRYABLE.includes(res.status)) throw new GeminiError(`${step} (Gemini ${res.status}): ${(await res.text()).slice(0, 400)}`);
+    } catch (err) {
+      // Un corte de red al consultar no pierde el trabajo: se vuelve a consultar en la siguiente vuelta.
+      if (err instanceof GeminiError) throw err;
+    }
+  }
+  if (interaction.status === "failed") {
+    const detail = interaction.errors?.map((e) => e.message).join("; ") || "sin detalle";
+    throw new GeminiError(`${step}: Gemini no completó la solicitud (${detail}).`);
+  }
+  if (interaction.status === "incomplete") throw new GeminiError(`${step}: la respuesta de Gemini quedó incompleta (límite de tokens).`);
+  if (interaction.status !== "completed") throw new GeminiError(`${step}: Gemini terminó con estado "${interaction.status}".`);
+  return interaction;
+};
+
+/**
+ * Llama a la Interactions API. Las solicitudes de texto van en segundo plano (background) y se consultan hasta
+ * que terminan: con razonamiento alto pueden tardar más de los 5 minutos que una conexión HTTP aguarda la respuesta.
+ * Reintenta una vez si el servicio está saturado, falla de forma temporal o se corta la red.
+ */
+const gemini = async (body, step, { background = true } = {}) => {
   let lastError;
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const res = await fetch(GEMINI_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(600_000),
-    });
-    if (res.ok) {
-      const interaction = await res.json();
-      if (interaction.status === "failed") {
-        const detail = interaction.errors?.map((e) => e.message).join("; ") || "sin detalle";
-        throw new GeminiError(`${step}: Gemini no completó la solicitud (${detail}).`);
-      }
-      if (interaction.status === "incomplete") throw new GeminiError(`${step}: la respuesta de Gemini quedó incompleta (límite de tokens).`);
-      return interaction;
+    try {
+      const res = await fetch(GEMINI_URL, {
+        method: "POST",
+        headers: geminiHeaders(),
+        body: JSON.stringify(background ? { ...body, background: true } : body),
+        signal: AbortSignal.timeout(background ? 120_000 : 280_000),
+      });
+      if (res.ok) return await waitFor(await res.json(), step);
+      lastError = `${step} (Gemini ${res.status}): ${(await res.text()).slice(0, 400)}`;
+      // Clave inválida, sin permisos, sin facturación o solicitud mal formada: reintentar no sirve.
+      if (!RETRYABLE.includes(res.status)) break;
+    } catch (err) {
+      if (err instanceof GeminiError) throw err;
+      lastError = `${step}: ${networkError(err)} al llamar a Gemini.`;
     }
-    lastError = `${step} (Gemini ${res.status}): ${(await res.text()).slice(0, 400)}`;
-    // Clave inválida, sin permisos, sin facturación o solicitud mal formada: reintentar no sirve.
-    if (![429, 500, 502, 503, 504].includes(res.status)) break;
-    if (attempt === 1) await new Promise((r) => setTimeout(r, 20_000));
+    if (attempt === 1) await sleep(20_000);
   }
   throw new GeminiError(lastError);
 };
@@ -351,12 +383,13 @@ Redacta el artículo completo siguiendo las reglas.`;
 const usableSources = async (interaction) => {
   const sources = new Map();
   const excluded = [];
-  for (const cited of citedSources(interaction)) {
-    const url = await resolveUrl(cited.url);
+  // Las redirecciones se resuelven en paralelo: una investigación puede citar más de 30 páginas.
+  const resolved = await Promise.all(citedSources(interaction).map(async (cited) => ({ ...cited, url: await resolveUrl(cited.url) })));
+  for (const { url, title } of resolved) {
     if (!url) continue;
     const reason = excludedReason(url);
     if (reason) excluded.push({ url, result: `excluida: ${reason}` });
-    else sources.set(normalizeUrl(url), { url, title: cited.title });
+    else sources.set(normalizeUrl(url), { url, title });
   }
   return { sources: [...sources.values()], excluded };
 };
@@ -533,6 +566,8 @@ const generateImage = async (prompt, slug) => {
       response_format: { type: "image", mime_type: "image/jpeg", aspect_ratio: "3:2", image_size: "1K" },
     },
     "Imagen",
+    // La portada responde en segundos; se pide de forma directa, como cuando se probó el modelo de imagen.
+    { background: false },
   );
   const block = findImageBlock(interaction);
   if (!block) throw new Error(`Imagen: la respuesta de Gemini no trae ninguna imagen (campos: ${Object.keys(interaction).join(", ")}).`);
