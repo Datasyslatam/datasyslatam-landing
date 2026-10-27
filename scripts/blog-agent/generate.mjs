@@ -234,7 +234,12 @@ const waitFor = async (interaction, step) => {
     const detail = interaction.errors?.map((e) => e.message).join("; ") || "sin detalle";
     throw new GeminiError(`${step}: Gemini no completó la solicitud (${detail}).`);
   }
-  if (interaction.status === "incomplete") throw new GeminiError(`${step}: la respuesta de Gemini quedó incompleta (límite de tokens).`);
+  if (interaction.status === "incomplete") {
+    const u = interaction.usage ?? {};
+    throw new GeminiError(
+      `${step}: la respuesta de Gemini quedó incompleta (límite de tokens; salida ${u.total_output_tokens ?? "?"}, razonamiento ${u.total_thought_tokens ?? "?"}).`,
+    );
+  }
   if (interaction.status !== "completed") throw new GeminiError(`${step}: Gemini terminó con estado "${interaction.status}".`);
   return interaction;
 };
@@ -429,7 +434,8 @@ const writeArticle = async (input, step) => {
       system_instruction: WRITER_SYSTEM,
       input,
       response_format: { type: "text", mime_type: "application/json", schema: jsonSchema(ArticleSchema) },
-      generation_config: { thinking_level: "high", max_output_tokens: 16000 },
+      // Sin max_output_tokens: el límite incluye el razonamiento y, con muchas fuentes, 16.000 no alcanzaban para el JSON.
+      generation_config: { thinking_level: "high" },
     },
     step,
   );
