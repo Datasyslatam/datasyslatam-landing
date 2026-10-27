@@ -206,7 +206,13 @@ const resolveUrl = async (url) => {
 // Gemini (Interactions API)
 // ---------------------------------------------------------------------------
 
-export class GeminiError extends Error {}
+export class GeminiError extends Error {
+  /** retryable: fallo del lado de Gemini que puede no repetirse (p. ej. "There was a problem processing your request"). */
+  constructor(message, { retryable = false } = {}) {
+    super(message);
+    this.retryable = retryable;
+  }
+}
 
 const RETRYABLE = [429, 500, 502, 503, 504];
 const POLL_MS = Number(process.env.BLOG_POLL_MS) || 10_000;
@@ -232,7 +238,7 @@ const waitFor = async (interaction, step) => {
   }
   if (interaction.status === "failed") {
     const detail = interaction.errors?.map((e) => e.message).join("; ") || "sin detalle";
-    throw new GeminiError(`${step}: Gemini no completó la solicitud (${detail}).`);
+    throw new GeminiError(`${step}: Gemini no completó la solicitud (${detail}).`, { retryable: true });
   }
   if (interaction.status === "incomplete") {
     const u = interaction.usage ?? {};
@@ -247,7 +253,7 @@ const waitFor = async (interaction, step) => {
 /**
  * Llama a la Interactions API. Las solicitudes de texto van en segundo plano (background) y se consultan hasta
  * que terminan: con razonamiento alto pueden tardar más de los 5 minutos que una conexión HTTP aguarda la respuesta.
- * Reintenta una vez si el servicio está saturado, falla de forma temporal o se corta la red.
+ * Reintenta una vez si el servicio está saturado, falla de forma temporal (también dentro de Gemini) o se corta la red.
  */
 const gemini = async (body, step, { background = true } = {}) => {
   let lastError;
@@ -264,10 +270,13 @@ const gemini = async (body, step, { background = true } = {}) => {
       // Clave inválida, sin permisos, sin facturación o solicitud mal formada: reintentar no sirve.
       if (!RETRYABLE.includes(res.status)) break;
     } catch (err) {
-      if (err instanceof GeminiError) throw err;
-      lastError = `${step}: ${networkError(err)} al llamar a Gemini.`;
+      if (err instanceof GeminiError && !err.retryable) throw err;
+      lastError = err instanceof GeminiError ? err.message : `${step}: ${networkError(err)} al llamar a Gemini.`;
     }
-    if (attempt === 1) await sleep(20_000);
+    if (attempt === 1) {
+      console.log(`${lastError} Se reintenta en 20 s.`);
+      await sleep(20_000);
+    }
   }
   throw new GeminiError(lastError);
 };
@@ -625,16 +634,31 @@ const main = async () => {
     return result;
   };
 
-  let verification = await check("Verificación");
-  const corrected = [...verification.issues, ...lengthIssues(article)];
+  // Si la verificación no se puede completar (ni con su reintento), el artículo no se pierde: el PR pide revisar
+  // cifras y normas a mano, y la revisión humana sigue siendo obligatoria antes de publicar.
+  const tryCheck = async (step) => {
+    try {
+      return await check(step);
+    } catch (err) {
+      console.log(`${err instanceof Error ? err.message : err} El PR pedirá revisar cifras y normas a mano.`);
+      return null;
+    }
+  };
+
+  let verification = await tryCheck("Verificación");
+  const corrected = [...(verification?.issues ?? []), ...lengthIssues(article)];
   if (corrected.length) {
     console.log(`Verificación: ${corrected.length} problemas; se corrige el artículo`);
     ({ article, interaction: run } = await writeArticle(revisionPrompt(article, corrected, [...allowed.values()]), "Corrección"));
     runs.push(run);
-    verification = await check("Segunda verificación");
+    verification = await tryCheck("Segunda verificación");
   }
-  const pending = [...verification.issues, ...lengthIssues(article)];
-  console.log(`Verificación final: ${verification.report.figures.length} datos revisados, ${pending.length} pendientes`);
+  const pending = [...(verification?.issues ?? []), ...lengthIssues(article)];
+  console.log(
+    verification
+      ? `Verificación final: ${verification.report.figures.length} datos revisados, ${pending.length} pendientes`
+      : "Verificación final: no se pudo completar",
+  );
 
   const { body, sources, report } = await verifyLinks(article, new Set(allowed.keys()));
   if (sources.length < MIN_SOURCES) {
@@ -688,10 +712,14 @@ const main = async () => {
       : []),
     "",
     "### Verificación automática de cifras y normas",
-    `- ${verification.report.figures.length} datos y ${verification.report.standards.length} normas comprobados contra sus fuentes${corrected.length ? `; se corrigieron ${corrected.length} problemas encontrados en la primera revisión` : ""}.`,
+    verification
+      ? `- ${verification.report.figures.length} datos y ${verification.report.standards.length} normas comprobados contra sus fuentes${corrected.length ? `; se corrigieron ${corrected.length} problemas encontrados en la primera revisión` : ""}.`
+      : "- ⚠️ **No se pudo completar** (error de Gemini). Revise a mano cada cifra contra su fuente y que cada norma citada sea la edición vigente.",
     ...(pending.length
       ? ["", "⚠️ **Revise a mano** (el verificador no pudo confirmarlos):", ...pending.map((i) => `- ${describeIssue(i)}`)]
-      : ["- Sin problemas pendientes."]),
+      : verification
+        ? ["- Sin problemas pendientes."]
+        : []),
     "",
     "### Antes de aprobar",
     "- [ ] El contenido es correcto y coherente con lo que hacemos.",
