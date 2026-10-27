@@ -16,12 +16,12 @@ image: /blog/iso-9001-pymes-colombia-por-donde-empezar.jpg
 imageAlt: Equipo directivo de una pyme revisando el flujo de procesos para la implementación de ISO 9001 en su empresa.
 faq:
   - q: ¿Es obligatorio por ley que una pyme en Colombia se certifique en ISO 9001?
-    a: No, la certificación es de carácter voluntario. Sin embargo, se vuelve indispensable cuando una licitación pública o un cliente corporativo la exige en sus pliegos de condiciones como requisito habilitante o como factor de puntaje.
+    a: No, la certificación es de carácter voluntario. Se vuelve indispensable cuando un cliente privado la exige como condición para comprarle. En la contratación estatal, en cambio, la Ley 1150 de 2007 establece que las certificaciones de calidad no pueden exigirse como requisito habilitante ni dar puntaje.
   - q: ¿Una pyme de menos de diez trabajadores puede implementar ISO 9001?
     a: Sí. La ISO 9001 está concebida para organizaciones de cualquier tamaño o sector. Además, las micro y pequeñas empresas colombianas tienen la opción de iniciar con la NTC 6001, un modelo de gestión diseñado para estructuras operativas pequeñas.
   - q: ¿Cuánto tiempo tarda una pyme en estar lista para la auditoría de certificación?
     a: Depende del punto de partida. Influyen la madurez de los procesos actuales, el alcance que se defina y el tiempo que el equipo directivo dedique al proyecto. Además, el sistema debe funcionar y generar evidencia durante un periodo antes de la auditoría externa. Un diagnóstico inicial permite estimar un plazo realista para su empresa.
-  - q: ¿Cómo comprobar que el certificado de calidad sea válido para licitaciones públicas?
+  - q: ¿Cómo comprobar que un certificado de calidad tenga validez ante sus clientes?
     a: Verifique en el directorio oficial del Organismo Nacional de Acreditación de Colombia (ONAC) que la casa certificadora tenga acreditación vigente bajo el esquema de Certificación de Sistemas de Gestión (CSG) y que su alcance cubra la norma en la que usted se certificará.
 sources:
   - title: "ISO 9001:2026 — Quality management systems — Requirements"
@@ -39,6 +39,9 @@ sources:
   - title: Certificación NTC 6001 para mypes
     url: https://certification.bureauveritas.com.co/es/servicios/info/certificacion-ntc-6001-sistema-de-gestion-para-micro-y-pequenas-empresas-mypes
     publisher: Bureau Veritas Colombia
+  - title: Ley 1150 de 2007
+    url: https://relatoria.colombiacompra.gov.co/normativa/ley-1150-de-2007/
+    publisher: Colombia Compra Eficiente
   - title: Certificación de Sistemas de Gestión
     url: https://onac.org.co/servicios/certificacion-de-sistemas-de-gestion/
     publisher: Organismo Nacional de Acreditación de Colombia (ONAC)
@@ -73,7 +76,7 @@ Comprender el tamaño formal de su empresa según el [Decreto 957 de 2019 compil
 Implementar un sistema de gestión no debe traducirse en parálisis operativa. Para avanzar de manera eficiente, siga estas seis etapas:
 
 ### 1. Definir el propósito estratégico de la gerencia
-Todo sistema que nace por mera obligación burocrática termina abandonado en una gaveta. La alta dirección debe tener claro por qué busca la certificación: ¿acceder a licitaciones del Estado a través del SECOP, calificar como proveedor de una empresa multinacional o frenar pérdidas financieras causadas por errores de despacho? La dirección debe fijar los objetivos del negocio y respaldar al equipo asignando horas de trabajo reales para el proyecto.
+Todo sistema que nace por mera obligación burocrática termina abandonado en una gaveta. La alta dirección debe tener claro por qué busca la certificación: ¿calificar como proveedor de una gran empresa, ordenar la operación para poder crecer o frenar pérdidas financieras causadas por errores de despacho? La dirección debe fijar los objetivos del negocio y respaldar al equipo asignando horas de trabajo reales para el proyecto.
 
 ### 2. Ejecutar un diagnóstico de brechas (Gap Analysis)
 Antes de escribir una sola política, revise qué prácticas ya aplica su empresa en su cotidianidad. Si usted ya controla pedidos con hojas de cálculo, archiva remisiones firmadas y evalúa proveedores de insumos críticos, ya tiene una base real de calidad. El diagnóstico compara su rutina operativa con los requisitos de la [ISO 9001:2026](https://www.iso.org/standard/9001), señalando qué falta estandarizar sin necesidad de empezar de cero.
@@ -105,9 +108,11 @@ La NTC 6001 aborda la gestión del negocio con requisitos más ligeros. Cumple l
 
 ## La importancia de la acreditación ONAC
 
-Un certificado de calidad tiene reconocimiento en licitaciones públicas y en la homologación de proveedores cuando el organismo que lo otorga está acreditado. En Colombia, el [esquema de Certificación de Sistemas de Gestión del ONAC](https://onac.org.co/servicios/certificacion-de-sistemas-de-gestion/) evalúa a los entes certificadores con base en la norma internacional ISO/IEC 17021-1.
+Un certificado de calidad tiene reconocimiento ante clientes privados y en la homologación de proveedores cuando el organismo que lo otorga está acreditado. En Colombia, el [esquema de Certificación de Sistemas de Gestión del ONAC](https://onac.org.co/servicios/certificacion-de-sistemas-de-gestion/) evalúa a los entes certificadores con base en la norma internacional ISO/IEC 17021-1.
 
-Antes de firmar un contrato de certificación con cualquier entidad, consulte el [Directorio Oficial de Acreditados del ONAC](https://onac.org.co/directorio-de-acreditados/). Verificar que la entidad cuente con acreditación CSG vigente para la norma en la que se certificará evitará que su empresa invierta tiempo y dinero en un certificado sin reconocimiento ante entidades contratantes del Estado o grandes clientes privados.
+Tenga en cuenta que en la contratación estatal no funciona igual: el parágrafo 2 del artículo 5 de la [Ley 1150 de 2007](https://relatoria.colombiacompra.gov.co/normativa/ley-1150-de-2007/) establece que las certificaciones de sistemas de gestión de calidad no serán objeto de calificación ni podrán exigirse como documento habilitante en licitaciones o concursos. El valor de la certificación está en las compras privadas y, sobre todo, en una operación más ordenada.
+
+Antes de firmar un contrato de certificación con cualquier entidad, consulte el [Directorio Oficial de Acreditados del ONAC](https://onac.org.co/directorio-de-acreditados/). Verificar que la entidad cuente con acreditación CSG vigente para la norma en la que se certificará evitará que su empresa invierta tiempo y dinero en un certificado sin reconocimiento ante sus clientes.
 
 ## Opciones de cofinanciación para pymes
 
@@ -121,7 +126,7 @@ Estar al día con la documentación legal de su negocio y conocer su clasificaci
 *   **Inicie con un diagnóstico:** Evalúe sus procesos actuales frente a la norma antes de redactar documentos; aproveche las rutinas que su empresa ya utiliza con éxito.
 *   **Defina un alcance manejable:** Certifique primero las líneas de producto o servicio clave para su facturación o exigidas por sus clientes principales.
 *   **Evite el exceso de papel:** Documente donde un error cueste dinero o clientes, y apóyese en el enfoque de riesgos en lugar de manuales extensos.
-*   **Verifique la acreditación ante ONAC:** Asegúrese de que el organismo certificador esté acreditado para que el certificado tenga reconocimiento en licitaciones y contratos corporativos.
+*   **Verifique la acreditación ante ONAC:** Asegúrese de que el organismo certificador esté acreditado para que el certificado tenga reconocimiento ante sus clientes y en la homologación de proveedores.
 *   **Evalúe la NTC 6001:** Si es una microempresa con estructura incipiente, esta norma nacional sirve como un primer escalón más accesible.
 
 Si desea identificar el estado real de sus procesos y conocer qué tan preparada está su organización para iniciar este camino, lo invitamos a realizar nuestro [autodiagnóstico gratuito de 10 minutos](/#autodiagnostico) y recibir una orientación clara para dar el siguiente paso con seguridad.
