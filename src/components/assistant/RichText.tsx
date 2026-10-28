@@ -7,6 +7,23 @@ const SAFE_LINK = /^(\/(?!\/)|https:\/\/(www\.)?datasyslatam\.com\/|https:\/\/wa
 
 const INLINE = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g;
 
+// Si el modelo usa la ruta como texto del enlace ("[/#servicios](/#servicios)"), se muestra un nombre legible.
+const LINK_LABELS: Record<string, string> = {
+  "/#servicios": "nuestros servicios",
+  "/#consultoria": "la consultoría",
+  "/#contacto": "contacto",
+  "/#autodiagnostico": "el autodiagnóstico",
+  "/blog": "el blog",
+};
+export const linkLabel = (text: string, href: string) => {
+  if (!/^(\/|https?:\/\/)/.test(text.trim())) return text;
+  const path = href.replace(/^https:\/\/(www\.)?datasyslatam\.com/, "");
+  if (LINK_LABELS[path]) return LINK_LABELS[path];
+  if (path.startsWith("/blog/")) return "leer el artículo";
+  if (href.startsWith("https://wa.me/")) return "WhatsApp";
+  return "ver más";
+};
+
 const renderInline = (text: string, onNavigate: () => void): ReactNode[] => {
   const out: ReactNode[] = [];
   let last = 0;
@@ -22,7 +39,7 @@ const renderInline = (text: string, onNavigate: () => void): ReactNode[] => {
           className="font-medium text-electric-500 underline underline-offset-2 hover:text-electric-600"
           {...(external ? { target: "_blank", rel: "noopener noreferrer" } : { onClick: onNavigate })}
         >
-          {m[2]}
+          {linkLabel(m[2], m[3])}
         </a>,
       );
     } else out.push(m[2]);
