@@ -4,7 +4,7 @@ import App from "./App.tsx";
 import { resolveRoute } from "./routes.ts";
 import { buildHead } from "./blog/seo.ts";
 
-export { posts };
+export { loadPost, posts };
 
 /**
  * Renderiza una ruta a HTML para que buscadores y asistentes de IA la lean sin ejecutar JavaScript.

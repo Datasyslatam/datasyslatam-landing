@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = `${root}dist`;
 const ssrDir = `${root}dist-ssr`;
 
-const { render, posts } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
+const { render, posts, loadPost } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
 
 const template = await readFile(`${dist}/index.html`, "utf8");
 const placeholder = '<div id="root"></div>';
@@ -66,6 +66,54 @@ await writeFile(
     )
     .join("\n")}\n</channel>\n</rss>\n`,
 );
+
+// Base de conocimiento del asistente del sitio (server/chat.mjs): el texto publicado de la página de inicio y un
+// resumen de cada artículo. Se genera en cada build, así el asistente nunca responde con información vieja.
+const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", nbsp: " " };
+const htmlToText = (html) =>
+  html
+    .replace(/<(script|style|svg|noscript)[\s\S]*?<\/\1>/gi, "")
+    .replace(/<h[1-3][^>]*>/gi, "\n\n## ")
+    .replace(/<h[4-6][^>]*>/gi, "\n\n### ")
+    .replace(/<li[^>]*>/gi, "\n- ")
+    .replace(/<\/(p|div|section|article|header|footer|ul|ol|h[1-6]|dd|dt|blockquote)>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&(#\d+|#x[0-9a-f]+|\w+);/gi, (m, e) =>
+      e[0] === "#" ? String.fromCodePoint(e[1] === "x" ? parseInt(e.slice(2), 16) : Number(e.slice(1))) : (ENTITIES[e] ?? m),
+    )
+    .replace(/[ \t]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+const home = await render("/");
+const articles = await Promise.all(
+  posts.map(async (meta) => {
+    const post = await loadPost(meta.slug);
+    const summary = /<h2[^>]*>\s*En resumen\s*<\/h2>([\s\S]*?)(<h2|$)/i.exec(post?.html ?? "")?.[1] ?? "";
+    return [
+      `### ${meta.title}`,
+      `URL: /blog/${meta.slug} · Autor: ${meta.author} · Publicado: ${meta.date}`,
+      meta.description,
+      summary ? `Puntos clave:\n${htmlToText(summary)}` : "",
+      post?.faq?.length ? `Preguntas frecuentes:\n${post.faq.map((f) => `- ${f.q} ${f.a}`).join("\n")}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }),
+);
+const knowledge = [
+  `# Sitio web de DataSys Latam Group (${SITE_URL}) — generado el ${today}`,
+  "",
+  "## Contenido de la página de inicio",
+  htmlToText(home.html),
+  "",
+  "## Artículos del blog",
+  articles.join("\n\n") || "Aún no hay artículos.",
+].join("\n");
+await mkdir(`${root}dist-server`, { recursive: true });
+await writeFile(`${root}dist-server/knowledge.md`, `${knowledge}\n`);
 
 await rm(ssrDir, { recursive: true, force: true });
 console.log(`Prerender listo: ${routes.length} páginas (${posts.length} artículos), sitemap.xml y blog/rss.xml`);

@@ -8,4 +8,8 @@ export default defineConfig({
   resolve: {
     alias: { "@": `${import.meta.dirname}/src` },
   },
+  // En desarrollo, el asistente (/api/chat) lo atiende el servidor de producción: npm run dev:api (puerto 3000).
+  server: {
+    proxy: { "/api": "http://localhost:3000" },
+  },
 });
