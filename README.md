@@ -1,6 +1,6 @@
 # datasyslatam-landing
 
-Sitio corporativo de DataSys Latam Group: React 18, TypeScript, Vite y Tailwind CSS. Las páginas se prerenderizan en el build (HTML completo, legible sin JavaScript para Google y asistentes de IA) y se sirven con `serve` en Railway.
+Sitio corporativo de DataSys Latam Group: React 18, TypeScript, Vite y Tailwind CSS. Las páginas se prerenderizan en el build (HTML completo, legible sin JavaScript para Google y asistentes de IA) y se sirven con un pequeño servidor Node (`server/`) en Railway.
 
 ## Desarrollo local
 
@@ -8,6 +8,7 @@ Sitio corporativo de DataSys Latam Group: React 18, TypeScript, Vite y Tailwind 
 npm ci
 cp .env.example .env.local   # y completar VITE_WEB3FORMS_ACCESS_KEY
 npm run dev                  # http://localhost:5173
+npm run dev:api              # en otra terminal: /api/chat del asistente (requiere un npm run build previo)
 ```
 
 Build de producción servido igual que en Railway (con las cabeceras de `public/serve.json`):
@@ -17,13 +18,15 @@ npm run build
 npm run start                # http://localhost:3000
 ```
 
-`npm run build` hace tres pasos: build del cliente, build SSR de `src/entry-server.tsx` y `scripts/prerender.mjs`, que genera el HTML de `/`, `/blog`, cada artículo, `404.html`, `sitemap.xml` y `blog/rss.xml`.
+`npm run build` hace tres pasos: build del cliente, build SSR de `src/entry-server.tsx` y `scripts/prerender.mjs`, que genera el HTML de `/`, `/blog`, cada artículo, `404.html`, `sitemap.xml`, `blog/rss.xml` y la base de conocimiento del asistente (`dist-server/knowledge.md`).
 
 ## Variables de entorno
 
 | Variable | Uso |
 |---|---|
 | `VITE_WEB3FORMS_ACCESS_KEY` | Clave de Web3Forms del formulario de contacto. Vite la inserta en el build, así que en Railway debe existir **antes** de construir. |
+| `GEMINI_API_KEY` | Clave de Gemini del asistente del sitio (`/api/chat`). Solo la lee el servidor; sin ella el asistente ofrece WhatsApp y el formulario. |
+| `CHAT_MODEL` | Opcional. Modelo del asistente (por defecto `gemini-3.8-flash`). |
 
 ## Blog
 
@@ -37,8 +40,14 @@ Configuración necesaria en GitHub (una sola vez):
 1. *Settings → Secrets and variables → Actions*: secreto `GEMINI_API_KEY` (Google AI Studio). Con ella se investiga y redacta (`gemini-3.8-flash`, se cambia con la variable `BLOG_TEXT_MODEL`, p. ej. `gemini-4-argon`) y se generan las portadas (`gemini-nano-banana-2.1`, variable `BLOG_IMAGE_MODEL`). Puede requerir facturación activa en el proyecto de Google.
 2. *Settings → Actions → General → Workflow permissions*: activar **Allow GitHub Actions to create and approve pull requests**.
 
+## Asistente del sitio
+
+- Botón flotante (`src/components/assistant/`) con pestañas Inicio y Mensajes: responde preguntas, abre el autodiagnóstico, WhatsApp, y envía mensajes o solicitudes de reunión por Web3Forms con la conversación adjunta. Reemplaza al antiguo botón de WhatsApp.
+- `server/chat.mjs` atiende `POST /api/chat`: valida el origen y el tamaño, limita a 20 preguntas cada 10 minutos y 120 al día por IP, y llama a Gemini con la base de conocimiento generada en el build. Responde solo con el contenido del sitio y del blog; no registra el contenido de las conversaciones.
+
 ## Despliegue (Railway)
 
 - Builder: Railpack (`railway.toml`, `railpack.json`). Node 22 según `.nvmrc` / `engines`.
 - `.npmrc` (`include=dev`) mantiene las devDependencies necesarias para `npm run build`.
+- `server/index.mjs` (`npm run start`) sirve `dist/` con `serve-handler` y compresión gzip, y atiende `/api/chat`.
 - `public/serve.json`: cabeceras de seguridad (CSP, HSTS, etc.) y caché inmutable para `/assets/*`. Las rutas inexistentes reciben `404.html` con estado 404.
