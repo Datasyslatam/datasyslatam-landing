@@ -4,7 +4,11 @@
 import { readFile } from "node:fs/promises";
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
-const MODEL = process.env.CHAT_MODEL || "gemini-3.8-flash";
+// Modelo rápido y razonamiento mínimo: la respuesta sale de una base corta y debe llegar en segundos.
+// Con gemini-3.8-flash y razonamiento "low" tardaba de 30 a más de 45 s en producción.
+const MODEL = process.env.CHAT_MODEL || "gemini-3.5-flash-lite";
+const THINKING = process.env.CHAT_THINKING || "minimal";
+const DEADLINE_MS = 25_000;
 const KNOWLEDGE_FILE = new URL("../dist-server/knowledge.md", import.meta.url);
 
 const MAX_BODY_BYTES = 16_000;
@@ -179,6 +183,8 @@ export const normalizeReply = (json) => ({
 });
 
 const askGemini = async (messages, kb) => {
+  // Un visitante no espera más de unos segundos: un solo plazo total para la consulta y su posible reintento.
+  const deadline = Date.now() + DEADLINE_MS;
   for (let attempt = 1; attempt <= 2; attempt++) {
     const res = await fetch(GEMINI_URL, {
       method: "POST",
@@ -188,10 +194,10 @@ const askGemini = async (messages, kb) => {
         system_instruction: systemInstruction(kb),
         input: transcript(messages),
         response_format: { type: "text", mime_type: "application/json", schema: RESPONSE_SCHEMA },
-        generation_config: { thinking_level: "low" },
+        generation_config: { thinking_level: THINKING },
         store: false,
       }),
-      signal: AbortSignal.timeout(45_000),
+      signal: AbortSignal.timeout(Math.max(1000, deadline - Date.now())),
     });
     if (res.ok) {
       const interaction = await res.json();
@@ -201,8 +207,9 @@ const askGemini = async (messages, kb) => {
       return reply;
     }
     const detail = (await res.text()).slice(0, 300);
-    if (attempt === 2 || ![429, 500, 502, 503, 504].includes(res.status)) throw new Error(`Gemini ${res.status}: ${detail}`);
-    await new Promise((r) => setTimeout(r, 1500));
+    const retryable = [429, 500, 502, 503, 504].includes(res.status) && deadline - Date.now() > 8000;
+    if (attempt === 2 || !retryable) throw new Error(`Gemini ${res.status}: ${detail}`);
+    await new Promise((r) => setTimeout(r, 1000));
   }
 };
 
@@ -231,10 +238,10 @@ export const handleChat = async (req, res) => {
   try {
     const reply = await askGemini(messages, kb);
     // Solo métricas: el contenido de las conversaciones no se registra.
-    console.log(`[chat] ok ${Date.now() - started} ms, ${messages.length} turnos, acciones: ${reply.actions.join(",") || "-"}`);
+    console.log(`[chat] ok ${MODEL} ${Date.now() - started} ms, ${messages.length} turnos, acciones: ${reply.actions.join(",") || "-"}`);
     return send(res, 200, reply);
   } catch (err) {
-    console.error(`[chat] error ${Date.now() - started} ms: ${err?.message ?? err}`);
+    console.error(`[chat] error ${MODEL} ${Date.now() - started} ms: ${err?.message ?? err}`);
     return send(res, 502, { error: "upstream" });
   }
 };
