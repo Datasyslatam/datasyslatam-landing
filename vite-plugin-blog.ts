@@ -6,7 +6,7 @@ import { join, resolve } from "node:path";
 import { Marked } from "marked";
 import { parse as parseYaml } from "yaml";
 import type { Plugin } from "vite";
-import type { BlogPost } from "./src/blog/types.ts";
+import type { BlogArea, BlogPost } from "./src/blog/types.ts";
 
 const INDEX_ID = "virtual:blog-posts";
 const POST_PREFIX = "virtual:blog-post/";
@@ -46,10 +46,28 @@ const required = (data: Record<string, unknown>, key: string, file: string) => {
   return value.trim();
 };
 
+const AREAS: BlogArea[] = ["gestion", "tecnologia", "analitica"];
+
+/** Área del artículo: la del frontmatter o, si no la tiene, la de su tema en el calendario del asistente. */
+const areaOf = (data: Record<string, unknown>, topicAreas: Map<string, BlogArea>): BlogArea => {
+  if (AREAS.includes(data.area as BlogArea)) return data.area as BlogArea;
+  return topicAreas.get(String(data.topic ?? "")) ?? "gestion";
+};
+
+const readTopicAreas = (file: string) => {
+  const areas = new Map<string, BlogArea>();
+  if (!existsSync(file)) return areas;
+  for (const t of JSON.parse(readFileSync(file, "utf8")) as { id: string; area?: BlogArea }[]) {
+    if (t.area && AREAS.includes(t.area)) areas.set(t.id, t.area);
+  }
+  return areas;
+};
+
 const toDate = (value: unknown) => (value instanceof Date ? value.toISOString().slice(0, 10) : String(value ?? ""));
 
-export const loadPosts = (dir: string): BlogPost[] => {
+export const loadPosts = (dir: string, topicsFile = resolve("scripts/blog-agent/topics.json")): BlogPost[] => {
   if (!existsSync(dir)) return [];
+  const topicAreas = readTopicAreas(topicsFile);
   const posts = readdirSync(dir)
     .filter((file) => file.endsWith(".md") && file.toLowerCase() !== "readme.md")
     .map((file): BlogPost => {
@@ -73,6 +91,7 @@ export const loadPosts = (dir: string): BlogPost[] => {
         date,
         updated: data.updated ? toDate(data.updated) : undefined,
         author: typeof data.author === "string" ? data.author : "DataSys Latam Group",
+        area: areaOf(data, topicAreas),
         keywords: Array.isArray(data.keywords) ? data.keywords.map(String) : [],
         image: required(data, "image", file),
         imageAlt: required(data, "imageAlt", file),
@@ -119,6 +138,7 @@ export const blogPlugin = (): Plugin => {
           .join("\n");
         return [
           `export const posts = ${JSON.stringify(meta)};`,
+          `export const buildDate = ${JSON.stringify(new Date().toISOString().slice(0, 10))};`,
           `const loaders = {\n${loaders}\n};`,
           `export const loadPost = (slug) => (loaders[slug] ? loaders[slug]().then((m) => m.default) : Promise.resolve(null));`,
         ].join("\n");

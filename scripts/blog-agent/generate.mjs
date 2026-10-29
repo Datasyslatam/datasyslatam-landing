@@ -704,6 +704,7 @@ const main = async () => {
     date: today(),
     author: AUTHORS[topic.area] ?? AUTHORS.gestion,
     topic: topic.id,
+    area: topic.area ?? "gestion",
     keywords: article.keywords,
     image,
     imageAlt: article.image_alt.trim(),

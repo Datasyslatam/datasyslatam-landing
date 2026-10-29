@@ -1,15 +1,22 @@
-import { ChevronDown, ExternalLink } from "lucide-react";
+import { ChevronDown, Clock, ExternalLink } from "lucide-react";
 import { posts } from "virtual:blog-posts";
 import SiteChrome from "@/components/SiteChrome";
 import { heroBtnBlue, heroBtnOrange } from "@/components/heroButtons";
 import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/data";
 import { articleJsonLd } from "@/blog/seo";
 import { formatDate } from "@/blog/format";
+import { AREAS, findAuthor } from "@/blog/authors";
+import BlogCard, { AuthorAvatar } from "@/components/blog/BlogCard";
 import type { BlogPost as BlogPostData } from "@/blog/types";
 import { whatsappUrl } from "@/lib/whatsapp";
 
 const BlogPost = ({ post }: { post: BlogPostData }) => {
-  const related = posts.filter((p) => p.slug !== post.slug).slice(0, 3);
+  // Primero los de la misma categoría, luego los más recientes.
+  const related = posts
+    .filter((p) => p.slug !== post.slug)
+    .sort((a, b) => Number(b.area === post.area) - Number(a.area === post.area))
+    .slice(0, 3);
+  const author = findAuthor(post.author);
 
   return (
     <SiteChrome>
@@ -24,11 +31,28 @@ const BlogPost = ({ post }: { post: BlogPostData }) => {
           </nav>
 
           <header className="mb-8">
+            <a
+              href={`/blog?categoria=${AREAS[post.area].slug}`}
+              className="mb-3 inline-block rounded-md bg-electric-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-electric-600 hover:bg-electric-500/15"
+            >
+              {AREAS[post.area].label}
+            </a>
             <h1 className="mb-4 text-3xl font-bold leading-tight text-navy-900 md:text-4xl">{post.title}</h1>
-            <p className="mb-4 text-lg leading-relaxed text-[#0b2a5e]/80">{post.description}</p>
-            <p className="text-sm text-steel-500">
-              <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.author} · {post.readingMinutes} min de lectura
-            </p>
+            <p className="mb-5 text-lg leading-relaxed text-[#0b2a5e]/80">{post.description}</p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-steel-500">
+              <span className="flex items-center gap-3">
+                <AuthorAvatar name={post.author} size={44} />
+                <span className="leading-tight">
+                  <span className="block font-semibold text-navy-900">{author.name}</span>
+                  <span className="block text-xs">{author.role}</span>
+                </span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <time dateTime={post.date}>{formatDate(post.date)}</time>
+                <span aria-hidden="true">·</span>
+                <Clock className="h-3.5 w-3.5" aria-hidden="true" /> {post.readingMinutes} min de lectura
+              </span>
+            </div>
           </header>
 
           <img
@@ -94,13 +118,12 @@ const BlogPost = ({ post }: { post: BlogPostData }) => {
 
       {related.length > 0 && (
         <section aria-labelledby="related-title" className="bg-[#f5f7fb] py-12">
-          <div className="container mx-auto max-w-5xl px-4">
-            <h2 id="related-title" className="mb-6 text-2xl font-bold text-navy-900">Siga leyendo</h2>
-            <ul className="grid gap-5 sm:grid-cols-3">
+          <div className="container mx-auto max-w-6xl px-4">
+            <h2 id="related-title" className="mb-8 text-2xl font-bold text-navy-900">Siga leyendo</h2>
+            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
-                <li key={p.slug} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                  <p className="mb-1 text-xs text-steel-500"><time dateTime={p.date}>{formatDate(p.date)}</time></p>
-                  <a href={`/blog/${p.slug}`} className="font-bold leading-snug text-navy-900 hover:text-blue-600">{p.title}</a>
+                <li key={p.slug}>
+                  <BlogCard post={p} />
                 </li>
               ))}
             </ul>
