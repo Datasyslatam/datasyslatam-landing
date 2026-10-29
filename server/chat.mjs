@@ -6,8 +6,24 @@ import { readFile } from "node:fs/promises";
 export const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
 // Modelo rápido y razonamiento mínimo: la respuesta sale de una base corta y debe llegar en segundos.
 // Con gemini-3.8-flash y razonamiento "low" tardaba de 30 a más de 45 s en producción.
-export const MODEL = process.env.CHAT_MODEL || "gemini-3.5-flash-lite";
-export const THINKING = process.env.CHAT_THINKING || "minimal";
+// Las variables de configuración se validan: un valor equivocado (p. ej. una clave pegada en CHAT_MODEL) se ignora,
+// nunca se envía a Gemini ni se muestra, y se avisa en el registro sin imprimirlo.
+const fromEnv = (name, valid, fallback) => {
+  const value = process.env[name]?.trim();
+  if (!value) return fallback;
+  if (valid(value)) return value;
+  console.error(`[chat] ${name} tiene un valor no válido; se usa "${fallback}". Revise la variable en Railway.`);
+  return fallback;
+};
+/** Oculta cualquier cosa con forma de clave de Google (o la clave configurada) antes de registrar o mostrar un texto. */
+export const redactSecrets = (text) => {
+  let out = String(text ?? "").replace(/AIza[0-9A-Za-z_-]{20,}|AQ\.[0-9A-Za-z_.-]{20,}/g, "[oculto]");
+  if (process.env.GEMINI_API_KEY) out = out.split(process.env.GEMINI_API_KEY).join("[oculto]");
+  return out;
+};
+export const isModelName = (value) => /^gemini-[a-z0-9.-]{2,60}$/.test(value);
+export const MODEL = fromEnv("CHAT_MODEL", isModelName, "gemini-3.5-flash-lite");
+export const THINKING = fromEnv("CHAT_THINKING", (v) => ["minimal", "low", "medium", "high"].includes(v), "minimal");
 const DEADLINE_MS = Number(process.env.CHAT_DEADLINE_MS) || 25_000;
 const KNOWLEDGE_FILE = new URL("../dist-server/knowledge.md", import.meta.url);
 
@@ -199,7 +215,7 @@ export const normalizeReply = (json) => ({
 // llegue primero; la otra se cancela. Así una solicitud atascada en la cola no deja esperando al visitante.
 const HEDGE_MS = Number(process.env.CHAT_HEDGE_MS) || 7000;
 // Opcional: "priority" (más caro, requiere cuentas de nivel 2 o 3 en Google) o "flex". Sin valor, el estándar.
-export const SERVICE_TIER = process.env.CHAT_SERVICE_TIER || "";
+export const SERVICE_TIER = fromEnv("CHAT_SERVICE_TIER", (v) => ["flex", "standard", "priority"].includes(v), "");
 
 /** Error de una solicitud a Gemini con su causa resumida, que se devuelve al navegador para diagnosticar. */
 class UpstreamError extends Error {
@@ -364,7 +380,7 @@ export const handleChat = async (req, res) => {
     return send(res, 200, reply, { "server-timing": `gemini;dur=${ms};desc="solicitud ${attempt}"` });
   } catch (err) {
     const ms = Date.now() - started;
-    console.error(`[chat] error ${MODEL} ${ms} ms: ${err?.message ?? err}`);
+    console.error(`[chat] error ${MODEL} ${ms} ms: ${redactSecrets(err?.message ?? err)}`);
     // La causa resumida (timeout, gemini_503, invalid_json...) permite diagnosticar sin acceso al registro.
     return send(res, 502, { error: "upstream", reason: err?.reason ?? "unknown" }, { "server-timing": `gemini;dur=${ms}` });
   }
