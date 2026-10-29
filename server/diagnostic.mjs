@@ -9,7 +9,7 @@ const PROBE_TIMEOUT_MS = 40_000;
 // Cada ejecución hace unas 7 llamadas pequeñas a Gemini: como mucho una cada 2 minutos para todo el sitio.
 const MIN_INTERVAL_MS = 2 * 60_000;
 // Solo nombres válidos de modelo: nada de lo que se configure por error se envía ni se muestra.
-const ALT_MODELS = (process.env.CHAT_DIAG_MODELS || "gemini-3.1-flash-lite,gemini-3.5-flash").split(",").map((m) => m.trim()).filter(isModelName);
+const ALT_MODELS = (process.env.CHAT_DIAG_MODELS || "gemini-3.5-flash-lite,gemini-3.5-flash").split(",").map((m) => m.trim()).filter(isModelName);
 const PING = "Responde únicamente con la palabra: ok";
 
 let lastRun = 0;

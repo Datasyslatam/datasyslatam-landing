@@ -5,7 +5,9 @@ import { readFile } from "node:fs/promises";
 
 export const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
 // Modelo rápido y razonamiento mínimo: la respuesta sale de una base corta y debe llegar en segundos.
-// Con gemini-3.8-flash y razonamiento "low" tardaba de 30 a más de 45 s en producción.
+// Con gemini-3.8-flash y razonamiento "low" tardaba de 30 a más de 45 s en producción. El 29 de octubre,
+// gemini-3.5-flash-lite tardaba 19–23 s en esta API (0,5 s en generateContent) y gemini-3.1-flash-lite, 2 s con
+// la solicitud real (medido con /api/diagnostico).
 // Las variables de configuración se validan: un valor equivocado (p. ej. una clave pegada en CHAT_MODEL) se ignora,
 // nunca se envía a Gemini ni se muestra, y se avisa en el registro sin imprimirlo.
 const fromEnv = (name, valid, fallback) => {
@@ -22,7 +24,7 @@ export const redactSecrets = (text) => {
   return out;
 };
 export const isModelName = (value) => /^gemini-[a-z0-9.-]{2,60}$/.test(value);
-export const MODEL = fromEnv("CHAT_MODEL", isModelName, "gemini-3.5-flash-lite");
+export const MODEL = fromEnv("CHAT_MODEL", isModelName, "gemini-3.1-flash-lite");
 export const THINKING = fromEnv("CHAT_THINKING", (v) => ["minimal", "low", "medium", "high"].includes(v), "minimal");
 const DEADLINE_MS = Number(process.env.CHAT_DEADLINE_MS) || 25_000;
 const KNOWLEDGE_FILE = new URL("../dist-server/knowledge.md", import.meta.url);

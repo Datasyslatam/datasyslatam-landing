@@ -26,7 +26,7 @@ npm run start                # http://localhost:3000
 |---|---|
 | `VITE_WEB3FORMS_ACCESS_KEY` | Clave de Web3Forms del formulario de contacto. Vite la inserta en el build, así que en Railway debe existir **antes** de construir. |
 | `GEMINI_API_KEY` | Clave de Gemini del asistente del sitio (`/api/chat`). Solo la lee el servidor; sin ella el asistente ofrece WhatsApp y el formulario. |
-| `CHAT_MODEL`, `CHAT_THINKING` | Opcionales. Modelo y nivel de razonamiento del asistente (por defecto `gemini-3.5-flash-lite` y `minimal`, para responder en segundos). |
+| `CHAT_MODEL`, `CHAT_THINKING` | Opcionales. Modelo y nivel de razonamiento del asistente (por defecto `gemini-3.1-flash-lite` y `minimal`, para responder en segundos; compare modelos con `/api/diagnostico`). |
 | `CHAT_SERVICE_TIER` | Opcional. `priority` para la cola prioritaria de Gemini (respuesta en segundos aun con carga; cuesta 75–100 % más y requiere cuenta de nivel 2 o 3 en Google). |
 
 ## Blog
