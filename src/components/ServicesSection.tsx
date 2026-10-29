@@ -7,6 +7,7 @@ const services = [
     tint:  "bg-blue-50",
     title: "Desarrollo de Software",
     desc:  "Aplicaciones web, móviles y sistemas empresariales adaptados a sus procesos.",
+    href:  "/servicios/desarrollo-software-medida",
   },
   {
     icon:  BrainCircuit,
@@ -62,7 +63,7 @@ const ServicesSection = () => (
             </div>
             <h3 className="mb-1 text-sm font-bold text-navy-900">{svc.title}</h3>
             <p className="mb-2 text-xs leading-snug text-gray-600">{svc.desc}</p>
-            <a href="#contacto" className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700">
+            <a href={"href" in svc ? svc.href : "#contacto"} className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700">
               Conocer más <ArrowRight className="h-3.5 w-3.5" />
             </a>
           </div>

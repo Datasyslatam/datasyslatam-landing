@@ -3,8 +3,10 @@ import { loadPost, posts } from "virtual:blog-posts";
 import App from "./App.tsx";
 import { resolveRoute } from "./routes.ts";
 import { buildHead } from "./blog/seo.ts";
+import { LANDING_PAGES } from "./landing/pages.ts";
 
 export { loadPost, posts };
+export const landingPaths = LANDING_PAGES.map((p) => p.path);
 
 /**
  * Renderiza una ruta a HTML para que buscadores y asistentes de IA la lean sin ejecutar JavaScript.
