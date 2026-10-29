@@ -60,6 +60,11 @@ jobs:
       - if: steps.guard.outputs.skip != 'true'
         run: npm ci
 
+      # pdftotext lee las fuentes en PDF para la comprobación local de cifras (scripts/blog-agent/figures.mjs).
+      - name: Instalar lector de PDF
+        if: steps.guard.outputs.skip != 'true'
+        run: command -v pdftotext >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils)
+
       - name: Investigar y redactar el artículo
         id: article
         if: steps.guard.outputs.skip != 'true'
