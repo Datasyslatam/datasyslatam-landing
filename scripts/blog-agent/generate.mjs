@@ -11,6 +11,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { z } from "zod";
 import { parse as parseYaml, stringify as toYaml } from "yaml";
+import { checkFiguresLocally } from "./figures.mjs";
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
 const TEXT_MODEL = process.env.BLOG_TEXT_MODEL || "gemini-3.8-flash";
@@ -499,21 +500,40 @@ Preguntas frecuentes:
 ${article.faq.map((f) => `- ${f.q} ${f.a}`).join("\n")}`;
 };
 
+// Gemini rechaza combinar herramientas (contexto de URL, Búsqueda) con salida JSON ("Tool use with a response mime type:
+// 'application/json' is unsupported", 29 de octubre de 2026). Por eso la verificación va en dos pasos: primero lee las
+// fuentes con herramientas y escribe un informe en texto; después, sin herramientas, ese informe se pasa a JSON.
+const VERIFIER_REPORT_FORMAT = `Entrega el informe en texto plano, sin introducción:
+- Una línea por cada cifra, porcentaje, plazo o dato cuantitativo del artículo y de sus preguntas frecuentes:
+  CIFRA | frase del artículo copiada textualmente | URL citada (o "sin enlace") | coincide / no_coincide / no_encontrada / sin_fuente | qué dice la fuente, con su año
+- Una línea por cada norma técnica citada con su edición:
+  NORMA | norma tal como aparece | edición vigente según iso.org o icontec.org | vigente sí/no | página que lo confirma`;
+
 const verify = async (article, step) => {
-  const interaction = await gemini(
+  const research = await gemini(
     {
       model: TEXT_MODEL,
       system_instruction: VERIFIER_SYSTEM,
-      input: verifierPrompt(article),
+      input: `${verifierPrompt(article)}\n\n${VERIFIER_REPORT_FORMAT}`,
       tools: [{ type: "url_context" }, { type: "google_search" }],
-      response_format: { type: "text", mime_type: "application/json", schema: jsonSchema(VerificationSchema) },
       generation_config: { thinking_level: "high" },
     },
     step,
   );
-  const report = parseJson(interaction, VerificationSchema, step);
+  const text = outputText(research);
+  if (!text) throw new Error(`${step}: el verificador no entregó informe.`);
+  const formatted = await gemini(
+    {
+      model: TEXT_MODEL,
+      input: `Convierte este informe de verificación al formato JSON pedido, sin agregar ni quitar datos:\n\n${text}`,
+      response_format: { type: "text", mime_type: "application/json", schema: jsonSchema(VerificationSchema) },
+      generation_config: { thinking_level: "low" },
+    },
+    `${step} (formato)`,
+  );
+  const report = parseJson(formatted, VerificationSchema, step);
   const issues = [...report.figures.filter((f) => f.status !== "coincide"), ...report.standards.filter((s) => !s.is_current)];
-  return { report, issues, ...(await usableSources(interaction)), interaction };
+  return { report, issues, ...(await usableSources(research)), interactions: [research, formatted] };
 };
 
 /** El cuerpo como problema a corregir si supera los 5 minutos de lectura. */
@@ -525,6 +545,8 @@ const lengthIssues = (article) => {
 export const describeIssue = (issue) =>
   "words" in issue
     ? `El cuerpo tiene ${issue.words} palabras; el máximo es ${MAX_WORDS} (5 minutos de lectura)`
+    : issue.local
+    ? `«${issue.figure}» no aparece en el texto de su fuente (${issue.urls.join(", ")}); frase: «${issue.claim}»`
     : "status" in issue
     ? `«${issue.claim}» — ${issue.status.replace("_", " ")}${issue.source_says ? `; la fuente dice: ${issue.source_says}` : ""}${issue.url ? ` (${issue.url})` : ""}`
     : `${issue.cited} no es la edición vigente; la vigente es ${issue.current}${issue.evidence_url ? ` (${issue.evidence_url})` : ""}`;
@@ -648,7 +670,7 @@ const main = async () => {
   const allowed = new Map(researched.map((s) => [normalizeUrl(s.url), s]));
   const check = async (step) => {
     const result = await verify(article, step);
-    runs.push(result.interaction);
+    runs.push(...result.interactions);
     excluded.push(...result.excluded);
     for (const s of result.sources) allowed.set(normalizeUrl(s.url), s);
     for (const s of result.report.standards) {
@@ -670,19 +692,24 @@ const main = async () => {
     }
   };
 
+  // Dos verificaciones independientes: la de Gemini (lee las fuentes y juzga el sentido) y la local, sin IA, que busca
+  // cada cifra en el texto de su fuente y funciona aunque Gemini falle.
   let verification = await tryCheck("Verificación");
-  const corrected = [...(verification?.issues ?? []), ...lengthIssues(article)];
+  let local = await checkFiguresLocally(article);
+  console.log(`Comprobación local: ${local.checked} cifras, ${local.issues.length} no encontradas en su fuente`);
+  const corrected = [...(verification?.issues ?? []), ...local.issues, ...lengthIssues(article)];
   if (corrected.length) {
     console.log(`Verificación: ${corrected.length} problemas; se corrige el artículo`);
     ({ article, interaction: run } = await writeArticle(revisionPrompt(article, corrected, [...allowed.values()]), "Corrección"));
     runs.push(run);
     verification = await tryCheck("Segunda verificación");
+    local = await checkFiguresLocally(article);
   }
-  const pending = [...(verification?.issues ?? []), ...lengthIssues(article)];
+  const pending = [...(verification?.issues ?? []), ...local.issues, ...lengthIssues(article)];
   console.log(
     verification
       ? `Verificación final: ${verification.report.figures.length} datos revisados, ${pending.length} pendientes`
-      : "Verificación final: no se pudo completar",
+      : `Verificación final: Gemini no pudo completarla; comprobación local con ${local.issues.length} pendientes`,
   );
 
   const { body, sources, report } = await verifyLinks(article, new Set(allowed.keys()));
@@ -740,7 +767,8 @@ const main = async () => {
     "### Verificación automática de cifras y normas",
     verification
       ? `- ${verification.report.figures.length} datos y ${verification.report.standards.length} normas comprobados contra sus fuentes${corrected.length ? `; se corrigieron ${corrected.length} problemas encontrados en la primera revisión` : ""}.`
-      : "- ⚠️ **No se pudo completar** (error de Gemini). Revise a mano cada cifra contra su fuente y que cada norma citada sea la edición vigente.",
+      : "- ⚠️ **La verificación con Gemini no se pudo completar.** Revise a mano el sentido de cada dato y que cada norma citada sea la edición vigente.",
+    `- Comprobación local (sin IA): ${local.checked - local.issues.length} de ${local.checked} cifras aparecen en el texto de su fuente${corrected.length ? " después de la corrección" : ""}.${local.unreadable.length ? ` No se pudo leer: ${local.unreadable.join(", ")}.` : ""}`,
     ...(pending.length
       ? ["", "⚠️ **Revise a mano** (el verificador no pudo confirmarlos):", ...pending.map((i) => `- ${describeIssue(i)}`)]
       : verification
