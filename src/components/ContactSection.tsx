@@ -8,7 +8,8 @@ const fadeUp = {
   show:   { opacity: 1, y: 0 },
 };
 
-const ContactSection = () => {
+/** subject: asunto del correo; las páginas de servicios lo cambian para saber de dónde llegó cada solicitud. */
+const ContactSection = ({ subject = "Nuevo mensaje de contacto - DatasysLatam Group" }: { subject?: string }) => {
   const [submitted,   setSubmitted]   = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -47,7 +48,7 @@ const ContactSection = () => {
       return;
     }
     setIsSubmitting(true);
-    const result = await submitWeb3Forms({ subject: "Nuevo mensaje de contacto - DatasysLatam Group", ...data });
+    const result = await submitWeb3Forms({ subject, ...data });
     setIsSubmitting(false);
     if (result.ok) {
       setSubmitted(true);

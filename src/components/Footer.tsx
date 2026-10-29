@@ -1,5 +1,5 @@
 import logoImg from "@/assets/logo-datasyslatam.webp";
-import { NAV_LINKS } from "./navLinks";
+import { NAV_LINKS, SERVICE_LINKS } from "./navLinks";
 
 
 const Footer = () => (
@@ -38,6 +38,15 @@ const Footer = () => (
                   href={href}
                   className="text-xs text-steel-400 hover:text-white transition-colors duration-200 tracking-wide"
                 >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <ul className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-2">
+            {SERVICE_LINKS.map(({ label, href }) => (
+              <li key={href}>
+                <a href={href} className="text-xs text-steel-400 hover:text-white transition-colors duration-200 tracking-wide">
                   {label}
                 </a>
               </li>

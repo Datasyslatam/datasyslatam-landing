@@ -8,3 +8,10 @@ export const NAV_LINKS = [
   { label: "Blog", href: "/blog" },
   { label: "Contacto", href: "/#contacto" },
 ];
+
+// Páginas de servicios y producto (palabras clave comerciales): se enlazan desde el pie de todas las páginas.
+export const SERVICE_LINKS = [
+  { label: "Consultoría ISO 9001", href: "/servicios/consultoria-iso-9001" },
+  { label: "Desarrollo de software a la medida", href: "/servicios/desarrollo-software-medida" },
+  { label: "Governex: software ISO", href: "/producto/governex" },
+];

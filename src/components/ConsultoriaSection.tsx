@@ -76,6 +76,14 @@ const ConsultoriaSection = () => (
               </motion.li>
             ))}
           </motion.ul>
+
+          <motion.a
+            variants={fadeUp}
+            href="/servicios/consultoria-iso-9001"
+            className="mt-6 inline-flex items-center gap-1 font-semibold text-blue-600 transition hover:text-blue-800"
+          >
+            Conozca nuestra consultoría ISO 9001 en Colombia <span aria-hidden="true">→</span>
+          </motion.a>
         </motion.div>
       </div>
     </div>

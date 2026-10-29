@@ -33,7 +33,7 @@ const ProductosSection = () => (
               <p className="mb-4 text-sm leading-relaxed text-gray-600">
                 Plataforma diseñada para ayudar a las organizaciones a gestionar de manera estructurada sus procesos de gobierno corporativo, información, cumplimiento y toma de decisiones.
               </p>
-              <a href="#contacto" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 transition hover:text-blue-800">
+              <a href="/producto/governex" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 transition hover:text-blue-800">
                 Conocer Governex <ArrowRight className="h-4 w-4" strokeWidth={2} />
               </a>
             </div>

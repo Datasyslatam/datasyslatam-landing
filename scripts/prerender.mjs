@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = `${root}dist`;
 const ssrDir = `${root}dist-ssr`;
 
-const { render, posts, loadPost } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
+const { render, posts, loadPost, landingPaths } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
 
 const template = await readFile(`${dist}/index.html`, "utf8");
 const placeholder = '<div id="root"></div>';
@@ -18,7 +18,7 @@ const headBlock = /<!-- page-meta:start[\s\S]*?<!-- page-meta:end -->/;
 if (!template.includes(placeholder)) throw new Error(`No se encontró ${placeholder} en dist/index.html`);
 if (!headBlock.test(template)) throw new Error("No se encontró el bloque <!-- page-meta --> en dist/index.html");
 
-const routes = ["/", "/blog", ...posts.map((p) => `/blog/${p.slug}`)];
+const routes = ["/", ...landingPaths, "/blog", ...posts.map((p) => `/blog/${p.slug}`)];
 
 for (const route of routes) {
   const { html, head } = await render(route);
@@ -46,6 +46,7 @@ const latest = posts[0]?.date ?? today;
 
 const sitemapUrls = [
   { loc: `${SITE_URL}/`, lastmod: today, priority: "1.0" },
+  ...landingPaths.map((path) => ({ loc: `${SITE_URL}${path}`, lastmod: today, priority: "0.9" })),
   { loc: `${SITE_URL}/blog`, lastmod: latest, priority: "0.8" },
   ...posts.map((p) => ({ loc: `${SITE_URL}/blog/${p.slug}`, lastmod: p.updated ?? p.date, priority: "0.7" })),
 ];
@@ -88,6 +89,14 @@ const htmlToText = (html) =>
     .trim();
 
 const home = await render("/");
+// Las páginas de servicios y producto también alimentan al asistente: sin el menú ni el pie, que ya trae el inicio.
+const landingTexts = await Promise.all(
+  landingPaths.map(async (path) => {
+    const { html } = await render(path);
+    const main = /<main[^>]*>([\s\S]*)<\/main>/.exec(html)?.[1] ?? html;
+    return `### Página ${path}\n${htmlToText(main.replace(/<section id="contacto"[\s\S]*?<\/section>/, ""))}`;
+  }),
+);
 const articles = await Promise.all(
   posts.map(async (meta) => {
     const post = await loadPost(meta.slug);
@@ -108,6 +117,9 @@ const knowledge = [
   "",
   "## Contenido de la página de inicio",
   htmlToText(home.html),
+  "",
+  "## Páginas de servicios y producto",
+  landingTexts.join("\n\n"),
   "",
   "## Artículos del blog",
   articles.join("\n\n") || "Aún no hay artículos.",

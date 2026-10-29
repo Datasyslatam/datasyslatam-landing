@@ -1,5 +1,6 @@
 import type { Route } from "@/routes";
 import type { BlogPost } from "./types";
+import { findLanding, type LandingPage } from "@/landing/pages";
 
 export const SITE_URL = "https://datasyslatam.com";
 const SITE_NAME = "DataSys Latam Group";
@@ -51,6 +52,17 @@ const renderTags = (m: PageMeta) =>
  * que conserva las de index.html.
  */
 export const buildHead = (route: Route, post: BlogPost | null): string | null => {
+  const landing = route.type === "landing" ? findLanding(route.path) : null;
+  if (landing) {
+    return renderTags({
+      title: landing.metaTitle,
+      description: landing.metaDescription,
+      path: landing.path,
+      image: landing.heroImage,
+      imageAlt: landing.heroImageAlt,
+      type: "website",
+    });
+  }
   if (route.type === "blog-index") {
     return renderTags({
       title: `${BLOG_TITLE} | ${SITE_NAME}`,
@@ -110,4 +122,51 @@ export const articleJsonLd = (post: BlogPost) => {
     });
   }
   return { "@context": "https://schema.org", "@graph": graph };
+};
+
+/** Datos estructurados de una página comercial: el servicio o el software, las migas de pan y sus preguntas frecuentes. */
+export const landingJsonLd = (page: LandingPage) => {
+  const url = `${SITE_URL}${page.path}`;
+  const main =
+    page.schema.type === "Service"
+      ? {
+          "@type": "Service",
+          "@id": `${url}#servicio`,
+          name: page.schema.name,
+          serviceType: page.schema.serviceType,
+          description: page.metaDescription,
+          url,
+          provider: { "@id": `${SITE_URL}/#organizacion` },
+          areaServed: [
+            { "@type": "Country", name: "Colombia" },
+            { "@type": "Place", name: "Latinoamérica" },
+          ],
+        }
+      : {
+          "@type": "SoftwareApplication",
+          "@id": `${url}#software`,
+          name: page.schema.name,
+          applicationCategory: page.schema.category,
+          description: page.metaDescription,
+          url,
+          image: absolute(page.heroImage),
+          publisher: { "@id": `${SITE_URL}/#organizacion` },
+        };
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      main,
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: page.breadcrumb, item: url },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: page.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+      },
+    ],
+  };
 };
