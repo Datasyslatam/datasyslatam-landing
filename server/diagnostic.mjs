@@ -2,20 +2,21 @@
 // Mide en paralelo cuánto tarda Gemini con distintas configuraciones, para saber si la lentitud viene del modelo,
 // de la forma de la solicitud (instrucciones largas, salida JSON) o de la cuenta. Nunca devuelve la clave ni el
 // contenido de conversaciones; los mensajes de error de Google se recortan y se ocultan los números largos.
-import { GEMINI_URL, MODEL, RESPONSE_SCHEMA, SERVICE_TIER, THINKING, loadKnowledge, outputText, systemInstruction } from "./chat.mjs";
+import { GEMINI_URL, MODEL, RESPONSE_SCHEMA, SERVICE_TIER, THINKING, isModelName, loadKnowledge, outputText, redactSecrets, systemInstruction } from "./chat.mjs";
 
 const API = "https://generativelanguage.googleapis.com/v1beta";
 const PROBE_TIMEOUT_MS = 40_000;
 // Cada ejecución hace unas 7 llamadas pequeñas a Gemini: como mucho una cada 2 minutos para todo el sitio.
 const MIN_INTERVAL_MS = 2 * 60_000;
-const ALT_MODELS = (process.env.CHAT_DIAG_MODELS || "gemini-3.1-flash-lite,gemini-3.8-flash").split(",").map((m) => m.trim()).filter(Boolean);
+// Solo nombres válidos de modelo: nada de lo que se configure por error se envía ni se muestra.
+const ALT_MODELS = (process.env.CHAT_DIAG_MODELS || "gemini-3.1-flash-lite,gemini-3.5-flash").split(",").map((m) => m.trim()).filter(isModelName);
 const PING = "Responde únicamente con la palabra: ok";
 
 let lastRun = 0;
 let lastResult = null;
 
 const headers = () => ({ "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY });
-const clean = (text) => String(text ?? "").replace(/\d{6,}/g, "…").replace(/\s+/g, " ").slice(0, 220);
+const clean = (text) => redactSecrets(text).replace(/\d{6,}/g, "…").replace(/\s+/g, " ").slice(0, 220);
 
 /** Ejecuta una prueba y devuelve su tiempo y resultado, sin lanzar errores. */
 const probe = async (name, run) => {
@@ -77,8 +78,10 @@ export const runDiagnostic = async () => {
       );
       return { texto: clean(json.candidates?.[0]?.content?.parts?.map((p) => p.text).join("")).slice(0, 80), version_modelo: json.modelVersion };
     }),
-    ...ALT_MODELS.map((model, i) =>
-      probe(`${6 + i}. ${model}: pregunta mínima`, interaction({ model, input: PING, generation_config: { thinking_level: "minimal" } })),
+    // Otros modelos con su razonamiento predeterminado (no todos aceptan "minimal"), y la solicitud real con el primero.
+    ...ALT_MODELS.map((model, i) => probe(`${6 + i}. ${model}: pregunta mínima`, interaction({ model, input: PING }))),
+    ...ALT_MODELS.slice(0, 1).map((model) =>
+      probe(`${6 + ALT_MODELS.length}. ${model}: solicitud real del asistente`, interaction({ ...realRequest, model, generation_config: undefined })),
     ),
   ];
 
