@@ -81,6 +81,8 @@ const AssistantPanel = ({ onClose }: Props) => {
   const [formMode, setFormMode] = useState<FormMode>("mensaje");
   const [draft, setDraft] = useState("");
   const [pending, setPending] = useState(false);
+  // Si la respuesta tarda, se avisa: el visitante sabe que no se colgó.
+  const [slow, setSlow] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -94,8 +96,15 @@ const AssistantPanel = ({ onClose }: Props) => {
   }, [messages, view]);
 
   useEffect(() => {
+    setSlow(false);
+    if (!pending) return;
+    const timer = setTimeout(() => setSlow(true), 6000);
+    return () => clearTimeout(timer);
+  }, [pending]);
+
+  useEffect(() => {
     if (view === "chat") listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, pending, view]);
+  }, [messages, pending, slow, view]);
 
   useEffect(() => {
     if (view === "chat") inputRef.current?.focus();
@@ -261,10 +270,13 @@ const AssistantPanel = ({ onClose }: Props) => {
               ),
             )}
             {pending && (
-              <div className="flex w-fit items-center gap-1 rounded-2xl rounded-bl-md border border-navy-900/10 bg-white px-4 py-3" aria-label="El asistente está escribiendo">
-                {[0, 1, 2].map((d) => (
-                  <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-steel-400" style={{ animationDelay: `${d * 150}ms` }} />
-                ))}
+              <div className="flex w-fit max-w-[85%] items-center gap-3 rounded-2xl rounded-bl-md border border-navy-900/10 bg-white px-4 py-3" aria-label="El asistente está escribiendo">
+                <span className="flex shrink-0 gap-1">
+                  {[0, 1, 2].map((d) => (
+                    <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-steel-400" style={{ animationDelay: `${d * 150}ms` }} />
+                  ))}
+                </span>
+                {slow && <span className="text-xs text-steel-500">Estoy preparando la respuesta, un momento…</span>}
               </div>
             )}
             {!pending && lastMessage?.role === "assistant" && !!lastMessage.suggestions?.length && (
