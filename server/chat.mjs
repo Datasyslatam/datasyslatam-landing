@@ -8,7 +8,7 @@ const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interaction
 // Con gemini-3.8-flash y razonamiento "low" tardaba de 30 a más de 45 s en producción.
 const MODEL = process.env.CHAT_MODEL || "gemini-3.5-flash-lite";
 const THINKING = process.env.CHAT_THINKING || "minimal";
-const DEADLINE_MS = 25_000;
+const DEADLINE_MS = Number(process.env.CHAT_DEADLINE_MS) || 25_000;
 const KNOWLEDGE_FILE = new URL("../dist-server/knowledge.md", import.meta.url);
 
 const MAX_BODY_BYTES = 16_000;
@@ -131,8 +131,8 @@ const clientIp = (req) =>
 // Utilidades HTTP
 // ---------------------------------------------------------------------------
 
-const send = (res, status, body) => {
-  res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
+const send = (res, status, body, headers = {}) => {
+  res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...headers });
   res.end(JSON.stringify(body));
 };
 
@@ -190,11 +190,30 @@ export const normalizeReply = (json) => ({
     .slice(0, 3),
 });
 
-const askGemini = async (messages, kb) => {
-  // Un visitante no espera más de unos segundos: un solo plazo total para la consulta y su posible reintento.
-  const deadline = Date.now() + DEADLINE_MS;
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    const res = await fetch(GEMINI_URL, {
+// ---------------------------------------------------------------------------
+// Llamada a Gemini con solicitud de respaldo
+// ---------------------------------------------------------------------------
+
+// El nivel estándar de Gemini responde en "segundos a minutos" según la carga. Si la primera solicitud no ha
+// respondido en HEDGE_MS (o falla rápido por una causa pasajera), se lanza una segunda idéntica y gana la que
+// llegue primero; la otra se cancela. Así una solicitud atascada en la cola no deja esperando al visitante.
+const HEDGE_MS = Number(process.env.CHAT_HEDGE_MS) || 7000;
+// Opcional: "priority" (más caro, requiere cuentas de nivel 2 o 3 en Google) o "flex". Sin valor, el estándar.
+const SERVICE_TIER = process.env.CHAT_SERVICE_TIER || "";
+
+/** Error de una solicitud a Gemini con su causa resumida, que se devuelve al navegador para diagnosticar. */
+class UpstreamError extends Error {
+  constructor(reason, detail = "", retryable = false) {
+    super(`${reason}${detail ? `: ${detail}` : ""}`);
+    this.reason = reason;
+    this.retryable = retryable;
+  }
+}
+
+const callGemini = async (messages, kb, signal) => {
+  let res;
+  try {
+    res = await fetch(GEMINI_URL, {
       method: "POST",
       headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
       body: JSON.stringify({
@@ -204,21 +223,108 @@ const askGemini = async (messages, kb) => {
         response_format: { type: "text", mime_type: "application/json", schema: RESPONSE_SCHEMA },
         generation_config: { thinking_level: THINKING },
         store: false,
+        ...(SERVICE_TIER ? { service_tier: SERVICE_TIER } : {}),
       }),
-      signal: AbortSignal.timeout(Math.max(1000, deadline - Date.now())),
+      signal,
     });
-    if (res.ok) {
-      const interaction = await res.json();
-      if (interaction.status !== "completed") throw new Error(`estado ${interaction.status}`);
-      const reply = normalizeReply(JSON.parse(outputText(interaction)));
-      if (!reply.answer) throw new Error("respuesta vacía");
-      return reply;
-    }
-    const detail = (await res.text()).slice(0, 300);
-    const retryable = [429, 500, 502, 503, 504].includes(res.status) && deadline - Date.now() > 8000;
-    if (attempt === 2 || !retryable) throw new Error(`Gemini ${res.status}: ${detail}`);
-    await new Promise((r) => setTimeout(r, 1000));
+  } catch (err) {
+    if (signal.aborted) throw new UpstreamError("timeout");
+    throw new UpstreamError("network", err?.cause?.code ?? err?.message, true);
   }
+  if (!res.ok) {
+    const detail = (await res.text()).slice(0, 200);
+    throw new UpstreamError(`gemini_${res.status}`, detail, [429, 500, 502, 503, 504].includes(res.status));
+  }
+  const interaction = await res.json();
+  if (interaction.status === "failed") throw new UpstreamError("gemini_failed", interaction.errors?.[0]?.message ?? "", true);
+  if (interaction.status !== "completed") throw new UpstreamError(`gemini_${interaction.status}`);
+  let reply;
+  try {
+    reply = normalizeReply(JSON.parse(outputText(interaction)));
+  } catch {
+    throw new UpstreamError("invalid_json", "", true);
+  }
+  if (!reply.answer) throw new UpstreamError("empty", "", true);
+  return reply;
+};
+
+/** Hasta dos solicitudes (la principal y una de respaldo) dentro de un plazo total de DEADLINE_MS. */
+export const askGemini = (messages, kb, call = callGemini) =>
+  new Promise((resolve, reject) => {
+    const controller = new AbortController();
+    const started = Date.now();
+    let settled = false;
+    let running = 0;
+    let launched = 0;
+    let lastError = null;
+
+    const finish = (fn, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(hedgeTimer);
+      clearTimeout(deadlineTimer);
+      controller.abort();
+      fn(value);
+    };
+
+    const launch = () => {
+      if (settled || launched >= 2) return;
+      launched += 1;
+      running += 1;
+      const attempt = launched;
+      call(messages, kb, controller.signal).then(
+        (reply) => finish(resolve, { reply, attempt, ms: Date.now() - started }),
+        (err) => {
+          running -= 1;
+          lastError = err;
+          // Falla pasajera de la primera: se lanza ya el respaldo, si queda tiempo útil.
+          if (err?.retryable && launched < 2 && DEADLINE_MS - (Date.now() - started) > Math.min(4000, DEADLINE_MS / 5)) launch();
+          else if (running === 0) finish(reject, err);
+        },
+      );
+    };
+
+    const hedgeTimer = setTimeout(launch, HEDGE_MS);
+    const deadlineTimer = setTimeout(() => finish(reject, lastError?.reason === "timeout" ? lastError : new UpstreamError("timeout")), DEADLINE_MS);
+    launch();
+  });
+
+// ---------------------------------------------------------------------------
+// Respuestas recientes en memoria
+// ---------------------------------------------------------------------------
+
+// Las preguntas sueltas se repiten mucho (sobre todo las sugerencias del panel): se guardan 6 horas.
+// La base de conocimiento solo cambia con un despliegue, que reinicia el servidor y vacía la memoria.
+const CACHE_TTL_MS = 6 * 60 * 60_000;
+const CACHE_MAX = 300;
+const cache = new Map();
+
+export const cacheKey = (messages) =>
+  messages.length === 1
+    ? messages[0].text
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9ñ ]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+    : null;
+
+const cacheGet = (key) => {
+  const hit = key && cache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.at > CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+  return hit.reply;
+};
+
+const cacheSet = (key, reply) => {
+  if (!key) return;
+  cache.delete(key);
+  cache.set(key, { reply, at: Date.now() });
+  if (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value);
 };
 
 // ---------------------------------------------------------------------------
@@ -242,14 +348,24 @@ export const handleChat = async (req, res) => {
   }
   if (!messages) return send(res, 400, { error: "messages" });
 
+  const key = cacheKey(messages);
+  const cached = cacheGet(key);
+  if (cached) {
+    console.log(`[chat] caché, ${messages.length} turnos`);
+    return send(res, 200, cached, { "server-timing": "cache;desc=hit" });
+  }
+
   const started = Date.now();
   try {
-    const reply = await askGemini(messages, kb);
+    const { reply, attempt, ms } = await askGemini(messages, kb);
+    cacheSet(key, reply);
     // Solo métricas: el contenido de las conversaciones no se registra.
-    console.log(`[chat] ok ${MODEL} ${Date.now() - started} ms, ${messages.length} turnos, acciones: ${reply.actions.join(",") || "-"}`);
-    return send(res, 200, reply);
+    console.log(`[chat] ok ${MODEL} ${ms} ms (solicitud ${attempt}), ${messages.length} turnos, acciones: ${reply.actions.join(",") || "-"}`);
+    return send(res, 200, reply, { "server-timing": `gemini;dur=${ms};desc="solicitud ${attempt}"` });
   } catch (err) {
-    console.error(`[chat] error ${MODEL} ${Date.now() - started} ms: ${err?.message ?? err}`);
-    return send(res, 502, { error: "upstream" });
+    const ms = Date.now() - started;
+    console.error(`[chat] error ${MODEL} ${ms} ms: ${err?.message ?? err}`);
+    // La causa resumida (timeout, gemini_503, invalid_json...) permite diagnosticar sin acceso al registro.
+    return send(res, 502, { error: "upstream", reason: err?.reason ?? "unknown" }, { "server-timing": `gemini;dur=${ms}` });
   }
 };
