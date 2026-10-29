@@ -47,6 +47,7 @@ Configuración necesaria en GitHub (una sola vez):
 - Botón flotante (`src/components/assistant/`) con pestañas Inicio y Mensajes: responde preguntas, abre el autodiagnóstico, WhatsApp, y envía mensajes o solicitudes de reunión por Web3Forms con la conversación adjunta. Reemplaza al antiguo botón de WhatsApp.
 - `server/chat.mjs` atiende `POST /api/chat`: valida el origen y el tamaño, limita a 20 preguntas cada 10 minutos y 120 al día por IP, y llama a Gemini con la base de conocimiento generada en el build. Responde solo con el contenido del sitio y del blog; no registra el contenido de las conversaciones.
 - Latencia: si Gemini no responde en 7 s (o falla de forma pasajera) se lanza una segunda solicitud y gana la primera en llegar, con un plazo total de 25 s; las preguntas sueltas repetidas se responden desde memoria durante 6 horas. Cada respuesta trae la cabecera `Server-Timing` y cada error su causa (`reason`: `timeout`, `gemini_503`, `invalid_json`…).
+- Diagnóstico: `GET /api/diagnostico` mide en paralelo la clave y la conexión, el modelo con una pregunta mínima, la solicitud real (con y sin salida JSON), la API `generateContent` y otros modelos (`CHAT_DIAG_MODELS`), con el nivel de servicio que informa Google. Como mucho una medición cada 2 minutos; no expone la clave.
 
 ## Despliegue (Railway)
 

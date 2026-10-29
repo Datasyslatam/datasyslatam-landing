@@ -3,11 +3,11 @@
 // El asistente responde solo con la base de conocimiento que genera el build (dist-server/knowledge.md).
 import { readFile } from "node:fs/promises";
 
-const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
+export const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
 // Modelo rápido y razonamiento mínimo: la respuesta sale de una base corta y debe llegar en segundos.
 // Con gemini-3.8-flash y razonamiento "low" tardaba de 30 a más de 45 s en producción.
-const MODEL = process.env.CHAT_MODEL || "gemini-3.5-flash-lite";
-const THINKING = process.env.CHAT_THINKING || "minimal";
+export const MODEL = process.env.CHAT_MODEL || "gemini-3.5-flash-lite";
+export const THINKING = process.env.CHAT_THINKING || "minimal";
 const DEADLINE_MS = Number(process.env.CHAT_DEADLINE_MS) || 25_000;
 const KNOWLEDGE_FILE = new URL("../dist-server/knowledge.md", import.meta.url);
 
@@ -31,7 +31,7 @@ const isAllowedOrigin = (origin) =>
   !origin || ALLOWED_ORIGINS.has(origin) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 
 let knowledge = null;
-const loadKnowledge = async () => {
+export const loadKnowledge = async () => {
   if (knowledge !== null) return knowledge;
   try {
     knowledge = await readFile(KNOWLEDGE_FILE, "utf8");
@@ -44,7 +44,7 @@ const loadKnowledge = async () => {
 
 const today = () => new Intl.DateTimeFormat("es-CO", { dateStyle: "long", timeZone: "America/Bogota" }).format(new Date());
 
-const systemInstruction = (kb) => `Eres el asistente virtual del sitio web de DataSys Latam Group (Barranquilla, Colombia).
+export const systemInstruction = (kb) => `Eres el asistente virtual del sitio web de DataSys Latam Group (Barranquilla, Colombia).
 Atiendes a dueños, gerentes y visitantes de empresas. Hoy es ${today()}.
 
 Cómo respondes:
@@ -90,7 +90,7 @@ respondibles con la base. Vacío si no aplica.
 BASE DE CONOCIMIENTO
 ${kb}`;
 
-const RESPONSE_SCHEMA = {
+export const RESPONSE_SCHEMA = {
   type: "object",
   properties: {
     answer: { type: "string", description: "Respuesta para el visitante" },
@@ -170,7 +170,7 @@ export const parseMessages = (raw) => {
 const transcript = (messages) =>
   `${messages.map((m) => `${m.role === "user" ? "Visitante" : "Asistente"}: ${m.text}`).join("\n\n")}\n\nResponde al último mensaje del visitante.`;
 
-const outputText = (interaction) =>
+export const outputText = (interaction) =>
   interaction.output_text ??
   (interaction.steps ?? [])
     .filter((s) => s.type === "model_output")
@@ -199,7 +199,7 @@ export const normalizeReply = (json) => ({
 // llegue primero; la otra se cancela. Así una solicitud atascada en la cola no deja esperando al visitante.
 const HEDGE_MS = Number(process.env.CHAT_HEDGE_MS) || 7000;
 // Opcional: "priority" (más caro, requiere cuentas de nivel 2 o 3 en Google) o "flex". Sin valor, el estándar.
-const SERVICE_TIER = process.env.CHAT_SERVICE_TIER || "";
+export const SERVICE_TIER = process.env.CHAT_SERVICE_TIER || "";
 
 /** Error de una solicitud a Gemini con su causa resumida, que se devuelve al navegador para diagnosticar. */
 class UpstreamError extends Error {
