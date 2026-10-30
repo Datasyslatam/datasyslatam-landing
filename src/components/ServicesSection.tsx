@@ -39,6 +39,7 @@ const services = [
     tint:  "bg-blue-50",
     title: "Transformación Digital",
     desc:  "Diseñamos hojas de ruta y modernizamos su operación con tecnología.",
+    href:  "/servicios/transformacion-digital",
   },
   {
     icon:  ShieldCheck,
@@ -46,6 +47,7 @@ const services = [
     tint:  "bg-red-50",
     title: "Gobernanza TI",
     desc:  "Alineamos la tecnología con sus objetivos, mejorando seguridad y cumplimiento.",
+    href:  "/servicios/gobernanza-ti",
   },
 ];
 
@@ -66,7 +68,7 @@ const ServicesSection = () => (
             </div>
             <h3 className="mb-1 text-sm font-bold text-navy-900">{svc.title}</h3>
             <p className="mb-2 text-xs leading-snug text-gray-600">{svc.desc}</p>
-            <a href={"href" in svc ? svc.href : "#contacto"} className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700">
+            <a href={svc.href} className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700">
               Conocer más <ArrowRight className="h-3.5 w-3.5" />
             </a>
           </div>

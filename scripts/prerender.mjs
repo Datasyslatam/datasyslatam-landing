@@ -1,5 +1,5 @@
 // Después del build: genera el HTML de cada página (inicio, /blog y cada artículo),
-// el sitemap y el feed RSS. Así Google y los rastreadores de IA (que no ejecutan
+// el sitemap, el feed RSS y llms.txt. Así Google y los rastreadores de IA (que no ejecutan
 // JavaScript) leen todo el contenido.
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = `${root}dist`;
 const ssrDir = `${root}dist-ssr`;
 
-const { render, posts, loadPost, landingPaths } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
+const { render, posts, loadPost, landingPaths, landingSummaries } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
 
 const template = await readFile(`${dist}/index.html`, "utf8");
 const placeholder = '<div id="root"></div>';
@@ -19,6 +19,10 @@ if (!template.includes(placeholder)) throw new Error(`No se encontró ${placehol
 if (!headBlock.test(template)) throw new Error("No se encontró el bloque <!-- page-meta --> en dist/index.html");
 
 const routes = ["/", ...landingPaths, "/blog", ...posts.map((p) => `/blog/${p.slug}`)];
+
+// El catálogo de servicios de los datos estructurados de index.html debe enlazar cada página de servicio.
+const missing = landingSummaries.filter((p) => !p.product && !template.includes(`"url": "${SITE_URL}${p.path}"`));
+if (missing.length) throw new Error(`Agregue al hasOfferCatalog de index.html: ${missing.map((p) => p.path).join(", ")}`);
 
 for (const route of routes) {
   const { html, head } = await render(route);
@@ -127,5 +131,30 @@ const knowledge = [
 await mkdir(`${root}dist-server`, { recursive: true });
 await writeFile(`${root}dist-server/knowledge.md`, `${knowledge}\n`);
 
+// llms.txt (https://llmstxt.org): índice del sitio para asistentes de IA, con un enlace y una línea por página.
+// llms-full.txt es el mismo texto publicado que usa el asistente del sitio, para leerlo de una sola vez.
+const llmsLink = (path, title, description) => `- [${title}](${SITE_URL}${path}): ${description}`;
+const llms = [
+  "# DataSys Latam Group",
+  "",
+  "> Empresa de Barranquilla (Colombia) que ayuda a micro, pequeñas y medianas empresas de Colombia y Latinoamérica a ordenar sus procesos con criterio ISO, automatizarlos con software e inteligencia artificial y decidir con datos. Primero ordenamos, después automatizamos.",
+  "",
+  `Contacto: contacto@datasyslatam.com · WhatsApp +57 324 624 9237 · Barranquilla, Colombia. Autodiagnóstico gratuito de 10 minutos: ${SITE_URL}/#autodiagnostico`,
+  "",
+  "## Servicios",
+  ...landingSummaries.filter((p) => !p.product).map((p) => llmsLink(p.path, p.title, p.description)),
+  "",
+  "## Producto",
+  ...landingSummaries.filter((p) => p.product).map((p) => llmsLink(p.path, p.title, p.description)),
+  "",
+  "## Blog",
+  ...posts.map((p) => llmsLink(`/blog/${p.slug}`, p.title, p.description)),
+  "",
+  "## Optional",
+  llmsLink("/llms-full.txt", "Contenido completo del sitio", "texto de todas las páginas de servicios y resúmenes de los artículos en un solo archivo."),
+].join("\n");
+await writeFile(`${dist}/llms.txt`, `${llms}\n`);
+await writeFile(`${dist}/llms-full.txt`, `${knowledge}\n`);
+
 await rm(ssrDir, { recursive: true, force: true });
-console.log(`Prerender listo: ${routes.length} páginas (${posts.length} artículos), sitemap.xml y blog/rss.xml`);
+console.log(`Prerender listo: ${routes.length} páginas (${posts.length} artículos), sitemap.xml, blog/rss.xml y llms.txt`);

@@ -7,6 +7,11 @@ import { LANDING_PAGES } from "./landing/pages.ts";
 
 export { loadPost, posts };
 export const landingPaths = LANDING_PAGES.map((p) => p.path);
+/** Resumen de cada página de servicio o producto para llms.txt (índice para asistentes de IA). */
+export const landingSummaries = LANDING_PAGES.map((p) => {
+  const product = p.schema.type !== "Service";
+  return { path: p.path, title: product ? `${p.schema.name}: ${p.h1[0].toLowerCase()}${p.h1.slice(1)}` : p.h1, description: p.metaDescription, product };
+});
 
 /**
  * Renderiza una ruta a HTML para que buscadores y asistentes de IA la lean sin ejecutar JavaScript.
