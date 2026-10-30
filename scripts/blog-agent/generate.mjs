@@ -1,5 +1,6 @@
 // Asistente de blog de DataSys Latam Group (todo con la API de Gemini de Google).
-// 1) Elige el siguiente tema del calendario (topics.json) que aún no tenga artículo.
+// 1) Elige el siguiente tema del calendario (topics.json) que aún no tenga artículo, del área que toca ese día:
+//    martes, tecnología o analítica; viernes, gestión.
 // 2) Investiga con Gemini + Búsqueda de Google y redacta el artículo con salida JSON estructurada.
 // 3) Otra llamada abre cada fuente y comprueba cifras y ediciones de normas; si algo no coincide, se corrige y se
 //    vuelve a comprobar. Lo que siga sin confirmarse queda señalado en el PR.
@@ -84,14 +85,29 @@ export const areaFor = (text) => {
   return "gestion";
 };
 
-const pickTopic = async (existing) => {
+// Autores por día de publicación: los martes, Fabián Florián (tecnología) o Agustín Robledo (analítica); los viernes,
+// Armando José López González (gestión). Una ejecución manual otro día prepara el artículo del siguiente día de
+// publicación: de miércoles a viernes, el del viernes; de sábado a martes, el del martes.
+export const AREAS_BY_DAY = { Tue: ["tecnologia", "analitica"], Fri: ["gestion"] };
+
+/** Áreas de tema que corresponden al artículo que se prepara en la fecha dada (hora de Colombia). */
+export const areasForDay = (date = new Date()) => {
+  const weekday = new Intl.DateTimeFormat("en-US", { timeZone: "America/Bogota", weekday: "short" }).format(date);
+  return ["Wed", "Thu", "Fri"].includes(weekday) ? AREAS_BY_DAY.Fri : AREAS_BY_DAY.Tue;
+};
+
+export const pickTopic = async (existing, date = new Date()) => {
+  // Un tema escrito a mano en Run workflow se respeta tal cual, con el autor de su área.
   const custom = process.env.BLOG_TOPIC?.trim();
   if (custom) return { id: slugify(custom), tema: custom, palabraClave: custom, enlace: "/#autodiagnostico", area: areaFor(custom) };
   const topics = JSON.parse(await readFile(new URL("./topics.json", import.meta.url), "utf8"));
   const used = new Set(existing.map((p) => p.topic).filter(Boolean));
-  const next = topics.find((t) => !used.has(t.id));
+  const areas = areasForDay(date);
+  const next = topics.find((t) => !used.has(t.id) && areas.includes(t.area ?? "gestion"));
   if (!next) {
-    throw new Error("Ya hay artículo para todos los temas de scripts/blog-agent/topics.json. Agregue temas nuevos al calendario.");
+    throw new Error(
+      `Ya hay artículo para todos los temas de ${areas.join(" y ")} de scripts/blog-agent/topics.json. Agregue temas nuevos de esa área al calendario.`,
+    );
   }
   return next;
 };
