@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import heroBg from "@/assets/hero-evolucion-digital.webp";
+import heroBg from "@/assets/hero-procesos-datasys.webp";
 import { heroBtnBlue, heroBtnOrange } from "./heroButtons";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { AUTODIAGNOSTICO_HASH } from "./autodiagnostico/data";
@@ -22,9 +22,13 @@ const STAGES = 4;
 
 const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
   <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900 text-white">
-    <img src={heroBg} alt="" aria-hidden="true" width={1920} height={1080} decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
-    <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy-900/95 via-navy-900/70 to-navy-900/10" />
-    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-900/80 via-transparent to-navy-900/30" />
+    {/* En escritorio la foto cubre el lado derecho y se funde con el azul hacia el texto; en móvil queda de fondo. */}
+    <div className="absolute inset-0 lg:left-[35%]" aria-hidden="true">
+      <img src={heroBg} alt="" width={1670} height={941} decoding="async" className="h-full w-full object-cover object-[90%_center]" />
+      <div className="absolute inset-y-0 left-0 hidden w-1/3 bg-gradient-to-r from-navy-900 to-transparent lg:block" />
+    </div>
+    <div className="pointer-events-none absolute inset-0 bg-navy-900/85 lg:bg-transparent lg:bg-gradient-to-r lg:from-navy-900 lg:via-navy-900/70 lg:to-navy-900/0" />
+    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/10 to-navy-900/30" />
     <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-12 lg:py-10">
       <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div className="max-w-2xl">
@@ -49,12 +53,13 @@ const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
           </div>
         </div>
 
-        <aside aria-label="Ejemplo de resultado del autodiagnóstico" className="w-full rounded-2xl bg-white p-6 sm:p-7 text-[#0b2a5e] shadow-2xl lg:max-w-md lg:justify-self-end">
+        {/* Semitransparente y un poco más pequeña para que la foto de fondo se vea a través. */}
+        <aside aria-label="Ejemplo de resultado del autodiagnóstico" className="w-full rounded-2xl border border-white/40 bg-white/80 p-5 sm:p-6 text-[#0b2a5e] shadow-2xl backdrop-blur-md lg:max-w-sm lg:justify-self-end">
           <div className="mb-4 flex items-center justify-between gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-steel-500">Ejemplo de resultado</p>
             <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-[#B5560B]">Autodiagnóstico</span>
           </div>
-          <h2 className="mb-4 text-xl sm:text-2xl font-bold leading-snug">
+          <h2 className="mb-4 text-lg sm:text-xl font-bold leading-snug">
             Su empresa está en la etapa <span className="text-[#E07B1A]">1 · Ordenar</span>
           </h2>
           <div className="mb-5 flex gap-1.5" aria-hidden="true">
