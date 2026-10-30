@@ -13,5 +13,8 @@ export const NAV_LINKS = [
 export const SERVICE_LINKS = [
   { label: "Consultoría ISO 9001", href: "/servicios/consultoria-iso-9001" },
   { label: "Desarrollo de software a la medida", href: "/servicios/desarrollo-software-medida" },
+  { label: "Inteligencia artificial", href: "/servicios/inteligencia-artificial-empresas" },
+  { label: "Analítica de datos", href: "/servicios/analitica-de-datos" },
+  { label: "Digitalización de procesos", href: "/servicios/digitalizacion-de-procesos" },
   { label: "Governex: software ISO", href: "/producto/governex" },
 ];
