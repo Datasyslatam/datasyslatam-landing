@@ -131,10 +131,36 @@ const Section = ({ section, index }: { section: LandingSection; index: number })
 /** Página comercial de un servicio o producto: héroe con la palabra clave en el H1, secciones, FAQ y formulario. */
 const LandingPage = ({ page }: { page: LandingData }) => (
   <SiteChrome>
-    <section className="relative overflow-hidden bg-gradient-to-br from-navy-950 via-navy-800 to-navy-600 text-white">
-      <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-electric-500/25 blur-3xl" />
+    {/* Mismo lenguaje visual que el héroe del inicio: la foto ocupa el lado derecho y se funde con el azul hacia el texto.
+        En móvil queda de fondo, cubierta casi por completo para que el texto se lea. Los productos muestran su captura
+        sin fondo flotando sobre luces difuminadas. */}
+    <section className="relative flex items-center overflow-hidden bg-navy-900 text-white lg:min-h-[560px]">
+      {page.heroMockup ? (
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800" aria-hidden="true">
+          <div className="absolute -right-32 top-1/2 h-[34rem] w-[34rem] -translate-y-1/2 rounded-full bg-electric-500/40 blur-3xl lg:right-[6%]" />
+          <div className="absolute -left-40 -top-40 h-96 w-96 rounded-full bg-electric-500/15 blur-3xl" />
+          <div className="absolute -bottom-40 right-1/3 h-80 w-80 rounded-full bg-[#FF8024]/10 blur-3xl" />
+        </div>
+      ) : (
+        <>
+          <div className="absolute inset-0 lg:left-[38%]">
+            <img
+              src={page.heroImage}
+              alt={page.heroImageAlt}
+              width={1200}
+              height={800}
+              decoding="async"
+              className="h-full w-full object-cover"
+              style={{ objectPosition: page.heroImagePosition ?? "center" }}
+            />
+            <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/3 bg-gradient-to-r from-navy-900 to-transparent lg:block" />
+          </div>
+          <div className="pointer-events-none absolute inset-0 bg-navy-900/85 lg:bg-transparent lg:bg-gradient-to-r lg:from-navy-900 lg:via-navy-900/75 lg:to-navy-900/10" />
+        </>
+      )}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-navy-900/20" />
       <div className="container relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 md:py-20 lg:grid-cols-[1.1fr_0.9fr]">
-        <div>
+        <div className="max-w-2xl">
           <nav aria-label="Ruta de navegación" className="mb-5 text-sm text-white/60">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
@@ -160,14 +186,16 @@ const LandingPage = ({ page }: { page: LandingData }) => (
             </a>
           </div>
         </div>
-        <img
-          src={page.heroImage}
-          alt={page.heroImageAlt}
-          width={1200}
-          height={800}
-          decoding="async"
-          className="w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/10 lg:max-h-[420px]"
-        />
+        {page.heroMockup && (
+          <img
+            src={page.heroMockup}
+            alt={page.heroImageAlt}
+            width={956}
+            height={602}
+            decoding="async"
+            className="mx-auto w-full max-w-xl drop-shadow-[0_30px_45px_rgba(2,8,23,0.6)] lg:max-h-[440px] lg:w-auto"
+          />
+        )}
       </div>
     </section>
 
