@@ -16,5 +16,7 @@ export const SERVICE_LINKS = [
   { label: "Inteligencia artificial", href: "/servicios/inteligencia-artificial-empresas" },
   { label: "Analítica de datos", href: "/servicios/analitica-de-datos" },
   { label: "Digitalización de procesos", href: "/servicios/digitalizacion-de-procesos" },
+  { label: "Transformación digital", href: "/servicios/transformacion-digital" },
+  { label: "Gobernanza de TI", href: "/servicios/gobernanza-ti" },
   { label: "Governex: software ISO", href: "/producto/governex" },
 ];

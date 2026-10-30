@@ -1,4 +1,21 @@
+# Todo el sitio es público: buscadores y asistentes de IA pueden leerlo y citarlo.
+# Índice para asistentes de IA: https://datasyslatam.com/llms.txt
 User-agent: *
+Allow: /
+
+# Rastreadores de búsqueda e IA permitidos de forma explícita.
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Google-Extended
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot-Extended
 Allow: /
 
 Sitemap: https://datasyslatam.com/sitemap.xml

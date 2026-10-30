@@ -7,6 +7,8 @@ import appSoft from "@/assets/banners/app-producto-soft.webp";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
+import transformacion from "@/assets/banners/transformacion-corporativo.webp";
+import redes from "@/assets/hero-evolucion-digital.webp";
 
 // Respuesta común sobre el precio: el brochure establece que no hay cotizaciones estandarizadas, sino diagnóstico a la medida.
 const PRICE_ANSWER =
@@ -552,6 +554,206 @@ export const LANDING_PAGES: LandingPage[] = [
       { label: "Desarrollo de software a la medida para empresas", href: "/servicios/desarrollo-software-medida" },
       { label: "Inteligencia artificial para empresas", href: "/servicios/inteligencia-artificial-empresas" },
       { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
+    ],
+  },
+  {
+    path: "/servicios/transformacion-digital",
+    metaTitle: "Transformación digital para pymes en Colombia | DataSys",
+    metaDescription:
+      "Transformación digital para pymes en Colombia: diagnóstico, hoja de ruta por fases y modernización de su operación con tecnología, sin desperdiciar dinero.",
+    eyebrow: "Transformación digital",
+    h1: "Transformación digital para pymes",
+    lead: "Diseñamos con usted una hoja de ruta clara y por fases para modernizar su operación con tecnología: primero lo que más retorno genera, sin comprar herramientas que su empresa todavía no necesita.",
+    heroImage: transformacion,
+    heroImageAlt: "Ciudad iluminada con trazos de luz que representan la evolución digital de una empresa",
+    primaryCta: "Solicitar un diagnóstico",
+    whatsappText: "Hola, quiero una hoja de ruta de transformación digital para mi empresa.",
+    leadSubject: "Nuevo lead: Transformación digital (sitio web)",
+    breadcrumb: "Transformación digital",
+    schema: { type: "Service", name: "Transformación digital para pymes", serviceType: "Consultoría en transformación digital" },
+    sections: [
+      {
+        kind: "text",
+        id: "que-es",
+        eyebrow: "Qué es",
+        title: "Transformación digital no es comprar software",
+        paragraphs: [
+          "Es cambiar la forma en que su empresa opera para que funcione con procesos claros, información confiable y herramientas que su equipo realmente usa. La tecnología es el medio; el objetivo es una empresa que no dependa de la memoria de dos o tres personas y que decida con datos.",
+          "Por eso no empezamos por la herramienta, sino por su operación: cómo vende, cómo produce, cómo factura y cómo decide hoy. Comprar un software sin haber ordenado el proceso solo hace más rápido el desorden.",
+        ],
+      },
+      {
+        kind: "steps",
+        id: "hoja-de-ruta",
+        eyebrow: "Metodología",
+        title: "Cómo construimos su hoja de ruta de transformación digital",
+        items: [
+          { title: "Diagnóstico de madurez", text: "Evaluamos procesos, sistemas, datos, infraestructura y equipo para saber en qué etapa está su empresa." },
+          { title: "Prioridades", text: "Identificamos los problemas que más tiempo, dinero o clientes le cuestan y los ordenamos por impacto y esfuerzo." },
+          { title: "Hoja de ruta por fases", text: "Un plan con etapas, responsables, inversión estimada y resultados esperados en cada fase." },
+          { title: "Implementación", text: "Ejecutamos cada fase con su equipo: procesos, software, integración, datos o infraestructura." },
+          { title: "Gestión del cambio", text: "Formamos y acompañamos a las personas, porque la transformación la hacen ellas, no la herramienta." },
+          { title: "Medición y ajuste", text: "Medimos los resultados de cada fase y ajustamos el plan antes de invertir en la siguiente." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "que-modernizamos",
+        eyebrow: "Qué modernizamos",
+        title: "Los frentes de la transformación digital de su empresa",
+        items: [
+          { title: "Procesos", text: "Ordenamos y estandarizamos los procesos con criterio ISO antes de digitalizarlos." },
+          { title: "Sistemas y software", text: "ERP, plataformas a la medida e integración de los sistemas que ya usa." },
+          { title: "Datos y decisiones", text: "Tableros de indicadores para que la gerencia decida con información a tiempo." },
+          { title: "Infraestructura en la nube", text: "Hosting, servidores virtuales y respaldo de la información, con la seguridad como requisito." },
+          { title: "Presencia digital", text: "Sitios web que generan clientes y que Google y los asistentes de IA pueden leer." },
+          { title: "Personas y cultura", text: "Formación a la medida para que su equipo adopte las nuevas formas de trabajar." },
+        ],
+      },
+      {
+        kind: "text",
+        id: "primer-paso",
+        eyebrow: "Primer paso",
+        title: "¿No sabe por dónde empezar su transformación digital?",
+        paragraphs: [
+          "El autodiagnóstico gratuito le muestra en menos de 10 minutos en qué etapa de la ruta Ordenar → Estandarizar → Automatizar → Decidir con datos está su empresa, cuáles son sus principales riesgos y cuál es el siguiente paso recomendado.",
+        ],
+        link: { label: "Hacer el autodiagnóstico gratuito", href: "/#autodiagnostico" },
+      },
+    ],
+    testimonials: [],
+    faq: [
+      {
+        q: "¿Qué es la transformación digital para una pyme?",
+        a: "Es modernizar la forma en que la empresa opera, con procesos claros, información confiable y herramientas que el equipo usa, para crecer sin depender de unas pocas personas y decidir con datos. La tecnología es el medio, no el fin.",
+      },
+      {
+        q: "¿Por dónde empieza la transformación digital de una empresa?",
+        a: "Por un diagnóstico de cómo opera hoy y de qué problemas le cuestan más. Con eso se define una hoja de ruta por fases, empezando por lo que más retorno genera. Comprar un software sin ordenar antes el proceso solo hace más rápido el desorden.",
+      },
+      { q: "¿Cuánto cuesta la transformación digital?", a: PRICE_ANSWER },
+      {
+        q: "¿Cuánto tiempo toma la transformación digital?",
+        a: "Depende del punto de partida y del alcance. Por eso la hoja de ruta se divide en fases cortas, cada una con resultados medibles, para que vea valor desde la primera etapa y decida si continúa.",
+      },
+      {
+        q: "¿Tengo que cambiar todos mis sistemas?",
+        a: "No. Aprovechamos lo que funciona e integramos lo que ya tiene; solo recomendamos reemplazar una herramienta cuando el cambio tiene un retorno claro.",
+      },
+    ],
+    related: [
+      { label: "Digitalización y automatización de procesos", href: "/servicios/digitalizacion-de-procesos" },
+      { label: "Gobernanza de TI para empresas", href: "/servicios/gobernanza-ti" },
+      { label: "Analítica de datos para empresas", href: "/servicios/analitica-de-datos" },
+    ],
+  },
+  {
+    path: "/servicios/gobernanza-ti",
+    metaTitle: "Gobernanza de TI y seguridad de la información | DataSys",
+    metaDescription:
+      "Gobernanza de TI para empresas en Colombia: alineamos la tecnología con sus objetivos y fortalecemos la seguridad de la información, los riesgos y el cumplimiento.",
+    eyebrow: "Gobernanza TI",
+    h1: "Gobernanza de TI para empresas",
+    lead: "Alineamos la tecnología con los objetivos de su negocio: sabrá en qué invierte, quién responde por cada sistema, cómo está protegida su información y si cumple lo que la ley y sus clientes le exigen.",
+    heroImage: redes,
+    heroImageAlt: "Red de conexiones luminosas que representa sistemas de información protegidos y bajo control",
+    primaryCta: "Solicitar un diagnóstico",
+    whatsappText: "Hola, me interesa la gobernanza de TI y la seguridad de la información para mi empresa.",
+    leadSubject: "Nuevo lead: Gobernanza de TI (sitio web)",
+    breadcrumb: "Gobernanza de TI",
+    schema: { type: "Service", name: "Gobernanza de TI para empresas", serviceType: "Gobernanza de tecnologías de la información y seguridad de la información" },
+    sections: [
+      {
+        kind: "cards",
+        id: "senales",
+        eyebrow: "¿Le suena familiar?",
+        title: "Señales de que su empresa necesita gobernanza de TI",
+        items: [
+          { title: "Nadie tiene el inventario completo", text: "No se sabe con certeza qué sistemas, licencias, equipos y accesos tiene la empresa." },
+          { title: "Accesos sin control", text: "Personas que ya no trabajan con usted conservan acceso a correos, carpetas o sistemas." },
+          { title: "Inversiones sin plan", text: "La tecnología se compra por urgencia y no por un plan alineado con los objetivos del negocio." },
+          { title: "Respaldos sin probar", text: "Hay copias de seguridad, pero nadie ha comprobado que se puedan restaurar." },
+          { title: "Clientes que preguntan por seguridad", text: "Un cliente grande le pide políticas de seguridad de la información o de protección de datos que su empresa no tiene." },
+          { title: "Todo depende de una persona", text: "Si su proveedor o la persona de sistemas se va, nadie sabe cómo funciona la tecnología de la empresa." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "que-hacemos",
+        eyebrow: "Qué hacemos",
+        title: "Tecnología alineada, segura y bajo control",
+        items: [
+          { title: "Plan estratégico de TI", text: "Alineamos las inversiones en tecnología con los objetivos del negocio, con prioridades y presupuesto." },
+          { title: "Inventario y responsables", text: "Identificamos sistemas, datos, licencias y proveedores, y definimos quién responde por cada uno." },
+          { title: "Seguridad de la información", text: "Políticas, control de accesos, respaldo y protección contra amenazas, con la ISO/IEC 27001 como referencia." },
+          { title: "Protección de datos personales", text: "Políticas y procedimientos para el tratamiento de datos personales conforme a la Ley 1581 de 2012." },
+          { title: "Riesgos y continuidad", text: "Identificamos los riesgos tecnológicos y preparamos a la empresa para seguir operando ante una falla o un ciberataque." },
+          { title: "Proveedores de tecnología", text: "Criterios para elegir, contratar y controlar a sus proveedores de software, soporte y servicios en la nube." },
+        ],
+      },
+      {
+        kind: "text",
+        id: "nuestro-enfoque",
+        eyebrow: "Nuestro enfoque",
+        title: "Gobernanza de TI con criterio de sistemas de gestión",
+        paragraphs: [
+          "La gobernanza de TI es un sistema de gestión aplicado a la tecnología: objetivos, responsables, riesgos, controles y mejora continua. Es el mismo criterio con el que acompañamos a las empresas en la implementación de normas ISO, adaptado a su tamaño: sin burocracia y con políticas que su equipo puede cumplir.",
+          "Con Governex, nuestra plataforma de gobernanza corporativa, puede llevar en un solo lugar el seguimiento de los procesos, el cumplimiento y las decisiones.",
+        ],
+        link: { label: "Conozca Governex", href: "/producto/governex" },
+      },
+      {
+        kind: "chips",
+        id: "marcos",
+        eyebrow: "Marcos de referencia",
+        title: "Normas y marcos de referencia para la gobernanza de TI",
+        intro: "Tomamos de cada referente lo que su empresa necesita, sin exigirle una certificación que no busca:",
+        chips: [
+          "ISO/IEC 38500 (gobierno de TI)",
+          "ISO/IEC 27001 (seguridad de la información)",
+          "ISO 31000 (gestión de riesgos)",
+          "ISO 22301 (continuidad del negocio)",
+          "Ley 1581 de 2012 (protección de datos personales)",
+        ],
+      },
+      {
+        kind: "steps",
+        id: "metodologia",
+        eyebrow: "Metodología",
+        title: "Cómo implementamos la gobernanza de TI",
+        items: [
+          { title: "Diagnóstico", text: "Revisamos sistemas, accesos, proveedores, respaldos y riesgos, y los comparamos con los objetivos del negocio." },
+          { title: "Plan", text: "Priorizamos los riesgos y definimos qué hacer, quién lo hace y con qué presupuesto." },
+          { title: "Políticas y controles", text: "Redactamos políticas sencillas y ponemos en marcha los controles que más protegen." },
+          { title: "Formación", text: "Capacitamos a su equipo, porque la seguridad también depende de las personas, por ejemplo al reconocer un correo fraudulento." },
+          { title: "Seguimiento", text: "Revisiones periódicas e indicadores para comprobar que los controles funcionan y mejorar." },
+        ],
+      },
+    ],
+    testimonials: [],
+    faq: [
+      {
+        q: "¿Qué es la gobernanza de TI?",
+        a: "Es el conjunto de decisiones, responsables, políticas y controles que aseguran que la tecnología de la empresa apoye sus objetivos, esté protegida y cumpla con la ley y con lo que exigen sus clientes.",
+      },
+      {
+        q: "¿La gobernanza de TI es solo para empresas grandes?",
+        a: "No. Una pyme también tiene información valiosa, accesos que controlar y proveedores de los que depende. Adaptamos el alcance al tamaño de su empresa, con políticas sencillas que se puedan cumplir.",
+      },
+      {
+        q: "¿Necesito certificarme en ISO 27001?",
+        a: "No necesariamente: la certificación es voluntaria. Podemos aplicar los controles de la norma que su empresa necesita y, si un cliente le exige el certificado, prepararla para la auditoría. El certificado lo otorga un organismo de certificación independiente.",
+      },
+      {
+        q: "¿Qué tiene que ver con la protección de datos personales?",
+        a: "En Colombia, la Ley 1581 de 2012 establece reglas para el tratamiento de datos personales, entre ellas contar con la autorización del titular y proteger la información con medidas de seguridad. La gobernanza de TI incluye las políticas y los controles para cumplirlas.",
+      },
+      { q: "¿Cuánto cuesta un proyecto de gobernanza de TI?", a: PRICE_ANSWER },
+    ],
+    related: [
+      { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
+      { label: "Governex: software para sistemas de gestión ISO", href: "/producto/governex" },
+      { label: "Ciberseguridad básica para pymes", href: "/blog/ciberseguridad-basica-pymes-bajo-costo" },
     ],
   },
   {

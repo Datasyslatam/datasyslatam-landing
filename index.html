@@ -37,7 +37,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" />
 
-    <!-- Datos estructurados: negocio local de servicios profesionales (las preguntas frecuentes van en FaqSection) -->
+    <!-- Datos estructurados: negocio local de servicios profesionales (las preguntas frecuentes van en FaqSection).
+         Cada servicio del catálogo enlaza su página (mismo @id que su JSON-LD); scripts/prerender.mjs falla si falta alguna. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -50,7 +51,7 @@
             "url": "https://datasyslatam.com/",
             "logo": "https://datasyslatam.com/icon-192.png",
             "image": "https://datasyslatam.com/og-image.jpg",
-            "description": "Consultoría en sistemas de gestión ISO, desarrollo de software a la medida, inteligencia artificial, analítica de datos, sitios web y SEO para empresas en Barranquilla y Colombia.",
+            "description": "Consultoría en sistemas de gestión ISO, desarrollo de software a la medida, inteligencia artificial, analítica de datos, digitalización de procesos, transformación digital, gobernanza de TI, sitios web y SEO para empresas en Barranquilla y Colombia.",
             "email": "contacto@datasyslatam.com",
             "telephone": "+57 324 624 9237",
             "address": {
@@ -69,15 +70,18 @@
               "jobTitle": "Fundador",
               "description": "Ingeniero industrial, magíster en Gerencia de Empresas y especialista en Gerencia del Talento Humano, con 26 años de experiencia en ingeniería y sistemas de gestión."
             },
-            "knowsAbout": ["ISO 9001", "ISO 14001", "ISO 45001", "ISO 27001", "ISO 22301", "ISO 21001", "Sistemas de gestión", "Desarrollo de software", "Inteligencia artificial", "Analítica de datos", "Transformación digital", "SEO"],
+            "knowsAbout": ["ISO 9001", "ISO 14001", "ISO 45001", "ISO 27001", "ISO 22301", "ISO 21001", "ISO 31000", "Sistemas de gestión", "Desarrollo de software", "Inteligencia artificial", "Analítica de datos", "Digitalización de procesos", "Automatización de procesos", "Transformación digital", "Gobernanza de TI", "Seguridad de la información", "Protección de datos personales", "SEO"],
             "hasOfferCatalog": {
               "@type": "OfferCatalog",
               "name": "Servicios",
               "itemListElement": [
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Consultoría en sistemas de gestión ISO" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Desarrollo de software a la medida" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Inteligencia artificial aplicada" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Analítica de datos y tableros de indicadores" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://datasyslatam.com/servicios/consultoria-iso-9001#servicio", "name": "Consultoría ISO 9001 en Colombia", "url": "https://datasyslatam.com/servicios/consultoria-iso-9001" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://datasyslatam.com/servicios/desarrollo-software-medida#servicio", "name": "Desarrollo de software a la medida para empresas", "url": "https://datasyslatam.com/servicios/desarrollo-software-medida" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://datasyslatam.com/servicios/inteligencia-artificial-empresas#servicio", "name": "Inteligencia artificial para empresas", "url": "https://datasyslatam.com/servicios/inteligencia-artificial-empresas" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://datasyslatam.com/servicios/analitica-de-datos#servicio", "name": "Analítica de datos para empresas", "url": "https://datasyslatam.com/servicios/analitica-de-datos" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://datasyslatam.com/servicios/digitalizacion-de-procesos#servicio", "name": "Digitalización y automatización de procesos", "url": "https://datasyslatam.com/servicios/digitalizacion-de-procesos" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://datasyslatam.com/servicios/transformacion-digital#servicio", "name": "Transformación digital para pymes", "url": "https://datasyslatam.com/servicios/transformacion-digital" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "@id": "https://datasyslatam.com/servicios/gobernanza-ti#servicio", "name": "Gobernanza de TI para empresas", "url": "https://datasyslatam.com/servicios/gobernanza-ti" } },
                 { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sitios web y SEO" } },
                 { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Formación y talleres en sistemas de gestión" } }
               ]

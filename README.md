@@ -18,7 +18,7 @@ npm run build
 npm run start                # http://localhost:3000
 ```
 
-`npm run build` hace tres pasos: build del cliente, build SSR de `src/entry-server.tsx` y `scripts/prerender.mjs`, que genera el HTML de `/`, `/blog`, cada artículo, `404.html`, `sitemap.xml`, `blog/rss.xml` y la base de conocimiento del asistente (`dist-server/knowledge.md`).
+`npm run build` hace tres pasos: build del cliente, build SSR de `src/entry-server.tsx` y `scripts/prerender.mjs`, que genera el HTML de `/`, `/blog`, cada artículo, `404.html`, `sitemap.xml`, `blog/rss.xml`, `llms.txt` y `llms-full.txt` (índice y contenido completo para asistentes de IA) y la base de conocimiento del asistente (`dist-server/knowledge.md`). Cada página de servicio debe figurar en el `hasOfferCatalog` de `index.html`: el build falla si falta alguna.
 
 ## Variables de entorno
 
