@@ -15,6 +15,7 @@ const services = [
     tint:  "bg-purple-50",
     title: "Inteligencia Artificial",
     desc:  "Integramos IA para automatizar procesos, analizar información y crear nuevas capacidades.",
+    href:  "/servicios/inteligencia-artificial-empresas",
   },
   {
     icon:  BarChart3,
@@ -22,6 +23,7 @@ const services = [
     tint:  "bg-emerald-50",
     title: "Datos & Analítica",
     desc:  "Transformamos datos en información valiosa para tomar mejores decisiones.",
+    href:  "/servicios/analitica-de-datos",
   },
   {
     icon:  Settings,
@@ -29,6 +31,7 @@ const services = [
     tint:  "bg-orange-50",
     title: "Digitalización de operaciones",
     desc:  "Optimizamos procesos repetitivos para aumentar productividad y reducir costos.",
+    href:  "/servicios/digitalizacion-de-procesos",
   },
   {
     icon:  Rocket,
