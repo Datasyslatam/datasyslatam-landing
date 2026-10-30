@@ -36,7 +36,7 @@ const renderInline = (text: string, onNavigate: () => void): ReactNode[] => {
         <a
           key={m.index}
           href={m[3]}
-          className="font-medium text-electric-500 underline underline-offset-2 hover:text-electric-600"
+          className="font-medium text-[#6d28d9] underline underline-offset-2 hover:text-[#a21caf]"
           {...(external ? { target: "_blank", rel: "noopener noreferrer" } : { onClick: onNavigate })}
         >
           {linkLabel(m[2], m[3])}
