@@ -20,6 +20,7 @@ import { submitWeb3Forms, SUBMIT_ERROR_MESSAGES } from "@/lib/web3forms";
 import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/data";
 import { askAssistant, transcriptText, type AssistantAction, type ChatMessage } from "./api";
 import RichText from "./RichText";
+import NovaAvatar from "./NovaAvatar";
 
 const STORAGE_KEY = "datasys-assistant";
 const MAX_CHARS = 800;
@@ -27,7 +28,7 @@ const MAX_CHARS = 800;
 const GREETING: ChatMessage = {
   role: "assistant",
   local: true,
-  text: "Hola 👋 Soy el asistente virtual de DataSys Latam. Pregúnteme por nuestros servicios, la consultoría ISO o cómo empezar.",
+  text: "¡Hola! Soy Nova ✨, asistente virtual de DataSys Latam. Pregúnteme por nuestros servicios, la consultoría ISO o cómo empezar.",
   suggestions: ["¿Qué servicios ofrecen?", "Un cliente me exige ISO 9001", "Quiero automatizar procesos", "¿Cuánto cuesta?"],
 };
 
@@ -163,47 +164,49 @@ const AssistantPanel = ({ onClose }: Props) => {
       aria-modal="false"
       aria-labelledby="assistant-title"
       // En pantallas grandes, el panel queda entre el menú del sitio (72 px) y el botón flotante.
-      className="fixed inset-0 z-[110] flex flex-col overflow-hidden bg-[#f5f7fb] font-body text-navy-900 shadow-2xl outline-none sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[min(640px,calc(100dvh-11rem))] sm:w-[390px] sm:rounded-2xl sm:border sm:border-navy-900/10"
+      className="nova-panel-bg fixed inset-0 z-[110] flex flex-col overflow-hidden font-body text-navy-900 shadow-2xl outline-none sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[min(640px,calc(100dvh-11rem))] sm:w-[390px] sm:rounded-3xl sm:border sm:border-[#7c3aed]/15"
     >
       {/* Encabezado */}
       {view === "home" ? (
-        <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-navy-950 via-navy-800 to-navy-600 px-6 pb-16 pt-6 text-white">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-electric-500/30 blur-3xl" />
+        <header className="nova-header relative shrink-0 overflow-hidden px-6 pb-16 pt-6 text-white">
+          {/* Destellos de fondo */}
+          <Sparkles aria-hidden="true" className="pointer-events-none absolute right-24 top-20 h-4 w-4 text-[#f0abfc]/70" />
+          <Sparkles aria-hidden="true" className="pointer-events-none absolute bottom-14 right-8 h-3 w-3 text-white/50" />
           <div className="relative flex items-start justify-between">
             <img src={logoImg} alt="DataSys Latam Group" width={120} height={37} className="h-9 w-auto object-contain" />
-            <button type="button" onClick={onClose} aria-label="Cerrar el asistente" className="rounded-full p-1.5 text-white/80 hover:bg-white/10 hover:text-white">
+            <button type="button" onClick={onClose} aria-label="Cerrar el chat con Nova" className="rounded-full p-1.5 text-white/80 hover:bg-white/10 hover:text-white">
               <X className="h-5 w-5" />
             </button>
           </div>
-          <h2 id="assistant-title" className="relative mt-8 font-heading text-[1.65rem] font-bold leading-tight">
-            Hola 👋
-            <br />
-            ¿Cómo podemos ayudarle?
-          </h2>
+          <div className="relative mt-6 flex items-center gap-4">
+            <NovaAvatar size={68} animated className="drop-shadow-[0_0_18px_rgba(217,70,239,0.55)]" />
+            <h2 id="assistant-title" className="font-heading text-[1.55rem] font-bold leading-tight">
+              ¡Hola! Soy Nova
+              <span className="mt-1 block text-base font-medium text-white/80">Vamos a resolver sus dudas juntos 🚀</span>
+            </h2>
+          </div>
         </header>
       ) : (
-        <header className="flex shrink-0 items-center gap-3 border-b border-navy-900/10 bg-white px-4 py-3">
+        <header className="nova-header flex shrink-0 items-center gap-3 px-4 py-3 text-white">
           <button
             type="button"
             onClick={() => setView(view === "form" ? "chat" : "home")}
             aria-label="Volver"
-            className="rounded-full p-1.5 text-navy-700 hover:bg-navy-900/5"
+            className="rounded-full p-1.5 text-white/85 hover:bg-white/10 hover:text-white"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-navy-800 to-electric-600 text-white">
-            <Sparkles className="h-4 w-4" />
-          </div>
+          <NovaAvatar size={38} />
           <div className="min-w-0 flex-1">
             <h2 id="assistant-title" className="truncate text-sm font-semibold">
-              {view === "form" ? (formMode === "agendar" ? "Agendar una reunión" : "Envíenos un mensaje") : "Asistente DataSys"}
+              {view === "form" ? (formMode === "agendar" ? "Agendar una reunión" : "Envíenos un mensaje") : "Nova"}
             </h2>
-            <p className="flex items-center gap-1.5 text-xs text-steel-500">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              {view === "form" ? "Le responde una persona del equipo" : "Responde al instante con IA"}
+            <p className="flex items-center gap-1.5 text-xs text-white/75">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              {view === "form" ? "Le responde una persona del equipo" : "En línea · responde al instante"}
             </p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Cerrar el asistente" className="rounded-full p-1.5 text-navy-700 hover:bg-navy-900/5">
+          <button type="button" onClick={onClose} aria-label="Cerrar el chat con Nova" className="rounded-full p-1.5 text-white/85 hover:bg-white/10 hover:text-white">
             <X className="h-5 w-5" />
           </button>
         </header>
@@ -213,7 +216,7 @@ const AssistantPanel = ({ onClose }: Props) => {
       {view === "home" && (
         <div className="relative z-10 -mt-10 flex-1 space-y-3 overflow-y-auto px-5 pb-5">
           <HomeCard
-            title="Pregúntele a nuestro asistente"
+            title="Pregúntele a Nova"
             text="Respuestas al instante sobre servicios, normas ISO y tecnología"
             Icon={Send}
             onClick={() => setView("chat")}
@@ -223,12 +226,12 @@ const AssistantPanel = ({ onClose }: Props) => {
           <HomeCard title="Hablar por WhatsApp" text="Un asesor le atiende directamente" Icon={MessageCircle} href={whatsappLink} />
           <HomeCard title="Agendar una reunión" text="Cuéntenos su necesidad y cuándo le sirve" Icon={CalendarDays} onClick={() => openForm("agendar")} />
           <HomeCard title="Leer el blog" text="Guías prácticas sobre ISO, procesos y tecnología" Icon={BookOpen} href="/blog" internal onNavigate={onClose} />
-          <div className="flex items-center gap-3 rounded-xl border border-navy-900/10 bg-white p-4">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50">
+          <div className="nova-glass flex items-center gap-3 rounded-2xl border border-[#7c3aed]/10 p-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50">
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
             </span>
             <div>
-              <p className="text-sm font-semibold">Asistente disponible</p>
+              <p className="text-sm font-semibold">Nova está disponible</p>
               <p className="text-xs text-steel-500">Si lo necesita, un asesor continúa por WhatsApp o correo.</p>
             </div>
           </div>
@@ -241,42 +244,48 @@ const AssistantPanel = ({ onClose }: Props) => {
             {messages.map((m, i) =>
               m.role === "user" ? (
                 <div key={i} className="flex justify-end">
-                  <p className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-navy-800 px-4 py-2.5 text-sm leading-relaxed text-white">{m.text}</p>
+                  <p className="nova-gradient max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-md px-4 py-2.5 text-sm leading-relaxed text-white shadow-sm">{m.text}</p>
                 </div>
               ) : (
-                <div key={i} className="flex max-w-[92%] flex-col gap-2">
-                  <div className="space-y-2 rounded-2xl rounded-bl-md border border-navy-900/10 bg-white px-4 py-3 text-sm leading-relaxed shadow-sm">
-                    <RichText text={m.text} onNavigate={onClose} />
-                  </div>
-                  {!!m.actions?.length && (
-                    <div className="flex flex-wrap gap-2">
-                      {m.actions.map((action) => {
-                        const { label, Icon } = ACTION_LABELS[action];
-                        const cls =
-                          "inline-flex items-center gap-1.5 rounded-full bg-[#FF8024] px-3.5 py-2 text-xs font-semibold text-navy-900 transition hover:brightness-110";
-                        return action === "whatsapp" ? (
-                          <a key={action} href={whatsappLink} target="_blank" rel="noopener noreferrer" className={cls}>
-                            <Icon className="h-3.5 w-3.5" /> {label}
-                          </a>
-                        ) : (
-                          <button key={action} type="button" onClick={() => runAction(action)} className={cls}>
-                            <Icon className="h-3.5 w-3.5" /> {label}
-                          </button>
-                        );
-                      })}
+                <div key={i} className="flex max-w-[95%] gap-2">
+                  <NovaAvatar size={28} className="mt-1" />
+                  <div className="flex min-w-0 flex-col gap-2">
+                    <div className="nova-glass space-y-2 rounded-2xl rounded-tl-md border border-[#7c3aed]/10 px-4 py-3 text-sm leading-relaxed shadow-sm">
+                      <RichText text={m.text} onNavigate={onClose} />
                     </div>
-                  )}
+                    {!!m.actions?.length && (
+                      <div className="flex flex-wrap gap-2">
+                        {m.actions.map((action) => {
+                          const { label, Icon } = ACTION_LABELS[action];
+                          const cls =
+                            "nova-gradient inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:brightness-110";
+                          return action === "whatsapp" ? (
+                            <a key={action} href={whatsappLink} target="_blank" rel="noopener noreferrer" className={cls}>
+                              <Icon className="h-3.5 w-3.5" /> {label}
+                            </a>
+                          ) : (
+                            <button key={action} type="button" onClick={() => runAction(action)} className={cls}>
+                              <Icon className="h-3.5 w-3.5" /> {label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ),
             )}
             {pending && (
-              <div className="flex w-fit max-w-[85%] items-center gap-3 rounded-2xl rounded-bl-md border border-navy-900/10 bg-white px-4 py-3" aria-label="El asistente está escribiendo">
-                <span className="flex shrink-0 gap-1">
-                  {[0, 1, 2].map((d) => (
-                    <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-steel-400" style={{ animationDelay: `${d * 150}ms` }} />
-                  ))}
-                </span>
-                {slow && <span className="text-xs text-steel-500">Estoy preparando la respuesta, un momento…</span>}
+              <div className="flex max-w-[95%] gap-2">
+                <NovaAvatar size={28} animated className="mt-1" />
+                <div className="nova-glass flex w-fit items-center gap-3 rounded-2xl rounded-tl-md border border-[#7c3aed]/10 px-4 py-3" aria-label="Nova está escribiendo">
+                  <span className="flex shrink-0 gap-1">
+                    {[0, 1, 2].map((d) => (
+                      <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-[#a855f7]" style={{ animationDelay: `${d * 150}ms` }} />
+                    ))}
+                  </span>
+                  {slow && <span className="text-xs text-steel-500">Estoy preparando la respuesta, un momento…</span>}
+                </div>
               </div>
             )}
             {!pending && lastMessage?.role === "assistant" && !!lastMessage.suggestions?.length && (
@@ -286,7 +295,7 @@ const AssistantPanel = ({ onClose }: Props) => {
                     key={s}
                     type="button"
                     onClick={() => void send(s)}
-                    className="rounded-full border border-electric-500/40 bg-white px-3 py-1.5 text-xs font-medium text-electric-600 transition hover:bg-electric-500/10"
+                    className="rounded-full border border-[#7c3aed]/30 bg-white/80 px-3 py-1.5 text-xs font-medium text-[#6d28d9] transition hover:bg-[#7c3aed]/10"
                   >
                     {s}
                   </button>
@@ -295,13 +304,13 @@ const AssistantPanel = ({ onClose }: Props) => {
             )}
           </div>
           <form
-            className="shrink-0 border-t border-navy-900/10 bg-white px-3 pb-2 pt-3"
+            className="nova-glass shrink-0 border-t border-[#7c3aed]/10 px-3 pb-2 pt-3"
             onSubmit={(e) => {
               e.preventDefault();
               void send(draft);
             }}
           >
-            <div className="flex items-end gap-2 rounded-xl border border-navy-900/15 bg-[#f5f7fb] px-3 py-2 focus-within:border-electric-500">
+            <div className="flex items-end gap-2 rounded-2xl border border-[#7c3aed]/20 bg-white px-3 py-2 focus-within:border-[#7c3aed] focus-within:ring-2 focus-within:ring-[#7c3aed]/15">
               <label htmlFor="assistant-input" className="sr-only">
                 Escriba su pregunta
               </label>
@@ -320,7 +329,7 @@ const AssistantPanel = ({ onClose }: Props) => {
                 type="submit"
                 disabled={!draft.trim() || pending}
                 aria-label="Enviar"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-800 text-white transition hover:bg-electric-600 disabled:opacity-40"
+                className="nova-gradient flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white transition hover:brightness-110 disabled:opacity-40"
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -336,7 +345,7 @@ const AssistantPanel = ({ onClose }: Props) => {
 
       {/* Pestañas */}
       {view !== "form" && (
-        <nav className="flex shrink-0 border-t border-navy-900/10 bg-white" aria-label="Secciones del asistente">
+        <nav className="nova-glass flex shrink-0 border-t border-[#7c3aed]/10" aria-label="Secciones del asistente">
           {(
             [
               ["home", "Inicio", Home],
@@ -348,7 +357,7 @@ const AssistantPanel = ({ onClose }: Props) => {
               type="button"
               onClick={() => setView(key)}
               aria-current={view === key ? "page" : undefined}
-              className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-medium transition ${view === key ? "text-navy-900" : "text-steel-400 hover:text-navy-700"}`}
+              className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-medium transition ${view === key ? "text-[#6d28d9]" : "text-steel-400 hover:text-[#6d28d9]"}`}
             >
               <Icon className="h-5 w-5" />
               {label}
@@ -374,19 +383,19 @@ interface HomeCardProps {
 }
 
 const HomeCard = ({ title, text, Icon, onClick, href, internal, onNavigate, highlight }: HomeCardProps) => {
-  const cls = `group flex w-full items-center gap-3 rounded-xl border bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
-    highlight ? "border-electric-500/40" : "border-navy-900/10"
+  const cls = `nova-glass group flex w-full items-center gap-3 rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+    highlight ? "border-[#7c3aed]/35 shadow-[0_8px_24px_-12px_rgba(124,58,237,0.5)]" : "border-[#7c3aed]/10"
   }`;
   const body = (
     <>
-      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${highlight ? "bg-[#FF8024] text-navy-900" : "bg-navy-900/5 text-navy-700"}`}>
+      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${highlight ? "nova-gradient text-white" : "bg-[#7c3aed]/10 text-[#6d28d9]"}`}>
         <Icon className="h-[18px] w-[18px]" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold text-navy-900">{title}</span>
         <span className="block text-xs text-steel-500">{text}</span>
       </span>
-      <ChevronRight className="h-4 w-4 shrink-0 text-steel-400 transition group-hover:translate-x-0.5 group-hover:text-navy-700" />
+      <ChevronRight className="h-4 w-4 shrink-0 text-steel-400 transition group-hover:translate-x-0.5 group-hover:text-[#6d28d9]" />
     </>
   );
   if (href) {
@@ -428,7 +437,7 @@ const ContactForm = ({ mode, messages, whatsappLink }: { mode: FormMode; message
     setError("");
     const result = await submitWeb3Forms({
       subject: mode === "agendar" ? "Asistente web: solicitud de reunión" : "Asistente web: nuevo mensaje",
-      from_name: "Asistente de datasyslatam.com",
+      from_name: "Nova, asistente de datasyslatam.com",
       name: String(data.get("name") ?? ""),
       email: String(data.get("email") ?? ""),
       phone: String(data.get("phone") ?? ""),
@@ -449,14 +458,14 @@ const ContactForm = ({ mode, messages, whatsappLink }: { mode: FormMode; message
         <CheckCircle2 className="h-12 w-12 text-emerald-500" />
         <p className="font-heading text-lg font-bold">¡Gracias! Recibimos su {mode === "agendar" ? "solicitud" : "mensaje"}.</p>
         <p className="text-sm text-steel-500">Le responderemos a {email} lo antes posible.</p>
-        <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-electric-600 underline underline-offset-2">
+        <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[#6d28d9] underline underline-offset-2">
           ¿Es urgente? Escríbanos por WhatsApp
         </a>
       </div>
     );
   }
 
-  const field = "w-full rounded-lg border border-navy-900/15 bg-white px-3 py-2 text-sm outline-none focus:border-electric-500";
+  const field = "w-full rounded-lg border border-[#7c3aed]/20 bg-white px-3 py-2 text-sm outline-none focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/15";
   return (
     <form onSubmit={submit} className="flex-1 space-y-3 overflow-y-auto px-5 py-5">
       <p className="text-sm text-steel-500">
@@ -496,7 +505,7 @@ const ContactForm = ({ mode, messages, whatsappLink }: { mode: FormMode; message
       <button
         type="submit"
         disabled={status === "sending"}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FF8024] px-4 py-3 text-sm font-semibold text-navy-900 transition hover:brightness-110 disabled:opacity-60"
+        className="nova-gradient flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:brightness-110 disabled:opacity-60"
       >
         {mode === "agendar" ? <CalendarDays className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
         {status === "sending" ? "Enviando…" : mode === "agendar" ? "Solicitar la reunión" : "Enviar mensaje"}

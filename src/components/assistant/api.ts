@@ -41,5 +41,5 @@ export const transcriptText = (history: ChatMessage[], maxTurns = 10) =>
   history
     .filter((m) => !m.local)
     .slice(-maxTurns)
-    .map((m) => `${m.role === "user" ? "Visitante" : "Asistente"}: ${m.text}`)
+    .map((m) => `${m.role === "user" ? "Visitante" : "Nova (asistente)"}: ${m.text}`)
     .join("\n\n");

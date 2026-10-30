@@ -153,7 +153,7 @@
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 2px solid #2176e8;
+  border: 2px solid #c084fc;
   opacity: 0;
   animation: assistant-pulse-ring 2.8s ease-out infinite;
   pointer-events: none;
@@ -164,8 +164,59 @@
   100% { transform: scale(1.4); opacity: 0; }
 }
 
+/* Nova: esfera de cristal que flota y destella; fondos con efecto de vidrio esmerilado. */
+.nova-launcher {
+  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.35), transparent 70%);
+  box-shadow: 0 10px 30px -6px rgba(124, 58, 237, 0.65), 0 0 24px rgba(217, 70, 239, 0.35);
+}
+
+.nova-orb {
+  animation: nova-float 4s ease-in-out infinite;
+}
+
+.nova-star {
+  transform-origin: 50px 45px;
+  animation: nova-twinkle 3.2s ease-in-out infinite;
+}
+
+@keyframes nova-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes nova-twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(0.82) rotate(12deg); opacity: 0.85; }
+}
+
+.nova-glass {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+.nova-panel-bg {
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgba(217, 70, 239, 0.14), transparent 60%),
+    radial-gradient(100% 60% at 0% 100%, rgba(33, 118, 232, 0.12), transparent 60%),
+    #f6f3fd;
+}
+
+.nova-header {
+  background:
+    radial-gradient(80% 120% at 100% 0%, rgba(217, 70, 239, 0.55), transparent 60%),
+    radial-gradient(70% 90% at 0% 100%, rgba(33, 118, 232, 0.45), transparent 60%),
+    linear-gradient(135deg, #12082e 0%, #2e1065 45%, #5b21b6 100%);
+}
+
+.nova-gradient {
+  background-image: linear-gradient(135deg, #6d28d9 0%, #a21caf 100%);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .assistant-pulse {
+  .assistant-pulse,
+  .nova-orb,
+  .nova-star {
     animation: none;
   }
 }

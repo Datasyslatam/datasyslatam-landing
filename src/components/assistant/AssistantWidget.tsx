@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { ChevronDown, MessageCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import NovaAvatar from "./NovaAvatar";
 
 // El panel (y su lógica) se descarga solo cuando el visitante abre el asistente: no pesa en la carga inicial.
 const loadPanel = () => import("./AssistantPanel");
@@ -60,11 +61,11 @@ const AssistantWidget = () => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-[5.6rem] right-5 z-50 max-w-[15rem] animate-fade-in rounded-2xl rounded-br-sm bg-white px-4 py-3 text-left text-sm text-navy-900 shadow-xl ring-1 ring-navy-900/10 sm:right-6"
+          className="nova-glass fixed bottom-[5.6rem] right-5 z-50 max-w-[16rem] animate-fade-in rounded-2xl rounded-br-sm px-4 py-3 text-left text-sm text-navy-900 shadow-xl ring-1 ring-[#7c3aed]/20 sm:right-6"
         >
-          <span className="font-semibold">¿Tiene alguna pregunta?</span>
+          <span className="font-semibold">¡Hola! Soy Nova ✨</span>
           <br />
-          <span className="text-steel-500">Nuestro asistente le responde al instante.</span>
+          <span className="text-steel-500">¿Tiene alguna pregunta? Le respondo al instante.</span>
         </button>
       )}
 
@@ -74,14 +75,14 @@ const AssistantWidget = () => {
         onClick={() => (open ? close() : setOpen(true))}
         onMouseEnter={() => void loadPanel()}
         onFocus={() => void loadPanel()}
-        aria-label={open ? "Cerrar el asistente" : "Abrir el asistente de DataSys Latam"}
+        aria-label={open ? "Cerrar el chat con Nova" : "Abrir el chat con Nova, asistente virtual de DataSys Latam"}
         aria-expanded={open}
-        className={`assistant-launcher fixed bottom-4 right-4 z-[111] h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-navy-800 to-electric-600 text-white shadow-xl transition hover:scale-105 sm:bottom-6 sm:right-6 sm:h-[60px] sm:w-[60px] ${
-          open ? "hidden sm:flex" : "flex"
+        className={`assistant-launcher nova-launcher fixed bottom-4 right-4 z-[111] h-14 w-14 items-center justify-center rounded-full text-white transition hover:scale-105 sm:bottom-6 sm:right-6 sm:h-[60px] sm:w-[60px] ${
+          open ? "nova-gradient hidden sm:flex" : "flex"
         }`}
       >
         {!open && <span className="assistant-pulse" aria-hidden="true" />}
-        {open ? <ChevronDown className="h-7 w-7" /> : <MessageCircle className="h-7 w-7" />}
+        {open ? <ChevronDown className="h-7 w-7" /> : <NovaAvatar size={60} animated className="h-full w-full" />}
       </button>
     </>
   );

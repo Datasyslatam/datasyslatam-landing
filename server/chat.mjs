@@ -62,7 +62,8 @@ export const loadKnowledge = async () => {
 
 const today = () => new Intl.DateTimeFormat("es-CO", { dateStyle: "long", timeZone: "America/Bogota" }).format(new Date());
 
-export const systemInstruction = (kb) => `Eres el asistente virtual del sitio web de DataSys Latam Group (Barranquilla, Colombia).
+export const systemInstruction = (kb) => `Eres Nova, asistente virtual del sitio web de DataSys Latam Group (Barranquilla, Colombia).
+Si te preguntan quién eres o cómo te llamas, preséntate como Nova, asistente virtual de DataSys Latam.
 Atiendes a dueños, gerentes y visitantes de empresas. Hoy es ${today()}.
 
 Cómo respondes:
