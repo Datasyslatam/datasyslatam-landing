@@ -4,6 +4,9 @@ name: Blog — artículo para revisión
 # Nada se publica hasta que alguien revisa y hace Merge.
 # GitHub a veces retrasa u omite ejecuciones programadas, sobre todo en punto: por eso hay dos horarios con minutos
 # impares (5:17 y 6:47 a. m.) y la segunda solo trabaja si la primera no dejó artículo.
+# Hasta el 30 de octubre de 2026 GitHub no había disparado ni una ejecución programada en este repositorio, así que
+# el servidor del sitio (server/blog-schedule.mjs) lanza el flujo desde las 7:00 a. m. con `programado: true` si
+# GitHub no lo hizo ese día.
 on:
   schedule:
     - cron: "17 10 * * 2,5"
@@ -14,6 +17,11 @@ on:
         description: "Tema opcional. Si se deja vacío, toma el siguiente del calendario (scripts/blog-agent/topics.json)."
         required: false
         type: string
+      programado:
+        description: "Uso interno: lo marca el servidor del sitio al lanzar el artículo del día como respaldo del horario."
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -32,15 +40,17 @@ jobs:
         with:
           ref: main
 
-      # Solo para las ejecuciones programadas: si hoy ya hay artículo publicado o un PR de artículo reciente, no se repite.
+      # Solo para las ejecuciones programadas (o las del respaldo del servidor): si hoy ya hay artículo publicado o un
+      # PR de artículo reciente, no se repite.
       - name: Comprobar si ya hay artículo de hoy
         id: guard
         env:
           GH_TOKEN: ${{ github.token }}
           EVENT: ${{ github.event_name }}
+          PROGRAMADO: ${{ inputs.programado }}
         run: |
           skip=false
-          if [ "$EVENT" = "schedule" ]; then
+          if [ "$EVENT" = "schedule" ] || [ "$PROGRAMADO" = "true" ]; then
             today=$(TZ=America/Bogota date +%F)
             recent=$(gh pr list --state all --limit 30 --json headRefName,createdAt \
               --jq '[.[] | select((.headRefName | startswith("blog/")) and ((.createdAt | fromdateiso8601) > (now - 43200)))] | length')

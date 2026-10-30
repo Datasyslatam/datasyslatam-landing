@@ -1,11 +1,13 @@
 // Servidor de producción (Railway): entrega el sitio prerenderizado de dist/ igual que antes lo hacía `serve`
 // (mismo motor serve-handler, mismas cabeceras de public/serve.json y 404.html con estado 404) y atiende
-// el asistente del sitio en /api/chat (y su diagnóstico de latencia en /api/diagnostico).
+// el asistente del sitio en /api/chat (y su diagnóstico de latencia en /api/diagnostico). También lanza el artículo
+// del blog de martes y viernes si el cron de GitHub no lo hizo (server/blog-schedule.mjs).
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import compression from "compression";
 import serveHandler from "serve-handler";
+import { startBlogSchedule } from "./blog-schedule.mjs";
 import { handleChat } from "./chat.mjs";
 import { handleDiagnostic } from "./diagnostic.mjs";
 
@@ -28,4 +30,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(port, () => console.log(`Sitio en http://localhost:${port} (asistente: ${process.env.GEMINI_API_KEY ? "activo" : "sin GEMINI_API_KEY"})`));
+server.listen(port, () => {
+  console.log(`Sitio en http://localhost:${port} (asistente: ${process.env.GEMINI_API_KEY ? "activo" : "sin GEMINI_API_KEY"})`);
+  startBlogSchedule();
+});
