@@ -2,6 +2,8 @@ name: Blog — artículo para revisión
 
 # Martes y viernes (hora de Colombia, UTC-5) el asistente redacta un artículo y abre un PR antes de las 8:00 a. m.
 # Nada se publica hasta que alguien revisa y hace Merge.
+# Los martes el tema es de tecnología (Fabián Florián) o analítica (Agustín Robledo); los viernes, de gestión
+# (Armando José López González). Ver AREAS_BY_DAY en scripts/blog-agent/generate.mjs.
 # GitHub a veces retrasa u omite ejecuciones programadas, sobre todo en punto: por eso hay dos horarios con minutos
 # impares (5:17 y 6:47 a. m.) y la segunda solo trabaja si la primera no dejó artículo.
 # Hasta el 30 de octubre de 2026 GitHub no había disparado ni una ejecución programada en este repositorio, así que
@@ -14,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       topic:
-        description: "Tema opcional. Si se deja vacío, toma el siguiente del calendario (scripts/blog-agent/topics.json)."
+        description: "Tema opcional. Si se deja vacío, toma el siguiente tema del calendario (scripts/blog-agent/topics.json) del área del día: martes, tecnología o analítica; viernes, gestión."
         required: false
         type: string
       programado:
