@@ -4,6 +4,8 @@
 import fundador from "@/assets/consultoria-fundador.webp";
 import appGovernex from "@/assets/banners/app-governex.webp";
 import appSoft from "@/assets/banners/app-producto-soft.webp";
+import appGovernexSinFondo from "@/assets/banners/app-governex-sin-fondo.webp";
+import appSoftSinFondo from "@/assets/banners/app-producto-soft-sin-fondo.webp";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
@@ -62,8 +64,13 @@ export interface LandingPage {
   eyebrow: string;
   h1: string;
   lead: string;
+  /** Foto de fondo del héroe (se funde con el azul hacia el texto) y miniatura al compartir la página. */
   heroImage: string;
   heroImageAlt: string;
+  /** Punto de la foto que debe quedar a la vista al recortarla (object-position de CSS). Por defecto, el centro. */
+  heroImagePosition?: string;
+  /** Captura del producto sin fondo: si existe, el héroe la muestra flotando sobre un fondo difuminado en vez de la foto. */
+  heroMockup?: string;
   primaryCta: string;
   whatsappText: string;
   /** Asunto del correo cuando alguien llena el formulario de esta página. */
@@ -182,6 +189,7 @@ export const LANDING_PAGES: LandingPage[] = [
     lead: "Construimos aplicaciones web, móviles y sistemas empresariales adaptados a sus procesos, integrados con lo que ya usa, para que su operación deje de depender de hojas de cálculo y tareas manuales.",
     heroImage: appSoft,
     heroImageAlt: "Plataforma de gestión empresarial desarrollada a la medida por DataSys Latam Group",
+    heroMockup: appSoftSinFondo,
     primaryCta: "Cotizar mi proyecto",
     whatsappText: "Hola, quiero cotizar un desarrollo de software a la medida para mi empresa.",
     leadSubject: "Nuevo lead: Desarrollo de software a la medida (sitio web)",
@@ -281,6 +289,7 @@ export const LANDING_PAGES: LandingPage[] = [
     lead: "Integramos IA en su operación para automatizar tareas repetitivas, analizar información y atender mejor a sus clientes, con sus datos protegidos y siempre con una persona de su equipo al mando de las decisiones.",
     heroImage: inteligencia,
     heroImageAlt: "Profesional frente a una visualización de red neuronal que representa la inteligencia artificial aplicada a la empresa",
+    heroImagePosition: "70% center",
     primaryCta: "Solicitar un diagnóstico",
     whatsappText: "Hola, me interesa aplicar inteligencia artificial en mi empresa.",
     leadSubject: "Nuevo lead: Inteligencia artificial (sitio web)",
@@ -766,6 +775,7 @@ export const LANDING_PAGES: LandingPage[] = [
     lead: "Governex simplifica, acelera y asegura su sistema de gestión ISO con inteligencia artificial: pase de una administración reactiva a una gestión proactiva, con la información y el cumplimiento en un solo lugar.",
     heroImage: appGovernex,
     heroImageAlt: "Governex, plataforma de gobernanza corporativa inteligente para sistemas de gestión ISO",
+    heroMockup: appGovernexSinFondo,
     primaryCta: "Solicitar una demostración",
     whatsappText: "Hola, quiero conocer Governex, el software para sistemas de gestión ISO.",
     leadSubject: "Nuevo lead: Governex, demostración (sitio web)",
