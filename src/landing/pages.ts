@@ -11,6 +11,10 @@ import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
 import transformacion from "@/assets/banners/transformacion-corporativo.webp";
 import redes from "@/assets/hero-evolucion-digital.webp";
+import novixDashboard from "@/assets/novix/novix-dashboard.webp";
+import novixDashboardVentana from "@/assets/novix/novix-dashboard-ventana.webp";
+import novixPlanCuentas from "@/assets/novix/novix-plan-cuentas.webp";
+import novixRoles from "@/assets/novix/novix-roles.webp";
 
 // Respuesta común sobre el precio: el brochure establece que no hay cotizaciones estandarizadas, sino diagnóstico a la medida.
 const PRICE_ANSWER =
@@ -34,6 +38,20 @@ export type LandingSection =
   | { kind: "steps"; id: string; eyebrow?: string; title: string; intro?: string; items: LandingCard[] }
   | { kind: "chips"; id: string; eyebrow?: string; title: string; intro: string; chips: string[] }
   | { kind: "text"; id: string; eyebrow?: string; title: string; paragraphs: string[]; link?: { label: string; href: string } }
+  /** Captura de pantalla del producto con sus puntos clave; `reverse` pone la imagen a la izquierda. */
+  | {
+      kind: "showcase";
+      id: string;
+      eyebrow?: string;
+      title: string;
+      intro?: string;
+      points: string[];
+      image: string;
+      imageAlt: string;
+      width: number;
+      height: number;
+      reverse?: boolean;
+    }
   | {
       kind: "profile";
       id: string;
@@ -71,6 +89,8 @@ export interface LandingPage {
   heroImagePosition?: string;
   /** Captura del producto sin fondo: si existe, el héroe la muestra flotando sobre un fondo difuminado en vez de la foto. */
   heroMockup?: string;
+  /** Datos breves y verificables que se muestran bajo los botones del héroe. */
+  heroHighlights?: string[];
   primaryCta: string;
   whatsappText: string;
   /** Asunto del correo cuando alguien llena el formulario de esta página. */
@@ -275,6 +295,7 @@ export const LANDING_PAGES: LandingPage[] = [
     ],
     related: [
       { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
+      { label: "Novix ERP: software de gestión empresarial", href: "/producto/novix-erp" },
       { label: "Governex: software para sistemas de gestión ISO", href: "/producto/governex" },
       { label: "Ciberseguridad básica para pymes", href: "/blog/ciberseguridad-basica-pymes-bajo-costo" },
     ],
@@ -560,8 +581,8 @@ export const LANDING_PAGES: LandingPage[] = [
       },
     ],
     related: [
+      { label: "Novix ERP: software de gestión empresarial", href: "/producto/novix-erp" },
       { label: "Desarrollo de software a la medida para empresas", href: "/servicios/desarrollo-software-medida" },
-      { label: "Inteligencia artificial para empresas", href: "/servicios/inteligencia-artificial-empresas" },
       { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
     ],
   },
@@ -652,8 +673,8 @@ export const LANDING_PAGES: LandingPage[] = [
     ],
     related: [
       { label: "Digitalización y automatización de procesos", href: "/servicios/digitalizacion-de-procesos" },
+      { label: "Novix ERP: software de gestión empresarial", href: "/producto/novix-erp" },
       { label: "Gobernanza de TI para empresas", href: "/servicios/gobernanza-ti" },
-      { label: "Analítica de datos para empresas", href: "/servicios/analitica-de-datos" },
     ],
   },
   {
@@ -763,6 +784,247 @@ export const LANDING_PAGES: LandingPage[] = [
       { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
       { label: "Governex: software para sistemas de gestión ISO", href: "/producto/governex" },
       { label: "Ciberseguridad básica para pymes", href: "/blog/ciberseguridad-basica-pymes-bajo-costo" },
+    ],
+  },
+  {
+    path: "/producto/novix-erp",
+    metaTitle: "Novix ERP: software ERP para pymes en Colombia | DataSys",
+    metaDescription:
+      "Compras, inventario por lotes, calidad, ventas, despachos y contabilidad en un solo sistema, con trazabilidad total. Solicite una demostración de Novix ERP.",
+    eyebrow: "Novix ERP · Software de gestión empresarial",
+    h1: "Software ERP para controlar su operación de punta a punta",
+    lead: "Compras, inventario, calidad, ventas, despachos y contabilidad en un solo sistema. Lo que su equipo registra una vez actualiza el inventario, la cartera y la contabilidad, y cada documento se conecta con el siguiente hasta su asiento contable.",
+    heroImage: novixDashboard,
+    heroImageAlt: "Tablero ejecutivo de Novix ERP con indicadores de finanzas, compras, inventario y operaciones",
+    heroMockup: novixDashboardVentana,
+    heroHighlights: ["53 indicadores con fórmula visible", "13 roles de usuario y roles propios", "Colombia (DIAN) y Venezuela (SENIAT)"],
+    primaryCta: "Solicitar una demostración",
+    whatsappText: "Hola, quisiera conocer Novix ERP para mi empresa.",
+    leadSubject: "Nuevo lead: Novix ERP, demostración (sitio web)",
+    breadcrumb: "Novix ERP",
+    schema: { type: "SoftwareApplication", name: "Novix ERP", category: "BusinessApplication" },
+    sections: [
+      {
+        kind: "text",
+        id: "que-es",
+        eyebrow: "Qué es Novix ERP",
+        title: "Cada operación, rastreable de principio a fin",
+        paragraphs: [
+          "Novix ERP es el sistema de gestión empresarial desarrollado por DataSys Latam Group. Integra en una sola base de datos compras, inventario, calidad, ventas, logística, facturación, contabilidad, tesorería e indicadores, con acceso desde el navegador y permisos por rol.",
+          "Está diseñado para pymes y medianas empresas comerciales, distribuidoras e industriales que ya superaron el Excel, y para entidades educativas que necesitan ordenar su gestión logística, administrativa y financiera. Opera en Colombia y en Venezuela, con varias empresas, sedes, bodegas y monedas.",
+        ],
+      },
+      {
+        kind: "cards",
+        id: "problemas",
+        eyebrow: "¿Le suena familiar?",
+        title: "Cuando la información vive en lugares distintos, la empresa pierde control",
+        intro: "Las compras van por correo, el inventario en una hoja de cálculo, la facturación en otro programa y la contabilidad se alimenta a fin de mes. No es un problema de esfuerzo: es un problema de sistema.",
+        items: [
+          { title: "Doble digitación", text: "La misma factura se registra en ventas, en cartera y en contabilidad. Cada paso es una oportunidad de error." },
+          { title: "Inventario que no cuadra", text: "Lo que dice el sistema no coincide con la bodega: se vende lo que no hay y se vencen productos que nadie vio." },
+          { title: "Compras sin control", text: "Se paga una factura sin comprobar que la mercancía llegó completa y al precio pactado." },
+          { title: "Proveedores sin medición", text: "Nadie sabe con datos quién entrega a tiempo y quién envía mercancía con defectos." },
+          { title: "Cifras que no se pueden explicar", text: "La gerencia recibe un número, pero no puede ver de qué documentos sale." },
+          { title: "Accesos sin control", text: "Cualquiera puede crear y aprobar lo mismo, y no queda claro quién hizo qué." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "beneficios",
+        eyebrow: "La solución",
+        title: "Un solo sistema donde cada operación alimenta a la siguiente",
+        items: [
+          { title: "Registre una vez", text: "Recepciones, despachos, facturas y pagos generan su asiento contable de forma automática; los comprobantes manuales los aprueba un segundo usuario." },
+          { title: "Vea la cadena completa", text: "Desde cualquier número de documento ve de dónde viene, qué generó, cómo se pagó y qué asientos produjo." },
+          { title: "Proteja su inventario", text: "Existencias por bodega, ubicación y lote; reserva primero lo que vence primero y nunca despacha lotes vencidos, bloqueados o en cuarentena." },
+          { title: "Pague solo lo que recibió", text: "La factura del proveedor se cruza con la orden de compra y la recepción, con tolerancia de precio configurable." },
+          { title: "Decida con indicadores auditables", text: "53 indicadores con fórmula, fuente, meta y responsable. Si faltan datos, el indicador lo dice: nunca rellena cifras." },
+          { title: "Controle quién hace qué", text: "Roles por empresa y por sede, segregación de funciones, límites de aprobación por monto y bitácora de auditoría." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "modulos",
+        eyebrow: "Módulos",
+        title: "Módulos de Novix ERP",
+        intro: "Todos comparten la misma base de datos. Los módulos operativos se activan por empresa: una comercializadora puede trabajar sin producción y una industria puede activarla.",
+        items: [
+          { title: "Gerencia e indicadores", text: "Tablero ejecutivo por área, periodo, sede y centro de costo, con alertas, metas, presupuestos y tendencia de seis meses." },
+          { title: "Trazabilidad de documentos", text: "La cadena completa de cualquier orden, recepción, pedido, despacho, factura o pago, a un clic." },
+          { title: "Compras y abastecimiento", text: "Solicitudes, comparativo de cotizaciones, órdenes con aprobación y presupuesto, recepciones y evaluación de proveedores." },
+          { title: "Inventario y almacén", text: "Kardex valorizado, lotes y vencimientos, reabastecimiento sugerido, ajustes con aprobación y conteos físicos ciegos." },
+          { title: "Calidad", text: "Planes de inspección por etapa, cuarentena y bloqueo de lotes, y no conformidades con causa raíz y acciones correctivas." },
+          { title: "Ventas, precios y promociones", text: "Cotizaciones, pedidos con cupo de crédito y reserva de inventario, listas de precios por cliente y promociones." },
+          { title: "Logística y despachos", text: "Preparación, empaque, envío y entrega, rutas del día, seguimiento, incidencias y devoluciones." },
+          { title: "Facturación electrónica", text: "Facturas y notas desde el despacho, con numeración autorizada. Preparada para conectarse con el proveedor autorizado por la DIAN o la imprenta digital del SENIAT que contrate su empresa." },
+          { title: "Producción y operaciones (opcional)", text: "Órdenes de producción, servicio y mantenimiento con listas de materiales, desperdicio, horas y costo real." },
+          { title: "Contabilidad y tesorería", text: "Cartera por edades, anticipos, recaudos y pagos con retenciones, conciliación bancaria con extractos y estados financieros." },
+          { title: "Libros y reportes fiscales", text: "Venezuela: libros de IVA, retenciones de IVA y TXT para el SENIAT. Colombia: auxiliar de IVA y certificados de retención." },
+          { title: "Importación y administración", text: "Plantillas CSV o Excel con validación previa, documentos en PDF y por correo, usuarios, roles y auditoría." },
+        ],
+      },
+      {
+        kind: "showcase",
+        id: "indicadores",
+        eyebrow: "Gerencia",
+        title: "Indicadores que se pueden auditar",
+        intro: "El tablero ejecutivo calcula 53 indicadores de finanzas, compras, inventario, calidad, logística y operaciones directamente de las transacciones registradas.",
+        points: [
+          "Estado frente a la meta: en meta, alerta, crítico o sin meta.",
+          "Fórmula, fuente, frecuencia y responsable de cada indicador.",
+          "Tendencia de seis meses y acceso a las transacciones de origen.",
+          "Si aún no hay datos, muestra «Pendiente de datos»: nunca inventa cifras.",
+        ],
+        image: novixDashboard,
+        imageAlt: "Dashboard ejecutivo de Novix ERP con filtros por periodo y sede e indicadores por estado",
+        width: 1582,
+        height: 872,
+      },
+      {
+        kind: "showcase",
+        id: "contabilidad",
+        eyebrow: "Contabilidad",
+        title: "La contabilidad se alimenta sola desde la operación",
+        intro: "Cada recepción, despacho, factura y pago genera su asiento. El equipo contable revisa y concilia en lugar de digitar.",
+        points: [
+          "Plan de cuentas de referencia para Colombia y Venezuela, ajustable por su contador.",
+          "Cuentas por cobrar y por pagar por edades, anticipos y estados de cuenta en PDF o por correo.",
+          "Conciliación bancaria con extractos en CSV, Excel u OFX.",
+          "Estados financieros, libro mayor, libro diario y cierre de periodos que ya no se pueden modificar.",
+        ],
+        image: novixPlanCuentas,
+        imageAlt: "Plan de cuentas en el módulo de contabilidad de Novix ERP",
+        width: 1262,
+        height: 836,
+        reverse: true,
+      },
+      {
+        kind: "showcase",
+        id: "roles",
+        eyebrow: "Control de acceso",
+        title: "Cada persona ve y hace solo lo que le corresponde",
+        intro: "Novix trae 13 roles listos para usar, del comprador al contador, y cada empresa puede crear los suyos con su propia matriz de permisos.",
+        points: [
+          "Roles por empresa y por sede, con fecha de vencimiento para reemplazos o auditores externos.",
+          "Quien crea un documento no lo aprueba: segregación de funciones configurable.",
+          "Límites de aprobación por monto para compras, ajustes y pagos.",
+          "Bitácora de auditoría y revisión periódica de accesos exportable.",
+        ],
+        image: novixRoles,
+        imageAlt: "Roles y permisos de Novix ERP: administrador, almacenista, comprador, contador, vendedor y otros",
+        width: 1242,
+        height: 786,
+      },
+      {
+        kind: "steps",
+        id: "diferenciadores",
+        eyebrow: "Por qué Novix",
+        title: "Por qué elegir Novix ERP",
+        items: [
+          { title: "Trazabilidad que se ve", text: "La cadena de cada documento aparece en la misma pantalla, del origen al asiento contable." },
+          { title: "Calidad dentro del ERP", text: "Inspección en recepción, cuarentena de lotes y no conformidades con causa raíz, sin un sistema aparte." },
+          { title: "Indicadores honestos", text: "Cada indicador muestra su fórmula y su fuente; si no hay datos, lo dice en lugar de mostrar un número." },
+          { title: "Integridad desde la base de datos", text: "Impide inventario negativo, asientos descuadrados y cambios en periodos cerrados, aunque alguien intente saltarse una pantalla." },
+          { title: "Colombia y Venezuela en un mismo sistema", text: "Impuestos, retenciones, numeración y reportes de cada país, por empresa y con varias monedas." },
+          { title: "Implementación con método", text: "Primero ordenamos sus procesos con criterio ISO; después configuramos el sistema, migramos sus datos y capacitamos a su equipo. En la nube o en su servidor." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "sectores",
+        eyebrow: "Sectores",
+        title: "Sectores que pueden aprovechar Novix ERP",
+        items: [
+          { title: "Distribución y comercialización", text: "Listas de precios por cliente, cupo de crédito, reservas, despachos por ruta y cartera por edades." },
+          { title: "Industria liviana y manufactura por órdenes", text: "Listas de materiales con desperdicio, órdenes de producción con costo real e inspección en proceso y producto final." },
+          { title: "Alimentos, bebidas, agroinsumos y químicos", text: "Control por lote y vencimiento, salida de lo que vence primero, cuarentena y bloqueo de lotes." },
+          { title: "Servicios técnicos y mantenimiento", text: "Órdenes de servicio y de mantenimiento con materiales y horas registradas." },
+          { title: "Entidades educativas", text: "Gestión logística, administrativa y financiera de la institución, y formación práctica de estudiantes en procesos empresariales." },
+          { title: "Grupos en Colombia y Venezuela", text: "Varias empresas en un mismo sistema, cada una con su jurisdicción, impuestos y moneda." },
+        ],
+      },
+      {
+        kind: "text",
+        id: "educacion",
+        eyebrow: "Entidades educativas",
+        title: "Novix ERP para colegios, institutos y universidades",
+        paragraphs: [
+          "Gestión logística, administrativa y financiera: solicitudes de compra con aprobación y presupuesto; almacén de insumos, papelería y material didáctico con entregas por centro de costo (sede, programa o dependencia); contabilidad, tesorería, conciliación bancaria y presupuesto, con control de quién aprueba cada gasto.",
+          "Herramienta educativa: los programas de contabilidad, logística, administración e ingeniería industrial pueden practicar con un ERP real, comprando, recibiendo, inspeccionando, vendiendo, despachando, facturando en ambiente de pruebas y contabilizando, para ver cómo cada operación afecta a las demás. Los roles permiten que cada estudiante asuma un cargo y la bitácora de auditoría muestra quién hizo cada operación.",
+          "Novix ERP no gestiona procesos académicos como matrículas, notas o pensiones.",
+        ],
+      },
+      {
+        kind: "cards",
+        id: "experiencia",
+        eyebrow: "Experiencia de uso",
+        title: "Diseñado para el trabajo diario",
+        items: [
+          { title: "Desde el navegador", text: "No requiere instalar programas en cada equipo; la interfaz se adapta al computador, la tableta y el celular." },
+          { title: "Menú por áreas y por rol", text: "Gerencia, Compras, Almacén, Calidad, Ventas y logística, Contabilidad, Datos maestros y Administración: cada usuario ve solo lo que su rol permite." },
+          { title: "Flujos guiados por estados", text: "Cada documento muestra solo las acciones válidas en su estado: enviar, aprobar, recibir, facturar o anular con motivo." },
+          { title: "Varias empresas y sedes", text: "Un mismo acceso para todas las empresas del grupo, con la empresa activa siempre visible en la barra superior." },
+          { title: "Documentos listos para enviar", text: "PDF y correo desde el mismo documento, con historial de envío." },
+          { title: "Arranque con sus datos", text: "Plantillas para terceros, artículos, plan de cuentas y saldos iniciales, con validación antes de importar." },
+        ],
+      },
+    ],
+    testimonials: [],
+    faq: [
+      {
+        q: "¿Qué es Novix ERP?",
+        a: "Es el sistema de gestión empresarial de DataSys Latam Group. Integra compras, inventario, calidad, ventas, logística, facturación, contabilidad, tesorería e indicadores en una sola base de datos, con acceso desde el navegador.",
+      },
+      {
+        q: "¿Para qué tipo de empresas está pensado?",
+        a: "Para pymes y medianas empresas comerciales, distribuidoras e industriales, y para entidades educativas que quieren ordenar su gestión logística, administrativa y financiera. Es especialmente útil cuando hay varias bodegas o sedes, productos con lote o vencimiento, o necesidad de control interno.",
+      },
+      {
+        q: "¿Novix ERP emite factura electrónica válida ante la DIAN o el SENIAT?",
+        a: "Novix ERP genera las facturas y notas, las numera y las contabiliza, y está preparado para conectarse con el proveedor tecnológico autorizado por la DIAN o la imprenta digital autorizada por el SENIAT que contrate su empresa. La validez fiscal depende de esa conexión, que se configura durante la implementación.",
+      },
+      {
+        q: "¿Funciona en Colombia y en Venezuela?",
+        a: "Sí. Cada empresa se configura con su país: impuestos, retenciones, numeración y reportes. Para Venezuela incluye libros de IVA, comprobantes de retención y el TXT para el SENIAT; para Colombia, el auxiliar de IVA y los certificados de retención en la fuente, IVA e ICA. Su contador debe validar los parámetros y reportes antes de presentarlos.",
+      },
+      {
+        q: "¿Se instala en la nube o en nuestros servidores?",
+        a: "Puede funcionar en la nube o en un servidor propio. En ambos casos se usa desde el navegador.",
+      },
+      {
+        q: "¿Puedo activar solo los módulos que necesito?",
+        a: "Sí. Los módulos operativos se activan por empresa; por ejemplo, una comercializadora puede trabajar sin el módulo de producción.",
+      },
+      {
+        q: "¿Cómo pasamos nuestros datos actuales a Novix ERP?",
+        a: "Con plantillas en CSV o Excel para terceros, artículos, plan de cuentas y saldos iniciales. El sistema valida cada fila antes de importarla, señala los errores para corregirlos y exige que otro usuario apruebe los saldos iniciales antes de contabilizarlos.",
+      },
+      {
+        q: "¿Cómo se protege la información?",
+        a: "Contraseñas cifradas, bloqueo tras cinco intentos fallidos, sesiones que vencen, permisos por rol, empresa y sede, segregación de funciones, límites de aprobación y bitácora de auditoría. También admite el inicio de sesión corporativo de su organización.",
+      },
+      {
+        q: "¿Sirve para colegios, institutos o universidades?",
+        a: "Sí, para su gestión logística, administrativa y financiera (compras, almacén, contabilidad, tesorería y presupuesto) y como herramienta educativa para que los estudiantes practiquen procesos empresariales reales. No gestiona procesos académicos como matrículas, notas o pensiones.",
+      },
+      {
+        q: "¿Incluye nómina o CRM?",
+        a: "No. Novix ERP se concentra en la operación, la logística y las finanzas. Las integraciones con otros sistemas se evalúan en el diagnóstico de cada proyecto.",
+      },
+      {
+        q: "¿Tiene aplicación para celular?",
+        a: "Se usa desde el navegador del celular o la tableta, con una interfaz que se adapta a la pantalla. Requiere conexión a internet.",
+      },
+      {
+        q: "¿Cuánto cuesta Novix ERP?",
+        a: "No manejamos cotizaciones estandarizadas. El valor depende de los módulos, el número de usuarios, la migración de datos y el acompañamiento que necesite. Tras un diagnóstico sin compromiso le entregamos una propuesta a la medida.",
+      },
+    ],
+    related: [
+      { label: "Digitalización y automatización de procesos", href: "/servicios/digitalizacion-de-procesos" },
+      { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
+      { label: "Analítica de datos para empresas", href: "/servicios/analitica-de-datos" },
     ],
   },
   {
