@@ -18,5 +18,6 @@ export const SERVICE_LINKS = [
   { label: "Digitalización de procesos", href: "/servicios/digitalizacion-de-procesos" },
   { label: "Transformación digital", href: "/servicios/transformacion-digital" },
   { label: "Gobernanza de TI", href: "/servicios/gobernanza-ti" },
+  { label: "Novix ERP", href: "/producto/novix-erp" },
   { label: "Governex: software ISO", href: "/producto/governex" },
 ];

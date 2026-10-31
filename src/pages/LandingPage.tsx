@@ -86,6 +86,31 @@ const Section = ({ section, index }: { section: LandingSection; index: number })
           )}
         </div>,
       );
+    case "showcase":
+      return wrap(
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className={section.reverse ? "lg:order-2" : undefined}>
+            <SectionHeader {...section} />
+            <ul className="space-y-3">
+              {section.points.map((point) => (
+                <li key={point} className="flex gap-3 text-base leading-relaxed text-[#0b2a5e]/85">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-electric-600" aria-hidden="true" />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <img
+            src={section.image}
+            alt={section.imageAlt}
+            width={section.width}
+            height={section.height}
+            loading="lazy"
+            decoding="async"
+            className="w-full rounded-2xl border border-gray-200 shadow-card"
+          />
+        </div>,
+      );
     case "profile":
       return wrap(
         <div className="grid items-center gap-8 lg:grid-cols-[0.8fr_1.2fr]">
@@ -185,6 +210,16 @@ const LandingPage = ({ page }: { page: LandingData }) => (
               Hablar por WhatsApp
             </a>
           </div>
+          {page.heroHighlights && (
+            <ul className="mt-7 flex flex-wrap gap-2">
+              {page.heroHighlights.map((h) => (
+                <li key={h} className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/85">
+                  <CheckCircle2 className="h-4 w-4 text-[#FF8024]" aria-hidden="true" />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
         {page.heroMockup && (
           <img
