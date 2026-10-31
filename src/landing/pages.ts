@@ -2,9 +2,7 @@
 // sus metadatos, sus datos estructurados (Service o SoftwareApplication, migas de pan y FAQPage) y entra al sitemap.
 // Todo el contenido sale de información ya publicada en el sitio: no se inventan cifras, clientes ni testimonios.
 import fundador from "@/assets/consultoria-fundador.webp";
-import appGovernex from "@/assets/banners/app-governex.webp";
 import appSoft from "@/assets/banners/app-producto-soft.webp";
-import appGovernexSinFondo from "@/assets/banners/app-governex-sin-fondo.webp";
 import appSoftSinFondo from "@/assets/banners/app-producto-soft-sin-fondo.webp";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
@@ -15,6 +13,11 @@ import novixDashboard from "@/assets/novix/novix-dashboard.webp";
 import novixDashboardVentana from "@/assets/novix/novix-dashboard-ventana.webp";
 import novixPlanCuentas from "@/assets/novix/novix-plan-cuentas.webp";
 import novixRoles from "@/assets/novix/novix-roles.webp";
+import governexDashboard from "@/assets/governex/governex-dashboard.webp";
+import governexDashboardVentana from "@/assets/governex/governex-dashboard-ventana.webp";
+import governexMapaProcesos from "@/assets/governex/governex-mapa-procesos.webp";
+import governexRiesgos from "@/assets/governex/governex-riesgos.webp";
+import governexRoles from "@/assets/governex/governex-roles.webp";
 
 // Respuesta común sobre el precio: el brochure establece que no hay cotizaciones estandarizadas, sino diagnóstico a la medida.
 const PRICE_ANSWER =
@@ -1029,41 +1032,214 @@ export const LANDING_PAGES: LandingPage[] = [
   },
   {
     path: "/producto/governex",
-    metaTitle: "Software para sistemas de gestión ISO | Governex",
+    metaTitle: "Governex: software para ISO 9001 y gestión de calidad",
     metaDescription:
-      "Governex, software para sistemas de gestión ISO con inteligencia artificial: simplifica, acelera y asegura su sistema de gestión, cumplimiento y toma de decisiones.",
-    eyebrow: "Governex · Nuestro producto",
-    h1: "Software para sistemas de gestión ISO",
-    lead: "Governex simplifica, acelera y asegura su sistema de gestión ISO con inteligencia artificial: pase de una administración reactiva a una gestión proactiva, con la información y el cumplimiento en un solo lugar.",
-    heroImage: appGovernex,
-    heroImageAlt: "Governex, plataforma de gobernanza corporativa inteligente para sistemas de gestión ISO",
-    heroMockup: appGovernexSinFondo,
-    primaryCta: "Solicitar una demostración",
-    whatsappText: "Hola, quiero conocer Governex, el software para sistemas de gestión ISO.",
+      "Gestione su sistema de calidad ISO 9001 en una sola plataforma: procesos, riesgos, auditorías, no conformidades e indicadores, con IA. Pida una demostración.",
+    eyebrow: "Governex · Plataforma de gestión de calidad",
+    h1: "Software para sistemas de gestión de calidad ISO 9001",
+    lead: "Su sistema de gestión de calidad completo y conectado, del contexto de la organización a la mejora continua. Governex reemplaza carpetas, hojas de cálculo y correos por un espacio donde procesos, riesgos, auditorías, indicadores y acciones de mejora trabajan juntos. La inteligencia artificial propone los borradores; su equipo revisa y decide.",
+    heroImage: governexDashboard,
+    heroImageAlt: "Resumen ejecutivo del sistema de gestión de calidad en Governex con indicadores, cumplimiento por proceso y mapa de riesgos",
+    heroMockup: governexDashboardVentana,
+    heroHighlights: ["25 módulos del capítulo 4 al 10", "22 asistentes de inteligencia artificial", "Permisos por módulo y acción"],
+    primaryCta: "Solicitar demostración",
+    whatsappText: "Hola, quiero conocer Governex, el software para sistemas de gestión de calidad.",
     leadSubject: "Nuevo lead: Governex, demostración (sitio web)",
     breadcrumb: "Governex",
     schema: { type: "SoftwareApplication", name: "Governex", category: "BusinessApplication" },
     sections: [
       {
         kind: "cards",
-        id: "que-hace",
-        eyebrow: "Qué hace Governex",
-        title: "Gobernanza corporativa inteligente para su sistema de gestión",
-        intro: "Una plataforma diseñada para gestionar de manera estructurada los procesos de gobierno corporativo, la información, el cumplimiento y la toma de decisiones.",
+        id: "problemas",
+        eyebrow: "¿Le suena familiar?",
+        title: "¿Su sistema de gestión de calidad vive en carpetas, correos y hojas de cálculo?",
+        intro: "No es falta de compromiso: es falta de una plataforma que conecte el sistema.",
         items: [
-          { title: "Requisitos de la norma con IA", text: "Formule y defina los requerimientos de la norma ISO con inteligencia artificial generativa." },
-          { title: "Procesos e información en un solo lugar", text: "Gestione de forma estructurada los procesos y la información de su sistema de gestión." },
-          { title: "Cumplimiento bajo control", text: "Haga seguimiento al cumplimiento de su sistema y anticípese en lugar de reaccionar." },
-          { title: "Decisiones informadas", text: "Apoye la toma de decisiones de la dirección con información organizada y disponible." },
+          { title: "Documentos dispersos", text: "Nadie sabe cuál es la versión vigente ni en qué carpeta está." },
+          { title: "Procesos desconectados", text: "La caracterización está en Word, los indicadores en Excel y los riesgos en otro archivo." },
+          { title: "Acciones correctivas que se pierden", text: "Se abren después de cada auditoría y nadie hace seguimiento hasta la siguiente." },
+          { title: "Sin trazabilidad", text: "No es posible ver qué hallazgo originó qué acción ni si fue eficaz." },
+          { title: "Auditorías a contrarreloj", text: "Cada auditoría obliga a reconstruir evidencias durante semanas." },
+          { title: "Indicadores tardíos", text: "Llegan a fin de mes, cuando ya no hay tiempo de corregir." },
+        ],
+      },
+      {
+        kind: "steps",
+        id: "solucion",
+        eyebrow: "La solución",
+        title: "Un sistema de gestión de calidad conectado, de principio a fin",
+        intro: "Governex organiza su SGC en los mismos capítulos que la norma y conecta la información entre módulos: el mapa de procesos alimenta los riesgos y los indicadores, los hallazgos de auditoría se convierten en no conformidades y la revisión por la dirección reúne lo que el sistema ya sabe.",
+        items: [
+          { title: "Describa su organización", text: "Registre los datos de la empresa, su mapa de procesos (también desde una imagen) y su organigrama." },
+          { title: "Construya con IA", text: "Governex propone PESTEL, DOFA, caracterizaciones, matrices de roles y recursos, indicadores y riesgos; su equipo los ajusta." },
+          { title: "Opere y mejore", text: "Auditorías, indicadores, no conformidades y acciones conectadas, con permisos para cada rol." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "modulos",
+        eyebrow: "Módulos",
+        title: "Todo su SGC, organizado en seis áreas",
+        intro: "25 módulos agrupados para que cada equipo encuentre lo suyo.",
+        items: [
+          { title: "Contexto y estrategia", text: "Ficha de la organización, partes interesadas, alcance del SGC, mapa de procesos, PESTEL y DOFA. Un contexto documentado y coherente en días, no en meses." },
+          { title: "Riesgos y planificación", text: "Matriz de riesgos y oportunidades con mapa de calor y evaluación de eficacia, objetivos de calidad con mediciones y planificación de los cambios." },
+          { title: "Procesos y operación", text: "Caracterización, planificación y control, requisitos de productos y servicios, diseño y desarrollo, compras, proveedores, producción, liberación y salidas no conformes." },
+          { title: "Liderazgo y personas", text: "Política de calidad con registro de lectura, roles y autoridades, competencias, perfiles de cargo, capacitación, toma de conciencia y comunicación." },
+          { title: "Evaluación del desempeño", text: "Programa de auditorías, hallazgos, indicadores, satisfacción del cliente y revisión por la dirección." },
+          { title: "Mejora continua", text: "No conformidades, corrección inmediata, análisis de causa raíz con 5 Porqués e Ishikawa, acciones y oportunidades de mejora." },
+        ],
+      },
+      {
+        kind: "showcase",
+        id: "contexto",
+        eyebrow: "Contexto de la organización",
+        title: "Del mapa de procesos al análisis completo",
+        intro: "Construya su mapa de procesos a mano o cargue el de su empresa, y Governex arma el análisis del contexto para que su equipo lo revise.",
+        points: [
+          "Procesos estratégicos, misionales y de apoyo, con entradas del cliente y salidas de satisfacción.",
+          "Lectura del mapa de procesos o del organigrama desde una imagen.",
+          "PESTEL, DOFA y caracterización de procesos propuestos con inteligencia artificial.",
+          "Partes interesadas y alcance del sistema documentados en la ficha de la organización.",
+        ],
+        image: governexMapaProcesos,
+        imageAlt: "Mapa de procesos en Governex con procesos estratégicos, misionales y de apoyo",
+        width: 1900,
+        height: 910,
+      },
+      {
+        kind: "showcase",
+        id: "riesgos",
+        eyebrow: "Pensamiento basado en riesgos",
+        title: "Riesgos y oportunidades visibles para decidir a tiempo",
+        intro: "La matriz parte del análisis del contexto y se mantiene viva con el tratamiento de cada riesgo.",
+        points: [
+          "Riesgos y oportunidades identificados desde PESTEL, DOFA y las actividades de los procesos.",
+          "Mapa de calor por probabilidad e impacto, y niveles bajo, medio, alto y crítico.",
+          "Estado de tratamiento, evidencias adjuntas y evaluación de la eficacia de las acciones.",
+          "Los borradores propuestos por la IA se confirman antes de quedar en el registro.",
+        ],
+        image: governexRiesgos,
+        imageAlt: "Matriz de riesgos y oportunidades de Governex con mapa de calor y registro de riesgos",
+        width: 1885,
+        height: 916,
+        reverse: true,
+      },
+      {
+        kind: "showcase",
+        id: "roles",
+        eyebrow: "Liderazgo",
+        title: "Roles, responsabilidades y autoridad claros",
+        intro: "Governex propone la matriz de roles a partir del organigrama y cada celda se puede editar.",
+        points: [
+          "Responsable, autoridad de decisión, funciones, recursos y rendición de cuentas por proceso.",
+          "Procesos clasificados en estratégicos, misionales y de apoyo.",
+          "Matriz de cargos complementaria y perfiles de cargo con su plan de capacitación.",
+          "Política de calidad con registro de lectura del personal.",
+        ],
+        image: governexRoles,
+        imageAlt: "Matriz de roles, responsabilidades y autoridad por proceso en Governex",
+        width: 1900,
+        height: 918,
+      },
+      {
+        kind: "cards",
+        id: "informacion-documentada",
+        eyebrow: "Información documentada",
+        title: "Su información documentada, organizada y bajo control",
+        intro: "Del documento suelto en una carpeta a un listado maestro conectado con sus procesos.",
+        items: [
+          { title: "Listado maestro", text: "Manuales, políticas, procesos, instructivos y formatos en un solo lugar." },
+          { title: "Codificación automática", text: "Cada documento recibe su código según el tipo, sin consecutivos manuales." },
+          { title: "Ciclo de vida", text: "Estados borrador, en revisión, aprobado y obsoleto, con permisos por rol para cambiarlos." },
+          { title: "Vínculo con los procesos", text: "Cada documento asociado a su proceso, con búsqueda y filtros por tipo y estado." },
+          { title: "Documentación con IA", text: "Caracterizaciones, mapa y manual de procedimientos, fichas técnicas y guías de capacitación como punto de partida." },
+          { title: "Evidencias seguras", text: "Archivos en almacenamiento en la nube, accesibles solo para su organización mediante enlaces temporales." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "iso-9001",
+        eyebrow: "ISO 9001:2015",
+        title: "Organizado según la estructura de ISO 9001:2015",
+        intro: "Cada capítulo tiene dónde gestionarse. Governex facilita la gestión de los requisitos; el uso de la plataforma no garantiza la certificación, que otorga un organismo de certificación independiente tras evaluar su sistema.",
+        items: [
+          { title: "4 · Contexto de la organización", text: "Ficha de la empresa, partes interesadas, alcance del SGC, mapa de procesos, PESTEL, DOFA y caracterización." },
+          { title: "5 · Liderazgo", text: "Política de calidad con registro de lectura, matrices de roles y autoridades, y enfoque al cliente con PQRS y encuestas." },
+          { title: "6 · Planificación", text: "Riesgos y oportunidades con mapa de calor y eficacia, objetivos de calidad con mediciones y planificación de los cambios." },
+          { title: "7 · Apoyo", text: "Recursos, competencias, perfiles de cargo, capacitación, toma de conciencia, comunicación e información documentada." },
+          { title: "8 · Operación", text: "Requisitos de productos y servicios, diseño y desarrollo, compras, proveedores, producción, liberación y salidas no conformes." },
+          { title: "9 · Evaluación del desempeño", text: "Indicadores, satisfacción del cliente, programa y hallazgos de auditoría, y revisión por la dirección con análisis." },
+          { title: "10 · Mejora", text: "No conformidades, corrección, causa raíz con 5 Porqués e Ishikawa, acciones y mejoras vinculadas a hallazgos." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "ia",
+        eyebrow: "Inteligencia artificial",
+        title: "Inteligencia artificial que le propone, usted decide",
+        intro: "22 asistentes convierten la información de su empresa en borradores listos para revisar. Nada se guarda ni se aprueba sin la revisión de su equipo.",
+        items: [
+          { title: "De la imagen al mapa", text: "Suba la imagen de su mapa de procesos o de su organigrama y Governex la convierte en información editable." },
+          { title: "Contexto en un análisis", text: "PESTEL, DOFA, caracterizaciones, matrices de roles, cargos y recursos, e indicadores sugeridos." },
+          { title: "Causa raíz guiada", text: "Propuesta de 5 Porqués o diagrama de Ishikawa (6M) para cada no conformidad, que su equipo edita." },
+          { title: "Operación asistida", text: "Matriz legal, revisión de requisitos, fichas técnicas, lectura de cotizaciones, control de diseño y evaluación de proveedores." },
+          { title: "Personas y capacitación", text: "Análisis del manual de funciones, lista de verificación del perfil, plan y guía de capacitación." },
+          { title: "Cliente y dirección", text: "Encuestas de satisfacción, análisis de las respuestas y análisis de la revisión por la dirección." },
+        ],
+      },
+      {
+        kind: "chips",
+        id: "beneficios",
+        eyebrow: "Beneficios",
+        title: "Convierta la gestión de calidad en una ventaja estratégica",
+        intro: "Resultados para la organización, no solo funciones.",
+        chips: [
+          "Información del SGC en un solo lugar",
+          "Control de la información documentada",
+          "Trazabilidad del hallazgo a la acción",
+          "Acciones vencidas visibles en el tablero",
+          "No conformidades tratadas con método",
+          "Riesgos, indicadores y revisión conectados",
+          "Desempeño visible para la dirección",
+          "Mejora continua con seguimiento",
+        ],
+      },
+      {
+        kind: "cards",
+        id: "para-quien",
+        eyebrow: "¿Para quién es?",
+        title: "Diseñado para quienes gestionan la calidad",
+        items: [
+          { title: "Pymes", text: "Digitalice su SGC sin un equipo grande de calidad: la IA le ahorra semanas de redacción." },
+          { title: "Empresas certificadas", text: "Mantenga el sistema vivo entre auditorías y llegue preparado a la de seguimiento." },
+          { title: "Empresas en implementación", text: "Pase del diagnóstico a un sistema estructurado con una ruta clara por capítulos." },
+          { title: "Consultores ISO", text: "Gestione a cada cliente en su propio espacio aislado, con la misma estructura de trabajo." },
+          { title: "Responsables de calidad", text: "Deje de perseguir archivos y dedique su tiempo a analizar y mejorar." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "diferenciadores",
+        eyebrow: "Diferenciadores",
+        title: "De la gestión tradicional a una plataforma integrada",
+        items: [
+          { title: "Listado maestro con códigos y estados", text: "En lugar de carpetas compartidas con versiones duplicadas." },
+          { title: "Contexto, procesos, riesgos e indicadores conectados", text: "En lugar de matrices en hojas de cálculo separadas." },
+          { title: "No conformidades con causa raíz y seguimiento", text: "En lugar de acciones correctivas perdidas en el correo." },
+          { title: "Hallazgos vinculados a su no conformidad o mejora", text: "En lugar de hallazgos que se olvidan entre auditorías." },
+          { title: "Revisión por la dirección consolidada", text: "En lugar de un informe armado a mano cada año, con análisis de IA sobre la información de los módulos." },
+          { title: "Permisos por módulo y acción", text: "En lugar de archivos que cualquiera puede editar, con bitácora de actividad." },
         ],
       },
       {
         kind: "text",
-        id: "consultoria-y-software",
-        eyebrow: "Software y acompañamiento",
+        id: "respaldo",
+        eyebrow: "DataSys Latam Group",
         title: "El software de un equipo que implementa sistemas de gestión",
         paragraphs: [
-          "Governex nace de la experiencia de DataSys Latam Group en consultoría de sistemas de gestión ISO. Además de la plataforma, puede contar con nuestro acompañamiento para diseñar e implementar su sistema.",
+          "Governex nace de la experiencia de DataSys Latam Group en consultoría de sistemas de gestión y en desarrollo de software empresarial. Combinamos conocimiento de la norma, automatización de procesos e inteligencia artificial con un principio: primero ordenamos, después automatizamos.",
+          "Si está empezando, puede combinar la plataforma con nuestra consultoría para diseñar e implementar su sistema.",
         ],
         link: { label: "Conozca la consultoría ISO 9001", href: "/servicios/consultoria-iso-9001" },
       },
@@ -1072,20 +1248,64 @@ export const LANDING_PAGES: LandingPage[] = [
     faq: [
       {
         q: "¿Qué es Governex?",
-        a: "Governex es nuestra plataforma de gobernanza corporativa inteligente: simplifica, acelera y asegura el sistema de gestión ISO con inteligencia artificial, y ayuda a gestionar procesos, información, cumplimiento y toma de decisiones.",
+        a: "Es una plataforma web de DataSys Latam Group para gestionar y digitalizar el sistema de gestión de calidad: contexto, procesos, riesgos, operación, auditorías, indicadores y mejora, con asistentes de inteligencia artificial.",
       },
       {
-        q: "¿Cómo puedo ver Governex en funcionamiento?",
-        a: "Solicite una demostración con el formulario de esta página o por WhatsApp y le mostraremos cómo se adapta a su sistema de gestión.",
+        q: "¿Qué problemas resuelve?",
+        a: "Información dispersa en carpetas y hojas de cálculo, procesos desconectados, acciones correctivas sin seguimiento, falta de trazabilidad y auditorías que obligan a reconstruir evidencias.",
       },
       {
-        q: "¿Necesito tener ya un sistema de gestión ISO para usar Governex?",
-        a: "No necesariamente. Si está empezando, puede combinar la plataforma con nuestra consultoría para diseñar e implementar el sistema.",
+        q: "¿Qué módulos incluye?",
+        a: "25 módulos agrupados en contexto y estrategia, riesgos y planificación, procesos y operación, liderazgo y personas, evaluación del desempeño y mejora continua.",
+      },
+      {
+        q: "¿Cómo funciona la gestión documental?",
+        a: "Governex lleva el listado maestro de su información documentada, con codificación automática por tipo, estados (borrador, en revisión, aprobado y obsoleto) controlados por permisos y el vínculo de cada documento con su proceso.",
+      },
+      {
+        q: "¿Cómo controla las versiones de los documentos?",
+        a: "Cada documento registra su versión vigente y su estado dentro del ciclo de vida, y solo los roles autorizados pueden cambiarlos.",
+      },
+      {
+        q: "¿Qué relación tiene con ISO 9001?",
+        a: "Está organizado según la estructura de ISO 9001:2015, del capítulo 4 al 10, para que cada requisito tenga dónde gestionarse. Facilita la gestión, pero no garantiza la certificación, que otorga un organismo de certificación independiente.",
+      },
+      {
+        q: "¿Cómo apoya las auditorías internas?",
+        a: "Con un programa anual de auditorías con enfoque ISO 19011, su calendario y su PDF, el registro de hallazgos y su conversión en no conformidades u oportunidades de mejora.",
+      },
+      {
+        q: "¿Cómo facilita las acciones correctivas?",
+        a: "Cada no conformidad registra su origen, la corrección inmediata, el análisis de causa raíz con 5 Porqués o Ishikawa (que la IA puede proponer) y las acciones con fechas y estado.",
+      },
+      {
+        q: "¿Qué hace la inteligencia artificial?",
+        a: "Propone borradores: análisis del contexto, caracterizaciones, matrices, riesgos, fichas técnicas, encuestas, causa raíz y análisis de la revisión por la dirección, entre otros. Su equipo revisa, edita y decide.",
+      },
+      {
+        q: "¿Mis datos están separados de los de otras empresas?",
+        a: "Sí. Cada organización trabaja en su propio espacio, los archivos se entregan con enlaces temporales y el acceso se controla por rol, módulo y acción.",
+      },
+      {
+        q: "¿Qué empresas pueden usarlo?",
+        a: "Pymes, empresas en implementación o ya certificadas, consultores ISO y responsables de calidad de cualquier sector.",
+      },
+      {
+        q: "¿Sirve para consultores que atienden varias empresas?",
+        a: "Sí. Cada empresa cliente trabaja en su propio espacio aislado, con la misma estructura, y el consultor accede a cada una con su usuario.",
+      },
+      {
+        q: "¿Cómo solicito una demostración?",
+        a: "Con el formulario de esta página o por WhatsApp. Le mostramos la plataforma con un recorrido adaptado a su organización.",
+      },
+      {
+        q: "¿Cómo se implementa y contrata?",
+        a: PRICE_ANSWER,
       },
     ],
     related: [
       { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
-      { label: "Desarrollo de software a la medida para empresas", href: "/servicios/desarrollo-software-medida" },
+      { label: "Novix ERP: software de gestión empresarial", href: "/producto/novix-erp" },
       { label: "Documentar procesos sin llenarse de papeles", href: "/blog/documentar-procesos-empresa-sin-papeles" },
     ],
   },
