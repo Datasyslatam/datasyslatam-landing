@@ -10,7 +10,7 @@ import gestion from "@/assets/banners/gestion-corporativo.webp";
 import transformacion from "@/assets/banners/transformacion-corporativo.webp";
 import redes from "@/assets/hero-evolucion-digital.webp";
 import novixDashboard from "@/assets/novix/novix-dashboard.webp";
-import novixDashboardVentana from "@/assets/novix/novix-dashboard-ventana.webp";
+import novixEquiposSinFondo from "@/assets/novix/novix-equipos-sin-fondo.webp";
 import novixPlanCuentas from "@/assets/novix/novix-plan-cuentas.webp";
 import novixRoles from "@/assets/novix/novix-roles.webp";
 import governexDashboard from "@/assets/governex/governex-dashboard.webp";
@@ -799,7 +799,7 @@ export const LANDING_PAGES: LandingPage[] = [
     lead: "Compras, inventario, calidad, ventas, despachos y contabilidad en un solo sistema. Lo que su equipo registra una vez actualiza el inventario, la cartera y la contabilidad, y cada documento se conecta con el siguiente hasta su asiento contable.",
     heroImage: novixDashboard,
     heroImageAlt: "Tablero ejecutivo de Novix ERP con indicadores de finanzas, compras, inventario y operaciones",
-    heroMockup: novixDashboardVentana,
+    heroMockup: novixEquiposSinFondo,
     heroHighlights: ["53 indicadores con fórmula visible", "13 roles de usuario y roles propios", "Colombia (DIAN) y Venezuela (SENIAT)"],
     primaryCta: "Solicitar una demostración",
     whatsappText: "Hola, quisiera conocer Novix ERP para mi empresa.",
