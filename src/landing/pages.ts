@@ -14,7 +14,7 @@ import novixDashboardVentana from "@/assets/novix/novix-dashboard-ventana.webp";
 import novixPlanCuentas from "@/assets/novix/novix-plan-cuentas.webp";
 import novixRoles from "@/assets/novix/novix-roles.webp";
 import governexDashboard from "@/assets/governex/governex-dashboard.webp";
-import governexDashboardVentana from "@/assets/governex/governex-dashboard-ventana.webp";
+import appGovernexSinFondo from "@/assets/banners/app-governex-sin-fondo.webp";
 import governexMapaProcesos from "@/assets/governex/governex-mapa-procesos.webp";
 import governexRiesgos from "@/assets/governex/governex-riesgos.webp";
 import governexRoles from "@/assets/governex/governex-roles.webp";
@@ -1040,7 +1040,7 @@ export const LANDING_PAGES: LandingPage[] = [
     lead: "Su sistema de gestión de calidad completo y conectado, del contexto de la organización a la mejora continua. Governex reemplaza carpetas, hojas de cálculo y correos por un espacio donde procesos, riesgos, auditorías, indicadores y acciones de mejora trabajan juntos. La inteligencia artificial propone los borradores; su equipo revisa y decide.",
     heroImage: governexDashboard,
     heroImageAlt: "Resumen ejecutivo del sistema de gestión de calidad en Governex con indicadores, cumplimiento por proceso y mapa de riesgos",
-    heroMockup: governexDashboardVentana,
+    heroMockup: appGovernexSinFondo,
     heroHighlights: ["25 módulos del capítulo 4 al 10", "22 asistentes de inteligencia artificial", "Permisos por módulo y acción"],
     primaryCta: "Solicitar demostración",
     whatsappText: "Hola, quiero conocer Governex, el software para sistemas de gestión de calidad.",
