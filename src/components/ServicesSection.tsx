@@ -29,7 +29,7 @@ const services = [
     icon:  Settings,
     color: "text-[#FF8024]",
     tint:  "bg-orange-50",
-    title: "Digitalización de operaciones",
+    title: "Digitalización de procesos",
     desc:  "Optimizamos procesos repetitivos para aumentar productividad y reducir costos.",
     href:  "/servicios/digitalizacion-de-procesos",
   },
