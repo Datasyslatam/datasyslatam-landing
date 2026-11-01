@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import fundador from "@/assets/consultoria-fundador.webp";
+import { heroBtnOrange } from "./heroButtons";
 
 const NORMAS = ["ISO 9001", "ISO 14001", "ISO 45001", "ISO 27001", "ISO 22301", "ISO 21001"];
 
@@ -80,7 +81,7 @@ const ConsultoriaSection = () => (
           <motion.a
             variants={fadeUp}
             href="/servicios/consultoria-iso-9001"
-            className="mt-6 inline-flex items-center gap-1 font-semibold text-blue-600 transition hover:text-blue-800"
+            className={`${heroBtnOrange} btn-shine mt-6 animate-cta-glow hover:animate-none motion-reduce:animate-none`}
           >
             Conozca nuestra consultoría ISO 9001 en Colombia <span aria-hidden="true">→</span>
           </motion.a>
