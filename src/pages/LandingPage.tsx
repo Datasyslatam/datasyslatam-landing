@@ -1,10 +1,77 @@
-import { ArrowRight, CheckCircle2, ChevronDown, Quote } from "lucide-react";
+import {
+  AppWindow,
+  ArrowRight,
+  CheckCircle2,
+  ChevronDown,
+  ClipboardList,
+  CodeXml,
+  Info,
+  Layers,
+  LayoutDashboard,
+  LifeBuoy,
+  ListChecks,
+  MessagesSquare,
+  MonitorSmartphone,
+  MousePointerClick,
+  Network,
+  Quote,
+  Search,
+  Target,
+  TrendingUp,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
 import SiteChrome from "@/components/SiteChrome";
 import ContactSection from "@/components/ContactSection";
 import { heroBtnOrange, heroBtnOutline } from "@/components/heroButtons";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { landingJsonLd } from "@/blog/seo";
-import type { LandingPage as LandingData, LandingSection } from "@/landing/pages";
+import type { LandingCard, LandingIcon, LandingPage as LandingData, LandingSection } from "@/landing/pages";
+
+const ICONS: Record<LandingIcon, LucideIcon> = {
+  web: MonitorSmartphone,
+  ai: MessagesSquare,
+  software: CodeXml,
+  process: ClipboardList,
+  automation: Workflow,
+  search: Search,
+  platform: LayoutDashboard,
+  integration: Network,
+  portal: AppWindow,
+  fit: Target,
+  layers: Layers,
+  checklist: ListChecks,
+  user: MousePointerClick,
+  support: LifeBuoy,
+  growth: TrendingUp,
+};
+
+const IconBadge = ({ icon, size = "md" }: { icon: LandingIcon; size?: "md" | "lg" }) => {
+  const Icon = ICONS[icon];
+  return (
+    <span
+      className={`mb-4 inline-flex items-center justify-center rounded-xl bg-electric-600/10 text-electric-600 ${size === "lg" ? "h-14 w-14" : "h-11 w-11"}`}
+      aria-hidden="true"
+    >
+      <Icon className={size === "lg" ? "h-7 w-7" : "h-5 w-5"} />
+    </span>
+  );
+};
+
+const CardLink = ({ href, label }: { href: string; label: string }) => (
+  <a href={href} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-electric-600 hover:text-electric-500">
+    {label} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+  </a>
+);
+
+const Card = ({ item }: { item: LandingCard }) => (
+  <li className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+    {item.icon ? <IconBadge icon={item.icon} /> : <CheckCircle2 className="mb-3 h-6 w-6 text-electric-600" aria-hidden="true" />}
+    <h3 className="mb-1.5 text-base font-bold text-navy-900">{item.title}</h3>
+    <p className="text-sm leading-relaxed text-[#0b2a5e]/75">{item.text}</p>
+    {item.href && item.linkLabel && <CardLink href={item.href} label={item.linkLabel} />}
+  </li>
+);
 
 const SectionHeader = ({ eyebrow, title, intro, id }: { eyebrow?: string; title: string; intro?: string; id: string }) => (
   <div className="mb-8 max-w-3xl">
@@ -16,7 +83,7 @@ const SectionHeader = ({ eyebrow, title, intro, id }: { eyebrow?: string; title:
   </div>
 );
 
-const Section = ({ section, index }: { section: LandingSection; index: number }) => {
+const Section = ({ section, index, whatsappText }: { section: LandingSection; index: number; whatsappText: string }) => {
   const bg = index % 2 === 0 ? "bg-white" : "bg-[#f5f7fb]";
   const wrap = (children: React.ReactNode) => (
     <section id={section.id} aria-labelledby={`${section.id}-titulo`} className={`${bg} py-14 md:py-16`}>
@@ -31,14 +98,113 @@ const Section = ({ section, index }: { section: LandingSection; index: number })
           <SectionHeader {...section} />
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {section.items.map((item) => (
-              <li key={item.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                <CheckCircle2 className="mb-3 h-6 w-6 text-electric-600" aria-hidden="true" />
-                <h3 className="mb-1.5 text-base font-bold text-navy-900">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-[#0b2a5e]/75">{item.text}</p>
+              <Card key={item.title} item={item} />
+            ))}
+          </ul>
+        </>,
+      );
+    case "services":
+      return wrap(
+        <>
+          <SectionHeader {...section} />
+          <ul className="grid gap-6 lg:grid-cols-3">
+            {section.items.map((item) => (
+              <li
+                key={item.title}
+                className="flex flex-col rounded-2xl border border-gray-200 border-t-4 border-t-electric-600 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+              >
+                <IconBadge icon={item.icon} size="lg" />
+                <h3 className="mb-2 font-heading text-xl font-bold text-navy-900">{item.title}</h3>
+                <p className="mb-4 text-sm leading-relaxed text-[#0b2a5e]/80">{item.text}</p>
+                <ul className="mb-2 space-y-2">
+                  {item.points.map((point) => (
+                    <li key={point} className="flex gap-2 text-sm text-[#0b2a5e]/85">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF8024]" aria-hidden="true" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-auto">
+                  <CardLink href={item.href} label={item.linkLabel} />
+                </div>
               </li>
             ))}
           </ul>
         </>,
+      );
+    case "service":
+      return wrap(
+        <>
+          <div className="grid items-start gap-10 lg:grid-cols-2">
+            <div className={section.reverse ? "lg:order-2" : undefined}>
+              <SectionHeader {...section} />
+              <h3 className="mb-3 text-base font-bold text-navy-900">{section.examplesTitle}</h3>
+              <ul className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+                {section.examples.map((example) => (
+                  <li key={example} className="flex gap-2 text-sm leading-relaxed text-[#0b2a5e]/85">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-electric-600" aria-hidden="true" />
+                    <span>{example}</span>
+                  </li>
+                ))}
+              </ul>
+              {section.note && (
+                <p className="mt-5 flex gap-2 rounded-xl border border-electric-600/20 bg-electric-600/5 p-4 text-sm leading-relaxed text-[#0b2a5e]/85">
+                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-electric-600" aria-hidden="true" />
+                  <span>{section.note}</span>
+                </p>
+              )}
+              {section.link && <CardLink href={section.link.href} label={section.link.label} />}
+            </div>
+            <figure className="lg:sticky lg:top-24">
+              <img
+                src={section.image}
+                alt={section.imageAlt}
+                width={section.width}
+                height={section.height}
+                loading="lazy"
+                decoding="async"
+                className="w-full rounded-2xl border border-gray-200 shadow-card"
+              />
+              {section.caption && <figcaption className="mt-3 text-center text-sm text-steel-500">{section.caption}</figcaption>}
+            </figure>
+          </div>
+          <div className="mt-10">
+            <h3 className="mb-4 text-base font-bold text-navy-900">{section.benefitsTitle}</h3>
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {section.benefits.map((benefit) => (
+                <li key={benefit} className="flex items-start gap-2.5 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-[#0b2a5e]">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF8024]" aria-hidden="true" />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>,
+      );
+    case "cta":
+      return (
+        <section
+          id={section.id}
+          aria-labelledby={`${section.id}-titulo`}
+          className="relative overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 py-16 text-white"
+        >
+          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-electric-500/25 blur-3xl" aria-hidden="true" />
+          <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#FF8024]/15 blur-3xl" aria-hidden="true" />
+          <div className="container relative mx-auto max-w-3xl px-4 text-center">
+            <h2 id={`${section.id}-titulo`} className="mb-4 font-heading text-2xl font-bold md:text-4xl">
+              {section.title}
+            </h2>
+            <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-white/80 md:text-lg">{section.text}</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a href="#contacto" className={`${heroBtnOrange} btn-shine`}>
+                {section.primary}
+              </a>
+              <a href={whatsappUrl(whatsappText)} target="_blank" rel="noopener noreferrer" className={heroBtnOutline}>
+                {section.secondary}
+              </a>
+            </div>
+          </div>
+        </section>
       );
     case "steps":
       return wrap(
@@ -206,9 +372,15 @@ const LandingPage = ({ page }: { page: LandingData }) => (
             <a href="#contacto" className={heroBtnOrange}>
               {page.primaryCta}
             </a>
-            <a href={whatsappUrl(page.whatsappText)} target="_blank" rel="noopener noreferrer" className={heroBtnOutline}>
-              Hablar por WhatsApp
-            </a>
+            {page.secondaryCta ? (
+              <a href={page.secondaryCta.href} className={heroBtnOutline}>
+                {page.secondaryCta.label}
+              </a>
+            ) : (
+              <a href={whatsappUrl(page.whatsappText)} target="_blank" rel="noopener noreferrer" className={heroBtnOutline}>
+                Hablar por WhatsApp
+              </a>
+            )}
           </div>
           {page.heroHighlights && (
             <ul className="mt-7 flex flex-wrap gap-2">
@@ -235,7 +407,7 @@ const LandingPage = ({ page }: { page: LandingData }) => (
     </section>
 
     {page.sections.map((section, i) => (
-      <Section key={section.id} section={section} index={i} />
+      <Section key={section.id} section={section} index={i} whatsappText={page.whatsappText} />
     ))}
 
     {page.testimonials.length > 0 && (
@@ -289,7 +461,7 @@ const LandingPage = ({ page }: { page: LandingData }) => (
       </div>
     </section>
 
-    <ContactSection subject={page.leadSubject} />
+    <ContactSection subject={page.leadSubject} needOptions={page.leadNeeds} />
 
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(landingJsonLd(page)) }} />
   </SiteChrome>

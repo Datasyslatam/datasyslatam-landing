@@ -3,7 +3,8 @@
 // Todo el contenido sale de información ya publicada en el sitio: no se inventan cifras, clientes ni testimonios.
 import fundador from "@/assets/consultoria-fundador.webp";
 import appSoft from "@/assets/banners/app-producto-soft.webp";
-import appSoftSinFondo from "@/assets/banners/app-producto-soft-sin-fondo.webp";
+import desarrolloSoftwareIa from "@/assets/banners/desarrollo-software-ia-sin-fondo.webp";
+import asistenteNovaMovil from "@/assets/banners/asistente-nova-movil.webp";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
@@ -23,9 +24,31 @@ import governexRoles from "@/assets/governex/governex-roles.webp";
 const PRICE_ANSWER =
   "No trabajamos con cotizaciones estandarizadas: cada empresa es distinta. Tras un diagnóstico a la medida de su operación le presentamos una ruta de acción clara, con alcance, etapas y plazos, sin ningún compromiso comercial, para que invierta solo en lo que realmente le genera retorno.";
 
+/** Iconos disponibles para tarjetas y servicios (LandingPage.tsx los traduce a íconos de lucide). */
+export type LandingIcon =
+  | "web"
+  | "ai"
+  | "software"
+  | "process"
+  | "automation"
+  | "search"
+  | "platform"
+  | "integration"
+  | "portal"
+  | "fit"
+  | "layers"
+  | "checklist"
+  | "user"
+  | "support"
+  | "growth";
+
 export interface LandingCard {
   title: string;
   text: string;
+  /** Sin ícono, la tarjeta muestra una marca de verificación. */
+  icon?: LandingIcon;
+  href?: string;
+  linkLabel?: string;
 }
 
 export interface Testimonial {
@@ -55,6 +78,38 @@ export type LandingSection =
       height: number;
       reverse?: boolean;
     }
+  /** Líneas de servicio en tarjetas destacadas, cada una con sus puntos clave y un enlace a su detalle. */
+  | {
+      kind: "services";
+      id: string;
+      eyebrow?: string;
+      title: string;
+      intro?: string;
+      items: { icon: LandingIcon; title: string; text: string; points: string[]; href: string; linkLabel: string }[];
+    }
+  /** Detalle de una línea de servicio: qué se puede desarrollar, una imagen real y sus beneficios. */
+  | {
+      kind: "service";
+      id: string;
+      eyebrow?: string;
+      title: string;
+      intro: string;
+      examplesTitle: string;
+      examples: string[];
+      benefitsTitle: string;
+      benefits: string[];
+      /** Aclaración sobre el alcance (p. ej. de qué dependen las capacidades de un asistente de IA). */
+      note?: string;
+      image: string;
+      imageAlt: string;
+      width: number;
+      height: number;
+      caption?: string;
+      reverse?: boolean;
+      link?: { label: string; href: string };
+    }
+  /** Franja de llamado a la acción: el botón principal lleva al formulario y el secundario a WhatsApp. */
+  | { kind: "cta"; id: string; title: string; text: string; primary: string; secondary: string }
   | {
       kind: "profile";
       id: string;
@@ -99,12 +154,16 @@ export interface LandingPage {
   /** Datos breves y verificables que se muestran bajo los botones del héroe. */
   heroHighlights?: string[];
   primaryCta: string;
+  /** Segundo botón del héroe. Por defecto, «Hablar por WhatsApp». */
+  secondaryCta?: { label: string; href: string };
   whatsappText: string;
   /** Asunto del correo cuando alguien llena el formulario de esta página. */
   leadSubject: string;
+  /** Opciones de «¿Qué necesita?» en el formulario; la elegida se suma al asunto para clasificar el prospecto. */
+  leadNeeds?: string[];
   breadcrumb: string;
   schema:
-    | { type: "Service"; name: string; serviceType: string }
+    | { type: "Service"; name: string; serviceType: string; offers?: { name: string; description: string }[] }
     | { type: "SoftwareApplication"; name: string; category: string };
   sections: LandingSection[];
   /** Solo testimonios reales y autorizados por el cliente. Vacío = la sección no se muestra. */
@@ -230,103 +289,327 @@ export const LANDING_PAGES: LandingPage[] = [
   },
   {
     path: "/servicios/desarrollo-software-medida",
-    metaTitle: "Desarrollo de software a la medida para empresas | DataSys",
+    metaTitle: "Desarrollo de software a la medida, apps web e IA | DataSys",
     metaDescription:
-      "Desarrollo de software a la medida para empresas en Colombia: aplicaciones web y móviles, sistemas empresariales e integración de sistemas con React, Python y Node.js.",
-    eyebrow: "Desarrollo de software",
-    h1: "Desarrollo de software a la medida para empresas",
-    lead: "Construimos aplicaciones web, móviles y sistemas empresariales adaptados a sus procesos, integrados con lo que ya usa, para que su operación deje de depender de hojas de cálculo y tareas manuales.",
+      "Desarrollo de software a la medida, aplicaciones web y asistentes de IA para empresas en Colombia y Latinoamérica. Cuéntenos su idea y solicite una asesoría.",
+    metaKeywords: [
+      "desarrollo de software a la medida",
+      "desarrollo de aplicaciones web",
+      "diseño de aplicaciones web empresariales",
+      "desarrollo de software empresarial",
+      "desarrollo de asistentes de inteligencia artificial",
+      "asistentes de IA para empresas",
+      "automatización de procesos empresariales",
+      "soluciones tecnológicas empresariales",
+      "desarrollo de sistemas de información",
+      "integración de inteligencia artificial en empresas",
+    ],
+    shareImage: {
+      src: "/og-desarrollo-software.jpg",
+      alt: "DataSys Latam Group: aplicaciones web, asistentes de inteligencia artificial y software a la medida para empresas",
+      width: 1200,
+      height: 630,
+    },
+    eyebrow: "Software a la medida, aplicaciones web e IA",
+    h1: "Creamos soluciones digitales que hacen evolucionar su empresa",
+    lead: "Desde aplicaciones web hasta asistentes de inteligencia artificial y software a la medida: creamos soluciones digitales que conectan sus procesos, optimizan su operación y convierten sus ideas en herramientas funcionales.",
     heroImage: appSoft,
-    heroImageAlt: "Plataforma de gestión empresarial desarrollada a la medida por DataSys Latam Group",
-    heroMockup: appSoftSinFondo,
-    primaryCta: "Cotizar mi proyecto",
-    whatsappText: "Hola, quiero cotizar un desarrollo de software a la medida para mi empresa.",
+    heroImageAlt: "Aplicación web de gestión y asistente de inteligencia artificial en un celular, desarrollados por DataSys Latam Group",
+    heroMockup: desarrolloSoftwareIa,
+    heroHighlights: ["Aplicaciones web", "Asistentes de IA", "Software a la medida"],
+    primaryCta: "Solicitar asesoría",
+    secondaryCta: { label: "Conocer nuestros servicios", href: "#nuestros-servicios" },
+    whatsappText: "Hola, quiero asesoría para desarrollar una solución tecnológica para mi empresa.",
     leadSubject: "Nuevo lead: Desarrollo de software a la medida (sitio web)",
+    leadNeeds: ["Aplicación web", "Asistente de IA", "Software a la medida", "Aún no lo sé"],
     breadcrumb: "Desarrollo de software a la medida",
-    schema: { type: "Service", name: "Desarrollo de software a la medida para empresas", serviceType: "Desarrollo de software a la medida" },
+    schema: {
+      type: "Service",
+      name: "Desarrollo de software a la medida para empresas",
+      serviceType: "Desarrollo de software a la medida",
+      offers: [
+        {
+          name: "Diseño y desarrollo de aplicaciones web",
+          description: "Aplicaciones web empresariales para digitalizar procesos, centralizar información y gestionar operaciones desde cualquier dispositivo.",
+        },
+        {
+          name: "Desarrollo de asistentes de inteligencia artificial",
+          description: "Asistentes conversacionales que consultan la información autorizada de la empresa para atender clientes y apoyar a los equipos.",
+        },
+        {
+          name: "Desarrollo de software a la medida",
+          description: "Sistemas de información, automatización de procesos e integración de sistemas ajustados a las reglas de negocio de cada organización.",
+        },
+      ],
+    },
     sections: [
       {
-        kind: "cards",
-        id: "que-desarrollamos",
-        eyebrow: "Qué desarrollamos",
-        title: "Software a la medida para cada necesidad de su empresa",
+        kind: "services",
+        id: "nuestros-servicios",
+        eyebrow: "Nuestros servicios",
+        title: "Transformamos sus ideas y procesos en soluciones digitales inteligentes",
+        intro: "Diseñamos y desarrollamos aplicaciones web, asistentes de inteligencia artificial y software a la medida que responden a las necesidades reales de su negocio. Combinamos ingeniería de software e inteligencia artificial para crear herramientas que optimizan procesos, conectan información y facilitan la toma de decisiones.",
         items: [
-          { title: "Aplicaciones web y móviles", text: "Aplicaciones escalables, modernas y seguras para sus clientes, su equipo o sus proveedores." },
-          { title: "Sistemas empresariales", text: "Plataformas de gestión y ERP a la medida que centralizan procesos que hoy están dispersos." },
-          { title: "Integración de sistemas", text: "Conectamos sistemas, datos, APIs y servicios existentes para no digitar los mismos datos dos veces." },
-          { title: "Automatización e inteligencia artificial", text: "Integramos IA para automatizar procesos, analizar información y crear nuevas capacidades." },
-          { title: "Datos y tableros", text: "Transformamos sus datos en indicadores para tomar mejores decisiones." },
-          { title: "Soporte y mantenimiento", text: "Acompañamiento técnico para la continuidad y evolución de su solución." },
+          {
+            icon: "web",
+            title: "Aplicaciones web",
+            text: "Plataformas que su equipo, sus clientes o sus proveedores usan desde el navegador para gestionar la operación y consultar información.",
+            points: ["Acceso desde computador, tableta o celular", "Información centralizada y organizada", "Crecen junto con su negocio"],
+            href: "#aplicaciones-web",
+            linkLabel: "Conocer más sobre aplicaciones web",
+          },
+          {
+            icon: "ai",
+            title: "Asistentes de inteligencia artificial",
+            text: "Asistentes que conversan con sus clientes o su equipo y responden con la información que su empresa autoriza.",
+            points: ["Respuestas ágiles a cualquier hora", "Menos consultas repetitivas", "Conectados a sus documentos y sistemas"],
+            href: "#asistentes-ia",
+            linkLabel: "Conocer más sobre asistentes de IA",
+          },
+          {
+            icon: "software",
+            title: "Software a la medida",
+            text: "Herramientas construidas alrededor de sus procesos y reglas de negocio, cuando las soluciones estándar no se ajustan a su forma de trabajar.",
+            points: ["Se adapta a sus procesos", "Automatiza tareas manuales", "Usted decide cómo evoluciona"],
+            href: "#software-a-la-medida",
+            linkLabel: "Conocer más sobre software a la medida",
+          },
+        ],
+      },
+      {
+        kind: "service",
+        id: "aplicaciones-web",
+        eyebrow: "Diseño y desarrollo de aplicaciones web",
+        title: "Aplicaciones web que impulsan la operación de su empresa",
+        intro: "Diseñamos y desarrollamos aplicaciones web empresariales para digitalizar procesos, centralizar información y facilitar la gestión de sus operaciones. Plataformas funcionales e intuitivas que se usan desde el navegador y se adaptan a la forma de trabajar de cada organización.",
+        examplesTitle: "Aplicaciones web que podemos desarrollar",
+        examples: [
+          "Sistemas de gestión administrativa y operativa",
+          "Plataformas de gestión empresarial",
+          "Portales para clientes, proveedores y colaboradores",
+          "Paneles de control y tableros de indicadores",
+          "Sistemas de registro, seguimiento y trazabilidad",
+          "Plataformas de gestión documental",
+          "Aplicaciones web progresivas (PWA)",
+          "Sistemas de información con bases de datos centralizadas",
+        ],
+        benefitsTitle: "Beneficios de una aplicación web empresarial",
+        benefits: [
+          "Acceso a la información desde diferentes dispositivos",
+          "Actividades y procedimientos digitalizados",
+          "Datos centralizados y organizados",
+          "Mejor control y seguimiento de las operaciones",
+          "Experiencias de uso intuitivas",
+          "Nuevas funcionalidades a medida que su negocio crece",
+        ],
+        image: novixRoles,
+        imageAlt: "Módulo de roles y permisos de Novix ERP, aplicación web de gestión empresarial desarrollada por DataSys Latam Group",
+        width: 1242,
+        height: 786,
+        caption: "Novix ERP, nuestra aplicación web de gestión empresarial, con roles y permisos por usuario.",
+      },
+      {
+        kind: "service",
+        id: "asistentes-ia",
+        eyebrow: "Asistentes de inteligencia artificial",
+        title: "Asistentes de IA que trabajan con la información de su negocio",
+        intro: "Integramos inteligencia artificial en sus procesos mediante asistentes capaces de conversar con los usuarios, consultar información, responder preguntas y apoyar actividades operativas y administrativas.",
+        examplesTitle: "Asistentes de IA que podemos desarrollar",
+        examples: [
+          "Asistentes virtuales para atención al cliente",
+          "Asistentes internos para colaboradores",
+          "Consulta de documentos empresariales",
+          "Búsqueda y recuperación de información",
+          "Chatbots inteligentes para su sitio web",
+          "Apoyo a procesos administrativos",
+          "Integración de IA con sus aplicaciones y sistemas",
+          "Automatización de consultas y tareas con IA",
+        ],
+        note: "Cada asistente hace lo que su proyecto define: sus capacidades dependen de las integraciones, los permisos y las fuentes de información que se configuren. Responde con base en esa información y, cuando un caso lo requiere, lo deriva a una persona de su equipo.",
+        benefitsTitle: "Beneficios de un asistente de IA para su empresa",
+        benefits: [
+          "Información disponible de manera ágil",
+          "Menos consultas operativas repetitivas",
+          "Mejor experiencia de atención al usuario",
+          "Acceso conversacional al conocimiento de su empresa",
+          "Apoyo a sus equipos en el día a día",
+          "Inteligencia artificial integrada a sus procesos actuales",
+        ],
+        image: asistenteNovaMovil,
+        imageAlt: "Nova, asistente virtual con inteligencia artificial de DataSys Latam Group, abierto en un celular",
+        width: 1200,
+        height: 800,
+        caption: "Nova, el asistente de este sitio: responde con el contenido publicado por DataSys y conecta con un asesor cuando hace falta.",
+        reverse: true,
+        link: { label: "Vea cómo aplicamos la inteligencia artificial en las empresas", href: "/servicios/inteligencia-artificial-empresas" },
+      },
+      {
+        kind: "service",
+        id: "software-a-la-medida",
+        eyebrow: "Desarrollo de software a la medida",
+        title: "Software diseñado alrededor de las necesidades de su negocio",
+        intro: "Desarrollamos software empresarial para organizaciones que necesitan herramientas ajustadas a sus procesos, reglas de negocio y objetivos estratégicos. No todas las empresas funcionan igual: por eso analizamos cada necesidad antes de proponer una solución.",
+        examplesTitle: "Software a la medida que podemos desarrollar",
+        examples: [
+          "Sistemas de información empresarial",
+          "Software administrativo y operativo",
+          "Sistemas de gestión de procesos",
+          "Plataformas de control y seguimiento",
+          "Inventarios y gestión de recursos",
+          "Aplicaciones para automatizar procesos",
+          "Integraciones entre diferentes sistemas",
+          "Modernización de aplicaciones existentes",
+          "Soluciones con funciones de inteligencia artificial",
+        ],
+        benefitsTitle: "Beneficios del software a la medida",
+        benefits: [
+          "Se adapta a los procesos de su organización",
+          "Automatiza actividades y reduce tareas manuales",
+          "Mayor trazabilidad de la información",
+          "Integración con sus sistemas, cuando es técnicamente viable",
+          "Flexibilidad para incorporar nuevas funcionalidades",
+          "Control sobre la evolución de su solución",
+        ],
+        image: governexRiesgos,
+        imageAlt: "Matriz de riesgos y oportunidades de Governex, software con funciones de inteligencia artificial desarrollado por DataSys Latam Group",
+        width: 1885,
+        height: 916,
+        caption: "Governex, nuestro software para sistemas de gestión ISO, propone riesgos con IA para que el equipo los revise y confirme.",
+        link: { label: "Vea cómo digitalizamos y automatizamos procesos", href: "/servicios/digitalizacion-de-procesos" },
+      },
+      {
+        kind: "cards",
+        id: "casos-de-uso",
+        eyebrow: "Casos de uso",
+        title: "¿Qué podemos desarrollar para su empresa?",
+        intro: "Estas son algunas de las necesidades que más resolvemos con soluciones tecnológicas empresariales:",
+        items: [
+          { icon: "process", title: "Digitalización de procesos manuales", text: "Formatos en papel, correos y hojas de cálculo convertidos en flujos digitales con responsables, fechas y registros." },
+          { icon: "automation", title: "Automatización de tareas administrativas", text: "Reportes, aprobaciones, recordatorios y cálculos que se ejecutan solos y liberan tiempo de su equipo." },
+          { icon: "search", title: "Consulta inteligente de información", text: "Asistentes que responden preguntas sobre sus documentos, políticas o productos en lenguaje natural." },
+          { icon: "platform", title: "Plataformas de gestión", text: "Sistemas para controlar operaciones, inventarios, solicitudes o proyectos en un solo lugar." },
+          { icon: "integration", title: "Integración de sistemas empresariales", text: "Conectamos su contabilidad, ERP, CRM, sitio web u otras herramientas para no digitar los mismos datos dos veces." },
+          { icon: "portal", title: "Portales y aplicaciones personalizadas", text: "Portales para clientes, proveedores o colaboradores, con acceso seguro a la información que cada uno necesita." },
+        ],
+      },
+      {
+        kind: "cards",
+        id: "soluciones-desarrolladas",
+        eyebrow: "Lo que ya construimos",
+        title: "Soluciones desarrolladas por DataSys",
+        intro: "Nuestros propios productos muestran cómo combinamos aplicaciones web, software a la medida e inteligencia artificial.",
+        items: [
+          {
+            icon: "platform",
+            title: "Novix ERP",
+            text: "Sistema de gestión empresarial web con compras, almacén, calidad, ventas, contabilidad y tableros gerenciales, con roles y permisos por usuario.",
+            href: "/producto/novix-erp",
+            linkLabel: "Conocer Novix ERP",
+          },
+          {
+            icon: "checklist",
+            title: "Governex",
+            text: "Software para gestionar sistemas ISO: procesos, riesgos, auditorías, no conformidades e indicadores, con asistentes de IA que proponen borradores.",
+            href: "/producto/governex",
+            linkLabel: "Conocer Governex",
+          },
+          {
+            icon: "ai",
+            title: "Nova, asistente del sitio",
+            text: "Responde preguntas con el contenido publicado en este sitio, guía el autodiagnóstico y conecta con un asesor por WhatsApp. Pruébelo en el botón de la esquina inferior.",
+          },
+        ],
+      },
+      {
+        kind: "steps",
+        id: "metodologia",
+        eyebrow: "Metodología",
+        title: "Nuestra metodología de trabajo, en cinco etapas",
+        items: [
+          { title: "Diagnóstico de la necesidad", text: "Entendemos su negocio, sus procesos, sus usuarios y el problema que quiere resolver." },
+          { title: "Requerimientos y alcance", text: "Definimos qué hará la solución, sus prioridades, etapas y plazos, antes de escribir código." },
+          { title: "Experiencia de usuario y arquitectura", text: "Diseñamos pantallas claras y la arquitectura técnica que soportará el crecimiento." },
+          { title: "Desarrollo, pruebas y validación", text: "Construimos por entregas, probamos cada funcionalidad y la validamos con su equipo." },
+          { title: "Implementación y evolución", text: "Ponemos la solución en marcha, acompañamos a sus usuarios y la mejoramos según su operación." },
         ],
       },
       {
         kind: "chips",
         id: "tecnologias",
         eyebrow: "Tecnologías",
-        title: "Desarrollo de software a la medida para empresas en React y Python",
+        title: "Tecnologías con las que desarrollamos su solución",
         intro: "Trabajamos con tecnologías modernas, probadas y con amplio soporte, elegidas según lo que su proyecto necesita:",
         chips: ["React", "Python", "Django", "Node.js", "PostgreSQL", "MySQL", "Docker", "GitHub", "Power BI", "OpenAI"],
       },
       {
-        kind: "steps",
-        id: "metodologia",
-        eyebrow: "Metodología",
-        title: "Un proceso claro, de la idea al software en producción",
+        kind: "cards",
+        id: "por-que-datasys",
+        eyebrow: "Por qué DataSys",
+        title: "¿Por qué desarrollar su solución con DataSys?",
         items: [
-          { title: "Descubrimos", text: "Entendemos su negocio, procesos, usuarios y objetivos." },
-          { title: "Diseñamos", text: "Definimos la arquitectura de la solución y la experiencia de usuario." },
-          { title: "Desarrollamos", text: "Construimos la solución con tecnologías modernas y seguras." },
-          { title: "Integramos", text: "Conectamos sistemas, datos, APIs y servicios existentes." },
-          { title: "Implementamos", text: "Llevamos la solución al entorno productivo." },
-          { title: "Evolucionamos", text: "Medimos resultados y mejoramos continuamente." },
+          { icon: "fit", title: "Soluciones adaptadas a su negocio", text: "Partimos de cómo opera su empresa, no de una plantilla. Si una herramienta existente le sirve, también se lo diremos." },
+          { icon: "layers", title: "Ingeniería de software e IA", text: "Integramos inteligencia artificial donde aporta valor, dentro de software bien construido y seguro." },
+          { icon: "checklist", title: "Primero el proceso, después el código", text: "Con criterio de sistemas de gestión ordenamos el proceso antes de automatizarlo, para resolver el problema correcto." },
+          { icon: "user", title: "Pensado para quien lo usa", text: "Diseñamos interfaces claras y las validamos con sus usuarios para facilitar la adopción." },
+          { icon: "support", title: "Acompañamiento en todo el ciclo", text: "Del diagnóstico a la puesta en marcha, con soporte y mantenimiento después de implementar." },
+          { icon: "growth", title: "Visión de crecimiento", text: "Arquitecturas que permiten sumar módulos, usuarios e integraciones cuando su negocio lo necesite." },
         ],
       },
       {
-        kind: "case",
-        id: "caso",
-        eyebrow: "Caso de éxito",
-        title: "Del proceso manual a una plataforma integrada",
-        name: "Plataforma de gestión empresarial",
-        challenge: "Procesos manuales y dispersos.",
-        solution: "Desarrollo de una plataforma web empresarial integrada.",
-        tech: "Python · React · Node.js · PostgreSQL · APIs",
-        result: "Centralización de procesos y disponibilidad de información en tiempo real.",
-      },
-      {
-        kind: "text",
-        id: "primero-procesos",
-        eyebrow: "Nuestro enfoque",
-        title: "Primero ordenamos el proceso, después lo automatizamos",
-        paragraphs: [
-          "Automatizar un proceso desordenado solo hace más rápido el desorden. Por eso, antes de escribir código, entendemos y ordenamos el proceso con criterio de sistemas de gestión; así el software resuelve el problema correcto.",
-        ],
-        link: { label: "Lea nuestros artículos de tecnología", href: "/blog?categoria=tecnologia" },
+        kind: "cta",
+        id: "su-proyecto",
+        title: "Su próximo proyecto tecnológico comienza con una idea",
+        text: "Cuéntenos qué necesita su empresa. Analizamos su requerimiento y le orientamos sobre la solución tecnológica más adecuada.",
+        primary: "Solicitar una asesoría",
+        secondary: "Hablar con un asesor",
       },
     ],
     testimonials: [],
     faq: [
       {
-        q: "¿Cuánto cuesta un desarrollo de software a la medida?",
-        a: "Depende del alcance, del número de usuarios y de las integraciones necesarias. Tras entender su necesidad le entregamos una propuesta con alcance, etapas y plazos.",
+        q: "¿Qué tipo de aplicaciones web desarrolla DataSys?",
+        a: "Aplicaciones web empresariales a la medida: sistemas de gestión administrativa y operativa, portales para clientes, proveedores o colaboradores, tableros de indicadores, sistemas de seguimiento y trazabilidad, gestión documental y aplicaciones web progresivas (PWA), que se usan desde el celular como una app.",
       },
       {
-        q: "¿Pueden integrar el nuevo software con los sistemas que ya usamos?",
-        a: "Sí. La integración de sistemas es uno de nuestros servicios: conectamos sistemas, datos, APIs y servicios existentes para que la información fluya sin digitarla dos veces.",
+        q: "¿Puedo solicitar un software diseñado específicamente para mi empresa?",
+        a: "Sí. Analizamos sus procesos, reglas de negocio y usuarios, y diseñamos la solución alrededor de ellos. Si una herramienta que ya existe resuelve bien su necesidad, también se lo diremos.",
+      },
+      {
+        q: "¿Qué es un asistente de inteligencia artificial empresarial?",
+        a: "Es un asistente conversacional que responde preguntas y apoya tareas usando la información de su empresa: documentos, políticas, catálogos o datos de sus sistemas. Sus capacidades dependen de las fuentes de información, las integraciones y los permisos que se definan en el proyecto, y las decisiones siguen a cargo de su equipo.",
+      },
+      {
+        q: "¿Es posible integrar inteligencia artificial con mis sistemas actuales?",
+        a: "En muchos casos, sí: cuando el sistema permite conectarse por API, base de datos o exportación de archivos. En el diagnóstico revisamos qué tan viable es la integración y qué información puede usar el asistente de forma segura.",
+      },
+      {
+        q: "¿Puedo automatizar procesos que hoy hago en Excel?",
+        a: "Sí, es una de las necesidades más frecuentes. Llevamos esas hojas de cálculo a una aplicación con datos centralizados, validaciones, permisos por usuario y reportes automáticos, y trasladamos la información que ya tiene.",
+      },
+      {
+        q: "¿Cómo comienza un proyecto de desarrollo de software?",
+        a: "Con una conversación sin compromiso para entender su necesidad. Después hacemos el diagnóstico y definimos el alcance, las etapas y los plazos antes de empezar a desarrollar. Puede solicitar la asesoría en el formulario de esta página o por WhatsApp.",
+      },
+      {
+        q: "¿Cuánto cuesta un desarrollo de software a la medida?",
+        a: PRICE_ANSWER,
       },
       {
         q: "¿Desarrollan aplicaciones móviles además de web?",
-        a: "Sí. Desarrollamos aplicaciones web, móviles y sistemas empresariales adaptados a sus procesos.",
+        a: "Sí. Además de aplicaciones web, desarrollamos aplicaciones móviles y aplicaciones web progresivas (PWA), que se instalan en el celular desde el navegador. Le recomendamos la opción que mejor se ajuste a sus usuarios.",
       },
       {
-        q: "¿Qué pasa después de entregar el software?",
-        a: "Ofrecemos soporte y mantenimiento para la continuidad y evolución de su solución, y medimos resultados para mejorarla de forma continua.",
+        q: "¿DataSys ofrece soporte y mantenimiento después de implementar una solución?",
+        a: "Sí. Acompañamos la puesta en marcha y ofrecemos soporte y mantenimiento para la continuidad de la solución, además de su evolución con nuevas funcionalidades cuando su negocio lo requiera.",
       },
     ],
     related: [
-      { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
+      { label: "Inteligencia artificial para empresas", href: "/servicios/inteligencia-artificial-empresas" },
+      { label: "Digitalización y automatización de procesos", href: "/servicios/digitalizacion-de-procesos" },
+      { label: "Analítica de datos para empresas", href: "/servicios/analitica-de-datos" },
       { label: "Novix ERP: software de gestión empresarial", href: "/producto/novix-erp" },
       { label: "Governex: software para sistemas de gestión ISO", href: "/producto/governex" },
-      { label: "Ciberseguridad básica para pymes", href: "/blog/ciberseguridad-basica-pymes-bajo-costo" },
+      { label: "Artículos de tecnología en el blog", href: "/blog?categoria=tecnologia" },
     ],
   },
   {
