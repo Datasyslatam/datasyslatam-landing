@@ -2,9 +2,11 @@
 // en el inicio el navegador solo se desplaza hasta la sección.
 export const NAV_LINKS = [
   { label: "Inicio", href: "/#inicio" },
+  { label: "Asesoría", href: "/#consultoria" },
   { label: "Nosotros", href: "/#nosotros" },
   { label: "Soluciones", href: "/#soluciones" },
   { label: "Servicios", href: "/#servicios" },
+  { label: "Productos", href: "/#productos" },
   { label: "Blog", href: "/blog" },
   { label: "Contacto", href: "/#contacto" },
 ];
