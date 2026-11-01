@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
@@ -64,15 +64,29 @@ const hl = (str: string): ReactNode[] => {
 const HeroSection = () => {
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(1);
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(true);
+
+  // En el celular las diapositivas no miden lo mismo (de una pantalla a casi una pantalla y media). Si el carrusel
+  // cambia mientras el visitante está más abajo, todo lo que sigue sube o baja y el salto a una sección del menú
+  // (/#servicios, /#contacto…) queda descuadrado. Por eso solo rota mientras el héroe está a la vista.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.25 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Se reinicia en cada cambio de diapositiva para que la navegación manual tenga el intervalo completo.
   useEffect(() => {
+    if (!visible) return;
     const timer = window.setTimeout(() => {
       setDirection(1);
       setActive((c) => (c + 1) % TOTAL_SLIDES);
     }, INTERVAL_MS);
     return () => window.clearTimeout(timer);
-  }, [active]);
+  }, [active, visible]);
 
   const go = (dir: number) => {
     setDirection(dir);
@@ -96,10 +110,12 @@ const HeroSection = () => {
     }),
   };
 
-  if (active === 0) return <HeroPyme active={active} total={TOTAL_SLIDES} go={go} />;
-  if (active === 1) return <HeroPremium active={active} total={TOTAL_SLIDES} go={go} />;
+  const wrap = (slide: ReactNode) => <div ref={ref}>{slide}</div>;
 
-  return (
+  if (active === 0) return wrap(<HeroPyme active={active} total={TOTAL_SLIDES} go={go} />);
+  if (active === 1) return wrap(<HeroPremium active={active} total={TOTAL_SLIDES} go={go} />);
+
+  return wrap(
     <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900">
       <AnimatePresence mode="sync">
         <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }}>
