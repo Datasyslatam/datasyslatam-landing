@@ -82,6 +82,10 @@ export interface LandingPage {
   /** Etiqueta <title> (palabra clave al inicio, máximo ~60 caracteres). */
   metaTitle: string;
   metaDescription: string;
+  /** Términos objetivo de la página (meta keywords). Google no los usa para posicionar; sirven de referencia y para otros buscadores. */
+  metaKeywords?: string[];
+  /** Imagen propia para compartir en redes (1200×630, en /public). Si falta, se comparte la foto del héroe. */
+  shareImage?: { src: string; alt: string; width: number; height: number };
   eyebrow: string;
   h1: string;
   lead: string;
@@ -112,9 +116,31 @@ export interface LandingPage {
 export const LANDING_PAGES: LandingPage[] = [
   {
     path: "/servicios/consultoria-iso-9001",
-    metaTitle: "Consultoría ISO 9001 en Colombia | DataSys Latam Group",
+    metaTitle: "Consultoría ISO 9001:2026 en Colombia | DataSys Latam Group",
     metaDescription:
-      "Consultoría ISO 9001 en Colombia y Latinoamérica: diagnóstico, implementación, auditoría interna y preparación para la certificación con la edición 2026.",
+      "Implementamos ISO 9001:2026 en Colombia y Latinoamérica: diagnóstico, transición desde 2015, auditoría interna y preparación para certificar. ¡Hablemos hoy!",
+    metaKeywords: [
+      "consultoria iso 9001",
+      "consultoria iso barranquilla",
+      "certificacion iso 9001 barranquilla",
+      "auditoria iso barranquilla",
+      "consultores de calidad atlantico",
+      "consultoria iso colombia",
+      "implementacion iso 9001 colombia",
+      "transicion iso 9001 2026 colombia",
+      "certificacion de calidad empresas colombia",
+      "consultoria iso para pymes colombia",
+      "consultoria iso latinoamerica",
+      "asesoria certificacion iso latam",
+      "sistemas de gestion de calidad latam",
+      "ISO 9001:2026",
+    ],
+    shareImage: {
+      src: "/og-consultoria-iso-9001.jpg",
+      alt: "Consultoría ISO 9001:2026 de DataSys Latam Group para empresas de Barranquilla, Colombia y Latinoamérica",
+      width: 1200,
+      height: 630,
+    },
     eyebrow: "Consultoría en sistemas de gestión",
     h1: "Consultoría ISO 9001 en Colombia",
     lead: "Implementamos su sistema de gestión de la calidad con criterio práctico y sin papeleo innecesario, para que su empresa llegue preparada a la certificación y el sistema funcione sin depender del consultor.",
@@ -124,7 +150,7 @@ export const LANDING_PAGES: LandingPage[] = [
     whatsappText: "Hola, me interesa la consultoría ISO 9001 para mi empresa.",
     leadSubject: "Nuevo lead: Consultoría ISO 9001 (sitio web)",
     breadcrumb: "Consultoría ISO 9001",
-    schema: { type: "Service", name: "Consultoría ISO 9001 en Colombia", serviceType: "Consultoría en sistemas de gestión de la calidad ISO 9001" },
+    schema: { type: "Service", name: "Consultoría ISO 9001 en Colombia", serviceType: "Consultoría e Implementación ISO 9001" },
     sections: [
       {
         kind: "steps",
