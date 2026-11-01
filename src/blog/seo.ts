@@ -151,6 +151,16 @@ export const landingJsonLd = (page: LandingPage) => {
             { "@type": "Country", name: "Colombia" },
             { "@type": "Place", name: "Latinoamérica" },
           ],
+          ...(page.schema.offers && {
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: page.schema.name,
+              itemListElement: page.schema.offers.map((o) => ({
+                "@type": "Offer",
+                itemOffered: { "@type": "Service", name: o.name, description: o.description, provider: { "@id": `${SITE_URL}/#organizacion` } },
+              })),
+            },
+          }),
         }
       : {
           "@type": "SoftwareApplication",

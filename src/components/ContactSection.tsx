@@ -8,8 +8,17 @@ const fadeUp = {
   show:   { opacity: 1, y: 0 },
 };
 
-/** subject: asunto del correo; las páginas de servicios lo cambian para saber de dónde llegó cada solicitud. */
-const ContactSection = ({ subject = "Nuevo mensaje de contacto - DatasysLatam Group" }: { subject?: string }) => {
+/**
+ * subject: asunto del correo; las páginas de servicios lo cambian para saber de dónde llegó cada solicitud.
+ * needOptions: si se pasan, el formulario pregunta «¿Qué necesita?» y la respuesta va en el asunto para clasificar el prospecto.
+ */
+const ContactSection = ({
+  subject = "Nuevo mensaje de contacto - DatasysLatam Group",
+  needOptions,
+}: {
+  subject?: string;
+  needOptions?: string[];
+}) => {
   const [submitted,   setSubmitted]   = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -21,6 +30,7 @@ const ContactSection = ({ subject = "Nuevo mensaje de contacto - DatasysLatam Gr
     if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
                                errs.email   = "Ingrese un correo válido.";
     if (!data.message.trim()) errs.message = "El mensaje es obligatorio.";
+    if (needOptions?.length && !data.need) errs.need = "Elija qué necesita.";
     return errs;
   };
 
@@ -33,6 +43,7 @@ const ContactSection = ({ subject = "Nuevo mensaje de contacto - DatasysLatam Gr
       email:   String(formData.get("email")   ?? ""),
       company: String(formData.get("company") ?? ""),
       message: String(formData.get("message") ?? ""),
+      need:    String(formData.get("need")    ?? ""),
     };
     const validationErrors = validate(data);
     if (Object.keys(validationErrors).length > 0) {
@@ -48,7 +59,10 @@ const ContactSection = ({ subject = "Nuevo mensaje de contacto - DatasysLatam Gr
       return;
     }
     setIsSubmitting(true);
-    const result = await submitWeb3Forms({ subject, ...data });
+    const { need, ...fields } = data;
+    const result = await submitWeb3Forms(
+      need ? { subject: `${subject} - ${need}`, necesidad: need, ...fields } : { subject, ...fields },
+    );
     setIsSubmitting(false);
     if (result.ok) {
       setSubmitted(true);
@@ -167,6 +181,34 @@ const ContactSection = ({ subject = "Nuevo mensaje de contacto - DatasysLatam Gr
               <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
                 {/* Honeypot anti-spam (Web3Forms) */}
                 <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+
+                {/* Qué necesita (solo en las páginas que lo piden) */}
+                {needOptions?.length ? (
+                  <fieldset>
+                    <legend className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                      ¿Qué necesita? <span className="text-destructive">*</span>
+                    </legend>
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                      {needOptions.map((option) => (
+                        <label key={option} className="cursor-pointer">
+                          <input type="radio" name="need" value={option} className="peer sr-only" />
+                          <span
+                            className={`flex h-full items-center justify-center rounded border px-3 py-2.5 text-center text-sm font-medium text-white/80 transition-colors duration-200 hover:border-primary peer-checked:border-[#FF6B00] peer-checked:bg-[#FF6B00]/15 peer-checked:text-white peer-focus-visible:ring-1 peer-focus-visible:ring-primary ${
+                              errors.need ? "border-destructive/60" : "border-navy-600"
+                            } bg-navy-800/60`}
+                          >
+                            {option}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                    {errors.need && (
+                      <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+                        <AlertCircle size={12} /> {errors.need}
+                      </p>
+                    )}
+                  </fieldset>
+                ) : null}
 
                 {/* Nombre + Email */}
                 <div className="grid sm:grid-cols-2 gap-5">
