@@ -145,8 +145,8 @@ export type LandingSection =
       reverse?: boolean;
       link?: { label: string; href: string };
     }
-  /** Franja de llamado a la acción: el botón principal lleva al formulario y el secundario a WhatsApp. */
-  | { kind: "cta"; id: string; title: string; text: string; primary: string; secondary: string }
+  /** Franja de llamado a la acción: el botón principal lleva al formulario y el secundario a WhatsApp. `points` resume lo que recibe el visitante. */
+  | { kind: "cta"; id: string; eyebrow?: string; title: string; text: string; points?: string[]; primary: string; secondary: string }
   | {
       kind: "profile";
       id: string;
@@ -204,6 +204,9 @@ export interface LandingPage {
   leadAskPhone?: boolean;
   /** Texto del botón de envío del formulario. Por defecto, «Solicitar asesoría». */
   leadSubmitLabel?: string;
+  /** Título y texto junto al formulario. Por defecto, «¿Tiene en mente un desafío tecnológico?». */
+  leadTitle?: string;
+  leadText?: string;
   breadcrumb: string;
   schema:
     | { type: "Service"; name: string; serviceType: string; offers?: { name: string; description: string }[] }
@@ -871,8 +874,8 @@ export const LANDING_PAGES: LandingPage[] = [
       height: 630,
     },
     eyebrow: "Digitalización de procesos para pymes",
-    h1: "De los procesos manuales a una empresa más digital y eficiente",
-    lead: "Digitalizamos los procesos de su empresa para reducir tareas repetitivas, organizar la información y mejorar el control de sus operaciones. Soluciones tecnológicas pensadas para las necesidades de las pymes.",
+    h1: "Mejoramos la forma en que las pymes realizan y controlan su trabajo",
+    lead: "Le ayudamos a reducir las tareas repetitivas, organizar la información y saber qué pasa en su operación. Empezamos por un diagnóstico de sus procesos y, con base en él, le proponemos la solución adecuada para su empresa.",
     heroImage: gestion,
     heroImageAlt: "Hoja de cálculo de pedidos que pasa a una plataforma web de seguimiento de solicitudes y a un formulario digital en el celular",
     heroMockup: digitalizacionProcesos,
@@ -885,6 +888,8 @@ export const LANDING_PAGES: LandingPage[] = [
     leadNeeds: ["Administrativos", "Comerciales", "Operativos", "Inventarios y compras", "Gestión documental y calidad", "Otro"],
     leadAskPhone: true,
     leadSubmitLabel: "Solicitar diagnóstico",
+    leadTitle: "Solicite su diagnóstico de procesos",
+    leadText: "Cuéntenos qué proceso le quita más tiempo a su equipo. Le contactamos para conocer cómo opera su empresa y, después, le presentamos una propuesta con la solución, el alcance, las etapas y los plazos, sin compromiso.",
     breadcrumb: "Digitalización de procesos",
     schema: {
       type: "Service",
@@ -914,6 +919,21 @@ export const LANDING_PAGES: LandingPage[] = [
           "¿Si alguien clave se ausenta, nadie sabe en qué va un pedido o un trámite?",
         ],
         closing: "Estos problemas no necesariamente requieren más personal o más trabajo. Muchas veces necesitan procesos mejor organizados y herramientas digitales adecuadas.",
+      },
+      {
+        kind: "cta",
+        id: "diagnostico",
+        eyebrow: "El primer paso",
+        title: "Todo empieza con un diagnóstico de sus procesos",
+        text: "Antes de hablar de tecnología, conocemos su operación: cómo trabaja su equipo, dónde se pierde el tiempo y qué le impide tener el control. Con eso le proponemos una solución con un alcance definido.",
+        points: [
+          "Conversación sobre cómo opera su empresa",
+          "Tareas manuales y cuellos de botella identificados",
+          "Propuesta con solución, alcance, etapas y plazos",
+          "Sin compromiso comercial",
+        ],
+        primary: "Solicitar diagnóstico de procesos",
+        secondary: "Hablar con un asesor",
       },
       {
         kind: "services",
