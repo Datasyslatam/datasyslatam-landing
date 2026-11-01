@@ -44,7 +44,7 @@ const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
           </p>
           <div className="flex flex-col items-start gap-4">
             {/* CTA principal: pulsa suavemente para llamar la atención (solo halo, sin movimiento, si el usuario lo prefiere); se detiene al pasar el cursor. */}
-            <a href={AUTODIAGNOSTICO_HASH} className={`${heroBtnOrange} animate-cta-pulse motion-reduce:animate-cta-glow hover:animate-none`}>
+            <a href={AUTODIAGNOSTICO_HASH} className={`${heroBtnOrange} btn-shine animate-cta-pulse motion-reduce:animate-cta-glow hover:animate-none`}>
               Descubra en 10 minutos qué tan ordenada está su empresa
             </a>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={heroBtnBlue}>
