@@ -36,10 +36,10 @@ const Navbar = () => {
         </a>
 
         {/* Links desktop */}
-        <ul className="hidden md:flex items-center gap-1">
+        <ul className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className="px-4 py-2 rounded text-sm font-medium text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200 tracking-wide">
+              <a href={link.href} className="px-2.5 xl:px-3.5 py-2 rounded text-sm font-medium text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200 tracking-wide">
                 {link.label}
               </a>
             </li>
@@ -47,7 +47,7 @@ const Navbar = () => {
         </ul>
 
         {/* CTA desktop */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           <a href="/#contacto" className="px-5 py-2 rounded text-sm font-semibold bg-[#0052CC] text-white hover:bg-[#00B4D8] transition-all duration-200 tracking-wide shadow-sm">
             Hablemos de su proyecto
           </a>
@@ -55,7 +55,7 @@ const Navbar = () => {
 
         {/* Boton menu movil */}
         <button
-          className="md:hidden p-2 rounded text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200"
+          className="lg:hidden p-2 rounded text-[#0A192F] hover:text-[#FF6B00] hover:bg-[#0A192F]/5 transition-all duration-200"
           onClick={() => setOpen(!open)}
           aria-label={open ? "Cerrar menu" : "Abrir menu"}
         >
@@ -72,7 +72,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="md:hidden overflow-hidden border-t border-gray-200/50 bg-white/90 backdrop-blur-[12px]"
+            className="lg:hidden overflow-hidden border-t border-gray-200/50 bg-white/90 backdrop-blur-[12px]"
           >
             <ul className="px-6 py-4 flex flex-col gap-1">
               {NAV_LINKS.map((link) => (
