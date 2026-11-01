@@ -5,6 +5,7 @@ import fundador from "@/assets/consultoria-fundador.webp";
 import appSoft from "@/assets/banners/app-producto-soft.webp";
 import desarrolloSoftwareIa from "@/assets/banners/desarrollo-software-ia-sin-fondo.webp";
 import asistenteNovaMovil from "@/assets/banners/asistente-nova-movil.webp";
+import digitalizacionProcesos from "@/assets/banners/digitalizacion-procesos-sin-fondo.webp";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
@@ -40,7 +41,16 @@ export type LandingIcon =
   | "checklist"
   | "user"
   | "support"
-  | "growth";
+  | "growth"
+  | "commercial"
+  | "operations"
+  | "inventory"
+  | "documents"
+  | "form"
+  | "database"
+  | "approval"
+  | "dashboard"
+  | "idea";
 
 export interface LandingCard {
   title: string;
@@ -61,7 +71,8 @@ export interface Testimonial {
 
 export type LandingSection =
   | { kind: "cards"; id: string; eyebrow?: string; title: string; intro?: string; items: LandingCard[] }
-  | { kind: "steps"; id: string; eyebrow?: string; title: string; intro?: string; items: LandingCard[] }
+  /** `layout: "line"` las muestra como una línea de proceso horizontal en escritorio. */
+  | { kind: "steps"; id: string; eyebrow?: string; title: string; intro?: string; items: LandingCard[]; layout?: "line" }
   | { kind: "chips"; id: string; eyebrow?: string; title: string; intro: string; chips: string[] }
   | { kind: "text"; id: string; eyebrow?: string; title: string; paragraphs: string[]; link?: { label: string; href: string } }
   /** Captura de pantalla del producto con sus puntos clave; `reverse` pone la imagen a la izquierda. */
@@ -85,7 +96,33 @@ export type LandingSection =
       eyebrow?: string;
       title: string;
       intro?: string;
-      items: { icon: LandingIcon; title: string; text: string; points: string[]; href: string; linkLabel: string }[];
+      items: { icon: LandingIcon; title: string; text: string; points: string[]; href?: string; linkLabel?: string }[];
+      /** Aclaración debajo de las tarjetas. */
+      note?: string;
+    }
+  /** Preguntas en las que el visitante reconoce los problemas de su negocio, con un mensaje de cierre destacado. */
+  | { kind: "problems"; id: string; eyebrow?: string; title: string; intro?: string; questions: string[]; closing: string }
+  /** Comparaciones «Antes / Después» de un mismo proceso. */
+  | {
+      kind: "compare";
+      id: string;
+      eyebrow?: string;
+      title: string;
+      intro?: string;
+      items: { icon: LandingIcon; title: string; before: string; after: string }[];
+      note?: string;
+    }
+  /** Lista breve de beneficios con marcas de verificación. */
+  | { kind: "benefits"; id: string; eyebrow?: string; title: string; intro?: string; items: string[] }
+  /** Niveles progresivos de intervención (inicial, intermedio, avanzado). */
+  | {
+      kind: "levels";
+      id: string;
+      eyebrow?: string;
+      title: string;
+      intro?: string;
+      items: { name: string; title: string; text: string }[];
+      note?: string;
     }
   /** Detalle de una línea de servicio: qué se puede desarrollar, una imagen real y sus beneficios. */
   | {
@@ -161,6 +198,12 @@ export interface LandingPage {
   leadSubject: string;
   /** Opciones de «¿Qué necesita?» en el formulario; la elegida se suma al asunto para clasificar el prospecto. */
   leadNeeds?: string[];
+  /** Pregunta que acompaña a leadNeeds. Por defecto, «¿Qué necesita?». */
+  leadNeedsLabel?: string;
+  /** El formulario pide también el teléfono (obligatorio). */
+  leadAskPhone?: boolean;
+  /** Texto del botón de envío del formulario. Por defecto, «Solicitar asesoría». */
+  leadSubmitLabel?: string;
   breadcrumb: string;
   schema:
     | { type: "Service"; name: string; serviceType: string; offers?: { name: string; description: string }[] }
@@ -806,96 +849,354 @@ export const LANDING_PAGES: LandingPage[] = [
   },
   {
     path: "/servicios/digitalizacion-de-procesos",
-    metaTitle: "Digitalización y automatización de procesos | DataSys",
+    metaTitle: "Digitalización de procesos para pymes | DataSys Latam",
     metaDescription:
-      "Digitalización y automatización de procesos para pymes en Colombia: primero ordenamos con criterio ISO, después automatizamos con software, RPA e integraciones.",
-    eyebrow: "Digitalización de operaciones",
-    h1: "Digitalización y automatización de procesos",
-    lead: "Optimizamos los procesos repetitivos de su empresa para que su equipo deje de copiar datos entre Excel, correo y WhatsApp: más productividad, menos errores y menores costos operativos.",
+      "Digitalización y automatización de procesos para pymes en Colombia y Latinoamérica: organice su información y controle su operación. Solicite un diagnóstico.",
+    metaKeywords: [
+      "digitalización de procesos para pymes",
+      "digitalización de procesos empresariales",
+      "servicios de digitalización empresarial",
+      "automatización de procesos para pequeñas empresas",
+      "transformación digital para pymes",
+      "optimización de procesos empresariales",
+      "digitalización de procesos administrativos",
+      "automatización de tareas empresariales",
+      "soluciones digitales para pequeñas empresas",
+      "consultoría en transformación digital",
+    ],
+    shareImage: {
+      src: "/og-digitalizacion-procesos.jpg",
+      alt: "DataSys Latam Group: digitalización de procesos para pymes, de la hoja de cálculo a una plataforma de seguimiento",
+      width: 1200,
+      height: 630,
+    },
+    eyebrow: "Digitalización de procesos para pymes",
+    h1: "De los procesos manuales a una empresa más digital y eficiente",
+    lead: "Digitalizamos los procesos de su empresa para reducir tareas repetitivas, organizar la información y mejorar el control de sus operaciones. Soluciones tecnológicas pensadas para las necesidades de las pymes.",
     heroImage: gestion,
-    heroImageAlt: "Equipo de trabajo reunido en una sala con trazos de luz que representan procesos digitalizados",
-    primaryCta: "Solicitar un diagnóstico",
+    heroImageAlt: "Hoja de cálculo de pedidos que pasa a una plataforma web de seguimiento de solicitudes y a un formulario digital en el celular",
+    heroMockup: digitalizacionProcesos,
+    heroHighlights: ["Identificamos lo que le quita tiempo", "Digitalizamos con la herramienta adecuada", "Optimizamos el control de su operación"],
+    primaryCta: "Solicitar diagnóstico",
+    secondaryCta: { label: "Conocer cómo funciona", href: "#como-funciona" },
     whatsappText: "Hola, quiero digitalizar y automatizar procesos de mi empresa.",
     leadSubject: "Nuevo lead: Digitalización de procesos (sitio web)",
+    leadNeedsLabel: "¿Qué proceso desea digitalizar?",
+    leadNeeds: ["Administrativos", "Comerciales", "Operativos", "Inventarios y compras", "Gestión documental y calidad", "Otro"],
+    leadAskPhone: true,
+    leadSubmitLabel: "Solicitar diagnóstico",
     breadcrumb: "Digitalización de procesos",
-    schema: { type: "Service", name: "Digitalización y automatización de procesos", serviceType: "Digitalización y automatización de procesos empresariales" },
+    schema: {
+      type: "Service",
+      name: "Digitalización y automatización de procesos",
+      serviceType: "Digitalización y automatización de procesos empresariales",
+      offers: [
+        { name: "Diagnóstico de procesos", description: "Análisis de cómo opera la empresa para identificar actividades manuales, dificultades y oportunidades de digitalización." },
+        { name: "Diseño de soluciones digitales", description: "Definición del proceso mejorado y selección de las herramientas tecnológicas adecuadas." },
+        { name: "Digitalización y automatización de procesos", description: "Implementación de soluciones para gestionar información, organizar actividades y automatizar tareas cuando es técnicamente viable." },
+        { name: "Acompañamiento y mejora continua", description: "Apoyo en la adopción de las soluciones e identificación de nuevas oportunidades de optimización." },
+      ],
+    },
     sections: [
       {
-        kind: "cards",
-        id: "senales",
+        kind: "problems",
+        id: "trabaja-manual",
         eyebrow: "¿Le suena familiar?",
-        title: "Señales de que su empresa necesita digitalizar sus procesos",
-        items: [
-          { title: "Los mismos datos se digitan varias veces", text: "Pedidos que llegan por WhatsApp, se pasan a Excel y después al sistema contable." },
-          { title: "La información depende de una persona", text: "Si alguien clave se ausenta, nadie sabe dónde está un pedido o en qué va un trámite." },
-          { title: "Aprobaciones perdidas en el correo", text: "Solicitudes, compras y permisos que solo avanzan a punta de recordatorios." },
-          { title: "Reportes que llegan tarde", text: "Armar el informe del mes toma días y, cuando llega, ya no sirve para decidir." },
-          { title: "Errores que se repiten", text: "Cifras que no cuadran, despachos equivocados o facturas con datos incorrectos." },
-          { title: "Crecer exige más trabajo manual", text: "Cada cliente nuevo aumenta las tareas repetitivas en lugar de aprovechar lo que ya existe." },
+        title: "¿Su empresa todavía trabaja de forma manual?",
+        questions: [
+          "¿Controla sus inventarios en archivos de Excel?",
+          "¿Registra a mano las compras, las ventas o los servicios?",
+          "¿Depende de correos y mensajes para hacer seguimiento a las actividades?",
+          "¿Pierde tiempo buscando documentos e información?",
+          "¿Sus colaboradores repiten varias veces el mismo registro?",
+          "¿Le cuesta saber en qué estado están las tareas pendientes?",
+          "¿Tiene que consolidar varios archivos para elaborar un informe?",
+          "¿Si alguien clave se ausenta, nadie sabe en qué va un pedido o un trámite?",
         ],
+        closing: "Estos problemas no necesariamente requieren más personal o más trabajo. Muchas veces necesitan procesos mejor organizados y herramientas digitales adecuadas.",
       },
       {
-        kind: "cards",
-        id: "que-hacemos",
-        eyebrow: "Qué hacemos",
-        title: "Qué digitalizamos y automatizamos",
+        kind: "services",
+        id: "procesos",
+        eyebrow: "Qué digitalizamos",
+        title: "¿Qué procesos podemos digitalizar en su empresa?",
+        intro: "Organizamos las soluciones por áreas. Estos son ejemplos de procesos que cualquier pyme reconoce en su día a día:",
         items: [
-          { title: "Flujos de trabajo y aprobaciones", text: "Solicitudes, compras, permisos y aprobaciones en línea, con responsables y tiempos a la vista." },
-          { title: "Formularios digitales", text: "Reemplazamos formatos en papel y hojas sueltas por formularios web y móviles que alimentan un solo sistema." },
-          { title: "Automatización robótica (RPA)", text: "Robots de software que ejecutan tareas repetitivas: copiar datos entre sistemas, generar reportes o enviar notificaciones." },
-          { title: "Integración de sistemas", text: "Conectamos su sitio web, ERP, sistema contable y demás herramientas para que la información fluya sin digitarla dos veces." },
-          { title: "Gestión documental", text: "Documentos y registros organizados, con control de versiones y acceso según el rol, listos para una auditoría." },
-          { title: "Plataformas a la medida", text: "Cuando ninguna herramienta del mercado se ajusta a su operación, desarrollamos la solución que necesita." },
+          {
+            icon: "process",
+            title: "Procesos administrativos",
+            text: "Menos correos y papeles para gestionar el día a día de la oficina.",
+            points: [
+              "Gestión de solicitudes internas",
+              "Control y seguimiento de actividades",
+              "Gestión de documentos y registros",
+              "Elaboración y consolidación de informes",
+              "Control de tareas y responsables",
+              "Flujos de aprobación",
+            ],
+          },
+          {
+            icon: "commercial",
+            title: "Procesos comerciales",
+            text: "Clientes, cotizaciones y pedidos con seguimiento, sin depender de la memoria de cada vendedor.",
+            points: [
+              "Registro y seguimiento de clientes",
+              "Gestión de cotizaciones",
+              "Seguimiento de oportunidades comerciales",
+              "Control de pedidos",
+              "Registro de solicitudes de servicio",
+              "Seguimiento de compromisos con clientes",
+            ],
+          },
+          {
+            icon: "operations",
+            title: "Procesos operativos",
+            text: "Órdenes de trabajo, servicios y entregas con responsables y trazabilidad.",
+            points: [
+              "Registro de actividades operativas",
+              "Control de órdenes de trabajo",
+              "Seguimiento de servicios y entregas",
+              "Gestión de novedades",
+              "Control de recursos y actividades",
+              "Trazabilidad de operaciones",
+            ],
+          },
+          {
+            icon: "inventory",
+            title: "Inventarios y compras",
+            text: "Existencias al día y compras con soporte, sin conteos a ciegas.",
+            points: [
+              "Registro de entradas y salidas",
+              "Control de existencias",
+              "Solicitudes de compra",
+              "Seguimiento de pedidos",
+              "Control de proveedores",
+              "Registro de movimientos de inventario",
+            ],
+            href: "/producto/novix-erp",
+            linkLabel: "Conozca Novix ERP",
+          },
+          {
+            icon: "documents",
+            title: "Gestión documental y calidad",
+            text: "Documentos, registros e indicadores organizados y listos para una auditoría.",
+            points: [
+              "Organización de documentos",
+              "Control de versiones",
+              "Gestión de formatos y registros",
+              "Seguimiento de procedimientos",
+              "Registro de no conformidades",
+              "Seguimiento de acciones correctivas",
+              "Control de indicadores de gestión",
+            ],
+            href: "/producto/governex",
+            linkLabel: "Conozca Governex",
+          },
         ],
+        note: "Cada empresa es distinta: seleccionamos los procesos y las funcionalidades según sus necesidades. No todas las pymes necesitan digitalizar los mismos procesos ni implementar todo a la vez.",
       },
       {
-        kind: "text",
-        id: "nuestro-enfoque",
-        eyebrow: "Nuestro enfoque",
-        title: "Primero ordenamos, después automatizamos. Siempre con criterio ISO",
-        paragraphs: [
-          "Automatizar un proceso desordenado solo hace más rápido el desorden. Por eso, antes de elegir una herramienta, documentamos cómo funciona hoy el proceso, quién hace qué y dónde se pierde el tiempo, con el criterio de los sistemas de gestión ISO que aplicamos en nuestra consultoría.",
-          "Esa es nuestra diferencia: entendemos el proceso y también construimos la herramienta. El resultado no es una carpeta de procedimientos ni un software que nadie usa, sino una operación que funciona sin depender de una sola persona.",
+        kind: "compare",
+        id: "antes-y-despues",
+        eyebrow: "Antes y después",
+        title: "¿Cómo transformamos sus procesos?",
+        intro: "Así cambia el trabajo diario cuando un proceso se digitaliza:",
+        items: [
+          {
+            icon: "process",
+            title: "Solicitudes internas",
+            before: "Un colaborador recibe la solicitud por correo, la registra en Excel, pregunta a sus compañeros en qué va y después consolida todo en un informe.",
+            after: "La solicitud se registra en una plataforma, se asigna a un responsable, se actualiza su estado y la información queda lista para el seguimiento y los reportes.",
+          },
+          {
+            icon: "inventory",
+            title: "Inventarios",
+            before: "Las entradas y salidas se anotan en una hoja de cálculo cuando hay tiempo, y las existencias se confirman contando en bodega.",
+            after: "Cada movimiento se registra al momento, las existencias se consultan en línea y se pueden configurar alertas de stock mínimo.",
+          },
+          {
+            icon: "approval",
+            title: "Compras",
+            before: "El pedido de compra se hace por WhatsApp, se aprueba de palabra y después nadie sabe quién lo autorizó.",
+            after: "La solicitud pasa por un flujo de aprobación con responsables definidos y queda registrada con su soporte.",
+          },
+          {
+            icon: "commercial",
+            title: "Ventas y cotizaciones",
+            before: "Las cotizaciones viven en el correo de cada vendedor y el seguimiento depende de su memoria.",
+            after: "Cada cotización queda registrada con su estado y su fecha de seguimiento, a la vista de quien la necesite.",
+          },
+          {
+            icon: "documents",
+            title: "Gestión documental",
+            before: "Hay varias versiones del mismo procedimiento en carpetas y correos, y nadie sabe cuál es la vigente.",
+            after: "Los documentos están en un solo lugar, con su versión vigente, su responsable y acceso según el rol.",
+          },
+          {
+            icon: "checklist",
+            title: "Seguimiento de actividades",
+            before: "Las tareas se reparten en reuniones y mensajes, y saber qué está pendiente exige preguntar uno por uno.",
+            after: "Cada tarea tiene responsable, fecha y estado, y un tablero muestra lo pendiente en todo momento.",
+          },
         ],
-        link: { label: "Lea: documentar procesos sin llenarse de papeles", href: "/blog/documentar-procesos-empresa-sin-papeles" },
+        note: "No todos los procesos pueden automatizarse por completo. El nivel de automatización depende de cada proceso: en el diagnóstico definimos qué conviene digitalizar, qué automatizar y qué debe seguir a cargo de su equipo.",
       },
       {
         kind: "steps",
-        id: "ruta",
-        eyebrow: "Metodología",
-        title: "La ruta para digitalizar sus operaciones",
+        id: "como-funciona",
+        eyebrow: "Nuestra propuesta de servicio",
+        title: "Un acompañamiento progresivo en cuatro etapas",
+        intro: "Identificamos lo que le quita tiempo, lo digitalizamos con la herramienta adecuada y le ayudamos a optimizar el control de su operación.",
+        layout: "line",
         items: [
-          { title: "Ordenar", text: "Levantamos el mapa de sus procesos e identificamos las tareas repetitivas que más tiempo consumen." },
-          { title: "Estandarizar", text: "Definimos cómo debe hacerse cada proceso y qué información necesita antes de llevarlo a una herramienta." },
-          { title: "Automatizar", text: "Implementamos la solución por fases, empezando por el proceso que más retorno genera." },
-          { title: "Decidir con datos", text: "Medimos tiempos y errores antes y después, y dejamos indicadores para seguir mejorando." },
+          { title: "Diagnóstico de procesos", text: "Analizamos cómo funciona hoy su empresa e identificamos actividades manuales, dificultades operativas y oportunidades de digitalización." },
+          { title: "Diseño de soluciones digitales", text: "Definimos cómo debe funcionar el proceso mejorado y seleccionamos las herramientas tecnológicas adecuadas según sus requerimientos." },
+          { title: "Digitalización y automatización", text: "Implementamos soluciones para gestionar la información, organizar actividades, conectar tareas y automatizar operaciones cuando es técnicamente viable." },
+          { title: "Acompañamiento y mejora continua", text: "Apoyamos la adopción de las soluciones por parte de su equipo e identificamos nuevas oportunidades de optimización." },
         ],
+      },
+      {
+        kind: "cards",
+        id: "soluciones-tecnologicas",
+        eyebrow: "Soluciones tecnológicas",
+        title: "Herramientas para digitalizar su empresa",
+        intro: "La solución puede ser sencilla o más avanzada, según el alcance de su proyecto. La prioridad es resolver una necesidad real, no implementar tecnología innecesaria: siempre que es posible aprovechamos e integramos lo que ya usa, y desarrollamos a la medida solo cuando hace falta.",
+        items: [
+          { icon: "form", title: "Formularios digitales", text: "Reemplazan formatos en papel y hojas sueltas para capturar información desde el computador o el celular." },
+          {
+            icon: "web",
+            title: "Plataformas web",
+            text: "Para gestionar actividades, solicitudes y responsables desde cualquier lugar.",
+            href: "/servicios/desarrollo-software-medida",
+            linkLabel: "Ver desarrollo de software",
+          },
+          { icon: "database", title: "Sistemas de información empresariales", text: "Centralizan los datos de varias áreas en una sola fuente confiable." },
+          { icon: "documents", title: "Gestión documental digital", text: "Documentos con su versión vigente, responsables y permisos de acceso." },
+          { icon: "approval", title: "Flujos de trabajo y aprobaciones", text: "Solicitudes que pasan de un responsable a otro con reglas claras y trazabilidad." },
+          { icon: "automation", title: "Automatización de tareas repetitivas", text: "Reportes, recordatorios, notificaciones y traspasos de datos que se ejecutan solos." },
+          { icon: "integration", title: "Integración de herramientas", text: "Conectamos su sistema contable, ERP, sitio web u otras herramientas para no digitar dos veces." },
+          {
+            icon: "dashboard",
+            title: "Tableros de control e indicadores",
+            text: "Información actualizada para decidir sin esperar el informe del mes.",
+            href: "/servicios/analitica-de-datos",
+            linkLabel: "Ver analítica de datos",
+          },
+          {
+            icon: "ai",
+            title: "Asistentes de inteligencia artificial",
+            text: "Para consultar información o apoyar procesos, cuando aportan un valor real.",
+            href: "/servicios/inteligencia-artificial-empresas",
+            linkLabel: "Ver IA para empresas",
+          },
+        ],
+      },
+      {
+        kind: "benefits",
+        id: "beneficios",
+        eyebrow: "Beneficios",
+        title: "Beneficios de digitalizar los procesos de su pyme",
+        items: [
+          "Menos actividades manuales y repetitivas",
+          "Información mejor organizada",
+          "Mayor trazabilidad de las operaciones",
+          "Menos errores por registros duplicados",
+          "Seguimiento más oportuno de las actividades",
+          "Mejor coordinación entre colaboradores",
+          "Información a la mano para tomar decisiones",
+          "Mayor control de las operaciones",
+          "Procesos organizados que permiten crecer",
+        ],
+      },
+      {
+        kind: "levels",
+        id: "a-la-medida",
+        eyebrow: "Digitalización a la medida de las pymes",
+        title: "Comience por el proceso que más tiempo y esfuerzo le consume",
+        intro: "No es necesario digitalizar toda la empresa al mismo tiempo. Le ayudamos a priorizar y a avanzar por proyectos graduales, al ritmo de su operación y de su capacidad de inversión.",
+        items: [
+          { name: "Nivel inicial", title: "Registros y documentos digitales", text: "Formularios, registros y documentos que dejan el papel y las hojas sueltas, y quedan organizados y disponibles." },
+          { name: "Nivel intermedio", title: "Procesos organizados y con seguimiento", text: "Procesos definidos, responsables asignados y control del estado de cada actividad." },
+          { name: "Nivel avanzado", title: "Automatización e integración", text: "Flujos de trabajo automatizados, sistemas integrados, indicadores y soluciones inteligentes." },
+        ],
+        note: "Estos niveles son orientativos: el alcance de cada proyecto se define en el diagnóstico de su empresa.",
+      },
+      {
+        kind: "cards",
+        id: "por-que-datasys",
+        eyebrow: "Por qué DataSys",
+        title: "¿Por qué elegir a DataSys Latam Group?",
+        intro: "No buscamos venderle herramientas innecesarias: identificamos qué necesita mejorar su empresa y cómo la tecnología puede ayudarle.",
+        items: [
+          { icon: "checklist", title: "Entendemos sus procesos", text: "Analizamos cómo trabaja hoy su empresa antes de proponer cualquier herramienta." },
+          { icon: "layers", title: "Primero ordenamos, después automatizamos", text: "Integramos gestión de procesos con criterio ISO y tecnología, para que la herramienta resuelva el problema correcto." },
+          { icon: "fit", title: "A la medida de cada pyme", text: "Soluciones adaptadas a su tamaño, a su operación y a su capacidad de inversión." },
+          { icon: "idea", title: "Orientación práctica", text: "Empezamos por lo que más tiempo le quita y resolvemos problemas concretos del negocio." },
+          { icon: "support", title: "Acompañamiento en la implementación", text: "Involucramos a su equipo desde el diseño y lo capacitamos para que adopte las herramientas." },
+          { icon: "growth", title: "Soluciones que crecen con usted", text: "Digitalización progresiva según sus prioridades, con soluciones que evolucionan a medida que crece su organización." },
+        ],
+      },
+      {
+        kind: "cta",
+        id: "siguiente-paso",
+        title: "Su empresa no necesita seguir trabajando como siempre",
+        text: "Identifiquemos juntos qué procesos puede digitalizar para mejorar la organización, el control y la eficiencia de su negocio. En DataSys le ayudamos a dar el siguiente paso hacia una gestión más digital.",
+        primary: "Solicitar diagnóstico de procesos",
+        secondary: "Hablar con un asesor",
       },
     ],
     testimonials: [],
     faq: [
       {
-        q: "¿Qué diferencia hay entre digitalizar y automatizar?",
-        a: "Digitalizar es pasar la información y los procesos del papel, el correo o las hojas sueltas a un sistema. Automatizar es que ese sistema ejecute por sí solo las tareas repetitivas. Normalmente se hace en ese orden.",
+        q: "¿Qué significa digitalizar los procesos de una empresa?",
+        a: "Es pasar la información y las actividades del papel, el correo o las hojas sueltas a herramientas digitales donde quedan organizadas, con responsables y seguimiento. Automatizar es el paso siguiente: que esas herramientas ejecuten por sí solas las tareas repetitivas.",
       },
       {
-        q: "¿Por dónde empiezo a digitalizar mi empresa?",
-        a: "Por el proceso que más tiempo consume o más errores genera. Si no lo tiene claro, el autodiagnóstico gratuito de 10 minutos le muestra en qué etapa está su empresa y cuál es el siguiente paso.",
+        q: "¿Una pequeña empresa puede implementar soluciones de digitalización?",
+        a: "Sí. La digitalización no es exclusiva de las grandes empresas: se puede empezar con soluciones sencillas, como formularios digitales o un tablero de seguimiento, y avanzar por etapas según sus prioridades y su presupuesto.",
       },
       {
-        q: "¿Tengo que cambiar los sistemas que ya uso?",
-        a: "No necesariamente. Siempre que es posible integramos y aprovechamos las herramientas que su empresa ya tiene; solo recomendamos reemplazarlas cuando el cambio genera un retorno claro.",
+        q: "¿Qué procesos de mi negocio puedo digitalizar?",
+        a: "Procesos administrativos, comerciales, operativos, de inventarios y compras, y de gestión documental y calidad, entre otros. En el diagnóstico identificamos cuáles le generan más trabajo manual y dónde la digitalización aporta más.",
       },
-      { q: "¿Cuánto cuesta digitalizar un proceso?", a: PRICE_ANSWER },
+      {
+        q: "¿Necesito cambiar todos mis sistemas actuales?",
+        a: "No necesariamente. Siempre que es posible integramos y aprovechamos las herramientas que su empresa ya tiene; solo recomendamos reemplazarlas cuando el cambio genera un beneficio claro.",
+      },
+      {
+        q: "¿Puedo comenzar digitalizando solamente un proceso?",
+        a: "Sí, y suele ser lo más recomendable: empezar por el proceso que más tiempo o errores le genera, comprobar los resultados y avanzar con el siguiente. Si no sabe por dónde empezar, el autodiagnóstico gratuito de 10 minutos le muestra en qué etapa está su empresa.",
+      },
+      {
+        q: "¿Es posible digitalizar procesos que actualmente gestiono en Excel?",
+        a: "Sí, es uno de los casos más frecuentes. Llevamos esas hojas de cálculo a una herramienta con datos centralizados, validaciones, permisos por usuario y reportes, y trasladamos la información que ya tiene.",
+      },
+      {
+        q: "¿La digitalización permite automatizar actividades repetitivas?",
+        a: "En muchos casos, sí: reportes, recordatorios, notificaciones, aprobaciones o el traspaso de datos entre sistemas. El nivel de automatización depende de cada proceso, y algunas tareas conviene que sigan a cargo de una persona.",
+      },
+      {
+        q: "¿Cuánto tiempo puede tomar implementar una solución?",
+        a: "Depende del alcance, de la complejidad del proceso y de las integraciones necesarias. Después del diagnóstico le presentamos una propuesta con etapas y plazos definidos para su caso.",
+      },
+      { q: "¿Qué inversión requiere digitalizar los procesos de una pyme?", a: PRICE_ANSWER },
+      {
+        q: "¿DataSys puede desarrollar una solución adaptada a las necesidades de mi empresa?",
+        a: "Sí. Cuando las herramientas existentes no se ajustan a su operación, desarrollamos software a la medida; y cuando sí se ajustan, le ayudamos a configurarlas e integrarlas.",
+      },
       {
         q: "¿Cómo logramos que el equipo use las nuevas herramientas?",
         a: "Involucramos desde el diseño a quienes ejecutan el proceso y los capacitamos durante la implementación. Una herramienta pensada con el equipo se adopta con más facilidad.",
       },
     ],
     related: [
-      { label: "Novix ERP: software de gestión empresarial", href: "/producto/novix-erp" },
+      { label: "Haga el autodiagnóstico gratuito de 10 minutos", href: "/#autodiagnostico" },
+      { label: "Transformación digital para pymes", href: "/servicios/transformacion-digital" },
       { label: "Desarrollo de software a la medida para empresas", href: "/servicios/desarrollo-software-medida" },
+      { label: "Novix ERP: software de gestión empresarial", href: "/producto/novix-erp" },
+      { label: "Governex: software para sistemas de gestión ISO", href: "/producto/governex" },
       { label: "Consultoría ISO 9001 en Colombia", href: "/servicios/consultoria-iso-9001" },
+      { label: "Lea: documentar procesos sin llenarse de papeles", href: "/blog/documentar-procesos-empresa-sin-papeles" },
     ],
   },
   {
