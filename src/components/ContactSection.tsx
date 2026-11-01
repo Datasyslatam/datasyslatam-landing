@@ -10,14 +10,21 @@ const fadeUp = {
 
 /**
  * subject: asunto del correo; las páginas de servicios lo cambian para saber de dónde llegó cada solicitud.
- * needOptions: si se pasan, el formulario pregunta «¿Qué necesita?» y la respuesta va en el asunto para clasificar el prospecto.
+ * needOptions: si se pasan, el formulario pregunta «¿Qué necesita?» (o needLabel) y la respuesta va en el asunto para clasificar el prospecto.
+ * askPhone: pide también el teléfono, como campo obligatorio.
  */
 const ContactSection = ({
   subject = "Nuevo mensaje de contacto - DatasysLatam Group",
   needOptions,
+  needLabel = "¿Qué necesita?",
+  askPhone = false,
+  submitLabel = "Solicitar asesoría",
 }: {
   subject?: string;
   needOptions?: string[];
+  needLabel?: string;
+  askPhone?: boolean;
+  submitLabel?: string;
 }) => {
   const [submitted,   setSubmitted]   = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,7 +37,8 @@ const ContactSection = ({
     if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
                                errs.email   = "Ingrese un correo válido.";
     if (!data.message.trim()) errs.message = "El mensaje es obligatorio.";
-    if (needOptions?.length && !data.need) errs.need = "Elija qué necesita.";
+    if (needOptions?.length && !data.need) errs.need = "Elija una opción.";
+    if (askPhone && data.phone.replace(/\D/g, "").length < 7) errs.phone = "Ingrese un teléfono válido.";
     return errs;
   };
 
@@ -44,6 +52,7 @@ const ContactSection = ({
       company: String(formData.get("company") ?? ""),
       message: String(formData.get("message") ?? ""),
       need:    String(formData.get("need")    ?? ""),
+      phone:   String(formData.get("phone")   ?? ""),
     };
     const validationErrors = validate(data);
     if (Object.keys(validationErrors).length > 0) {
@@ -59,7 +68,8 @@ const ContactSection = ({
       return;
     }
     setIsSubmitting(true);
-    const { need, ...fields } = data;
+    const { need, phone, ...rest } = data;
+    const fields = askPhone ? { ...rest, phone } : rest;
     const result = await submitWeb3Forms(
       need ? { subject: `${subject} - ${need}`, necesidad: need, ...fields } : { subject, ...fields },
     );
@@ -186,9 +196,9 @@ const ContactSection = ({
                 {needOptions?.length ? (
                   <fieldset>
                     <legend className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
-                      ¿Qué necesita? <span className="text-destructive">*</span>
+                      {needLabel} <span className="text-destructive">*</span>
                     </legend>
-                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                    <div className={`grid grid-cols-2 gap-2.5 ${needOptions.length > 4 ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
                       {needOptions.map((option) => (
                         <label key={option} className="cursor-pointer">
                           <input type="radio" name="need" value={option} className="peer sr-only" />
@@ -254,20 +264,45 @@ const ContactSection = ({
                   </div>
                 </div>
 
-                {/* Empresa */}
-                <div>
-                  <label htmlFor="contact-company" className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
-                    Empresa <span className="text-steel-500 font-normal">(opcional)</span>
-                  </label>
-                  <input
-                    id="contact-company"
-                    type="text"
-                    name="company"
-                    autoComplete="organization"
-                    maxLength={150}
-                    placeholder="Nombre de su organización"
-                    className={`${inputBase} ${inputOk}`}
-                  />
+                {/* Empresa (+ teléfono en las páginas que lo piden) */}
+                <div className={askPhone ? "grid sm:grid-cols-2 gap-5" : undefined}>
+                  <div>
+                    <label htmlFor="contact-company" className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                      Empresa <span className="text-steel-500 font-normal">(opcional)</span>
+                    </label>
+                    <input
+                      id="contact-company"
+                      type="text"
+                      name="company"
+                      autoComplete="organization"
+                      maxLength={150}
+                      placeholder="Nombre de su organización"
+                      className={`${inputBase} ${inputOk}`}
+                    />
+                  </div>
+                  {askPhone && (
+                    <div>
+                      <label htmlFor="contact-phone" className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                        Teléfono <span className="text-destructive">*</span>
+                      </label>
+                      <input
+                        id="contact-phone"
+                        type="tel"
+                        name="phone"
+                        autoComplete="tel"
+                        inputMode="tel"
+                        maxLength={30}
+                        aria-invalid={!!errors.phone}
+                        placeholder="+57 300 000 0000"
+                        className={`${inputBase} ${errors.phone ? inputErr : inputOk}`}
+                      />
+                      {errors.phone && (
+                        <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+                          <AlertCircle size={12} /> {errors.phone}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Mensaje */}
@@ -305,7 +340,7 @@ const ContactSection = ({
                   className="self-start inline-flex items-center gap-2.5 px-7 py-3 rounded bg-[#FF6B00] text-white font-semibold text-sm tracking-wide hover:bg-[#FF8040] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 shadow-card"
                 >
                   <Send size={15} strokeWidth={1.8} />
-              {isSubmitting ? "Enviando..." : "Solicitar asesoría"}
+              {isSubmitting ? "Enviando..." : submitLabel}
                 </button>
               </form>
             )}

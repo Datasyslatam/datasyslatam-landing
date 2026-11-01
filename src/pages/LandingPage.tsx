@@ -1,11 +1,22 @@
 import {
   AppWindow,
+  ArrowDown,
   ArrowRight,
+  ChartColumn,
   CheckCircle2,
   ChevronDown,
+  CircleHelp,
   ClipboardList,
+  ClipboardPen,
   CodeXml,
+  Database,
+  FileCheck2,
+  GitBranch,
+  Handshake,
   Info,
+  Lightbulb,
+  Package,
+  Wrench,
   Layers,
   LayoutDashboard,
   LifeBuoy,
@@ -44,7 +55,30 @@ const ICONS: Record<LandingIcon, LucideIcon> = {
   user: MousePointerClick,
   support: LifeBuoy,
   growth: TrendingUp,
+  commercial: Handshake,
+  operations: Wrench,
+  inventory: Package,
+  documents: FileCheck2,
+  form: ClipboardPen,
+  database: Database,
+  approval: GitBranch,
+  dashboard: ChartColumn,
+  idea: Lightbulb,
 };
+
+const Note = ({ text, className = "" }: { text: string; className?: string }) => (
+  <p className={`flex gap-2 rounded-xl border border-electric-600/20 bg-electric-600/5 p-4 text-sm leading-relaxed text-[#0b2a5e]/85 ${className}`}>
+    <Info className="mt-0.5 h-4 w-4 shrink-0 text-electric-600" aria-hidden="true" />
+    <span>{text}</span>
+  </p>
+);
+
+const CheckPill = ({ text }: { text: string }) => (
+  <li className="flex items-start gap-2.5 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-[#0b2a5e]">
+    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF8024]" aria-hidden="true" />
+    <span>{text}</span>
+  </li>
+);
 
 const IconBadge = ({ icon, size = "md" }: { icon: LandingIcon; size?: "md" | "lg" }) => {
   const Icon = ICONS[icon];
@@ -124,12 +158,98 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                     </li>
                   ))}
                 </ul>
-                <div className="mt-auto">
-                  <CardLink href={item.href} label={item.linkLabel} />
-                </div>
+                {item.href && item.linkLabel && (
+                  <div className="mt-auto">
+                    <CardLink href={item.href} label={item.linkLabel} />
+                  </div>
+                )}
               </li>
             ))}
           </ul>
+          {section.note && <Note text={section.note} className="mt-8" />}
+        </>,
+      );
+    case "problems":
+      return wrap(
+        <>
+          <SectionHeader {...section} />
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {section.questions.map((q) => (
+              <li key={q} className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-base text-[#0b2a5e]">
+                <CircleHelp className="mt-0.5 h-5 w-5 shrink-0 text-[#FF8024]" aria-hidden="true" />
+                <span>{q}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-8 rounded-2xl border-l-4 border-[#FF8024] bg-navy-900 px-6 py-5 text-base font-medium leading-relaxed text-white md:text-lg">
+            {section.closing}
+          </p>
+        </>,
+      );
+    case "compare":
+      return wrap(
+        <>
+          <SectionHeader {...section} />
+          <ul className="grid gap-5 lg:grid-cols-2">
+            {section.items.map((item) => {
+              const Icon = ICONS[item.icon];
+              return (
+                <li key={item.title} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <h3 className="mb-4 flex items-center gap-2.5 text-base font-bold text-navy-900">
+                    <Icon className="h-5 w-5 text-electric-600" aria-hidden="true" />
+                    {item.title}
+                  </h3>
+                  <div className="grid items-stretch gap-3 sm:grid-cols-[1fr_auto_1fr]">
+                    <div className="rounded-xl bg-gray-100 p-4">
+                      <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.15em] text-steel-500">Antes</p>
+                      <p className="text-sm leading-relaxed text-[#0b2a5e]/75">{item.before}</p>
+                    </div>
+                    <span className="flex items-center justify-center text-[#FF8024]" aria-hidden="true">
+                      <ArrowRight className="hidden h-6 w-6 sm:block" />
+                      <ArrowDown className="h-6 w-6 sm:hidden" />
+                    </span>
+                    <div className="rounded-xl bg-electric-600/10 p-4">
+                      <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">Después</p>
+                      <p className="text-sm leading-relaxed text-[#0b2a5e]">{item.after}</p>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          {section.note && <Note text={section.note} className="mt-8" />}
+        </>,
+      );
+    case "benefits":
+      return wrap(
+        <>
+          <SectionHeader {...section} />
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {section.items.map((item) => (
+              <CheckPill key={item} text={item} />
+            ))}
+          </ul>
+        </>,
+      );
+    case "levels":
+      return wrap(
+        <>
+          <SectionHeader {...section} />
+          <ol className="grid gap-5 lg:grid-cols-3">
+            {section.items.map((item, i) => (
+              <li key={item.name} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex gap-1.5" aria-hidden="true">
+                  {section.items.map((_, j) => (
+                    <span key={j} className={`h-2 flex-1 rounded-full ${j <= i ? "bg-[#FF8024]" : "bg-gray-200"}`} />
+                  ))}
+                </div>
+                <p className="mb-1 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">{item.name}</p>
+                <h3 className="mb-2 text-lg font-bold text-navy-900">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-[#0b2a5e]/75">{item.text}</p>
+              </li>
+            ))}
+          </ol>
+          {section.note && <Note text={section.note} className="mt-8" />}
         </>,
       );
     case "service":
@@ -147,12 +267,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                   </li>
                 ))}
               </ul>
-              {section.note && (
-                <p className="mt-5 flex gap-2 rounded-xl border border-electric-600/20 bg-electric-600/5 p-4 text-sm leading-relaxed text-[#0b2a5e]/85">
-                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-electric-600" aria-hidden="true" />
-                  <span>{section.note}</span>
-                </p>
-              )}
+              {section.note && <Note text={section.note} className="mt-5" />}
               {section.link && <CardLink href={section.link.href} label={section.link.label} />}
             </div>
             <figure className="lg:sticky lg:top-24">
@@ -172,10 +287,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
             <h3 className="mb-4 text-base font-bold text-navy-900">{section.benefitsTitle}</h3>
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {section.benefits.map((benefit) => (
-                <li key={benefit} className="flex items-start gap-2.5 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-[#0b2a5e]">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF8024]" aria-hidden="true" />
-                  <span>{benefit}</span>
-                </li>
+                <CheckPill key={benefit} text={benefit} />
               ))}
             </ul>
           </div>
@@ -207,6 +319,31 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
         </section>
       );
     case "steps":
+      if (section.layout === "line") {
+        return wrap(
+          <>
+            <SectionHeader {...section} />
+            <ol className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+              {section.items.map((item, i) => (
+                <li key={item.title} className="relative">
+                  {/* Tramo de la línea hasta la etapa siguiente (solo en escritorio) */}
+                  {i < section.items.length - 1 && (
+                    <span
+                      className="pointer-events-none absolute left-12 top-6 hidden h-0.5 w-[calc(100%-3rem+1.25rem)] bg-gradient-to-r from-[#FF8024] to-electric-600 lg:block"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="relative z-10 mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#FF8024] font-heading text-lg font-bold text-navy-900 shadow-md ring-4 ring-white">
+                    {i + 1}
+                  </span>
+                  <h3 className="mb-1.5 text-base font-bold text-navy-900">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-[#0b2a5e]/75">{item.text}</p>
+                </li>
+              ))}
+            </ol>
+          </>,
+        );
+      }
       return wrap(
         <>
           <SectionHeader {...section} />
@@ -461,7 +598,13 @@ const LandingPage = ({ page }: { page: LandingData }) => (
       </div>
     </section>
 
-    <ContactSection subject={page.leadSubject} needOptions={page.leadNeeds} />
+    <ContactSection
+      subject={page.leadSubject}
+      needOptions={page.leadNeeds}
+      needLabel={page.leadNeedsLabel}
+      askPhone={page.leadAskPhone}
+      submitLabel={page.leadSubmitLabel}
+    />
 
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(landingJsonLd(page)) }} />
   </SiteChrome>
