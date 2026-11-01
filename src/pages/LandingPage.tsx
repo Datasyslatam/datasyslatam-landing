@@ -303,10 +303,21 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
           <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-electric-500/25 blur-3xl" aria-hidden="true" />
           <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#FF8024]/15 blur-3xl" aria-hidden="true" />
           <div className="container relative mx-auto max-w-3xl px-4 text-center">
+            {section.eyebrow && <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#FF8024]">{section.eyebrow}</p>}
             <h2 id={`${section.id}-titulo`} className="mb-4 font-heading text-2xl font-bold md:text-4xl">
               {section.title}
             </h2>
             <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-white/80 md:text-lg">{section.text}</p>
+            {section.points && (
+              <ul className="mb-8 grid gap-2.5 text-left sm:grid-cols-2">
+                {section.points.map((point) => (
+                  <li key={point} className="flex items-start gap-2.5 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/90">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF8024]" aria-hidden="true" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="flex flex-wrap justify-center gap-3">
               <a href="#contacto" className={`${heroBtnOrange} btn-shine`}>
                 {section.primary}
@@ -604,6 +615,8 @@ const LandingPage = ({ page }: { page: LandingData }) => (
       needLabel={page.leadNeedsLabel}
       askPhone={page.leadAskPhone}
       submitLabel={page.leadSubmitLabel}
+      asideTitle={page.leadTitle}
+      asideText={page.leadText}
     />
 
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(landingJsonLd(page)) }} />

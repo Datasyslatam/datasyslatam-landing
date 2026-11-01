@@ -19,12 +19,16 @@ const ContactSection = ({
   needLabel = "¿Qué necesita?",
   askPhone = false,
   submitLabel = "Solicitar asesoría",
+  asideTitle = "¿Tiene en mente un desafío tecnológico?",
+  asideText = "Cuéntenos qué necesita transformar. Nuestro equipo puede ayudarle a convertir su necesidad empresarial en una solución tecnológica que genere resultados positivos.",
 }: {
   subject?: string;
   needOptions?: string[];
   needLabel?: string;
   askPhone?: boolean;
   submitLabel?: string;
+  asideTitle?: string;
+  asideText?: string;
 }) => {
   const [submitted,   setSubmitted]   = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -154,12 +158,8 @@ const ContactSection = ({
             className="lg:col-span-2 flex flex-col gap-5"
           >
             <div className="flex flex-col gap-5">
-              <h3 className="text-2xl font-bold text-white">
-                ¿Tiene en mente un desafío tecnológico?
-              </h3>
-              <p className="text-sm leading-relaxed text-white/70">
-                Cuéntenos qué necesita transformar. Nuestro equipo puede ayudarle a convertir su necesidad empresarial en una solución tecnológica que genere resultados positivos.
-              </p>
+              <h3 className="text-2xl font-bold text-white">{asideTitle}</h3>
+              <p className="text-sm leading-relaxed text-white/70">{asideText}</p>
             </div>
           </motion.div>
 
