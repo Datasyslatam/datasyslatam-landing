@@ -40,7 +40,7 @@ await writeFile(
   template
     .replace(placeholder, `<div id="root">${notFound.html}</div>`)
     .replace(headBlock, "<title>Página no encontrada | DataSys Latam Group</title>")
-    .replace('<meta name="robots" content="index, follow" />', '<meta name="robots" content="noindex" />'),
+    .replace(/<meta name="robots" content="[^"]*" \/>/, '<meta name="robots" content="noindex" />'),
 );
 
 const escXml = (value) =>

@@ -21,6 +21,9 @@ interface PageMeta {
   path: string;
   image: string;
   imageAlt: string;
+  /** Medidas de la imagen al compartir; si se conocen, WhatsApp y Facebook muestran la vista previa desde el primer envío. */
+  imageSize?: { width: number; height: number };
+  keywords?: string[];
   type: "website" | "article";
   publishedTime?: string;
 }
@@ -29,6 +32,7 @@ const renderTags = (m: PageMeta) =>
   [
     `<title>${esc(m.title)}</title>`,
     `<meta name="description" content="${esc(m.description)}" />`,
+    m.keywords?.length ? `<meta name="keywords" content="${esc(m.keywords.join(", "))}" />` : "",
     `<link rel="canonical" href="${esc(absolute(m.path))}" />`,
     `<meta property="og:type" content="${m.type}" />`,
     `<meta property="og:locale" content="es_CO" />`,
@@ -37,12 +41,15 @@ const renderTags = (m: PageMeta) =>
     `<meta property="og:title" content="${esc(m.title)}" />`,
     `<meta property="og:description" content="${esc(m.description)}" />`,
     `<meta property="og:image" content="${esc(absolute(m.image))}" />`,
+    m.imageSize ? `<meta property="og:image:width" content="${m.imageSize.width}" />` : "",
+    m.imageSize ? `<meta property="og:image:height" content="${m.imageSize.height}" />` : "",
     `<meta property="og:image:alt" content="${esc(m.imageAlt)}" />`,
     m.publishedTime ? `<meta property="article:published_time" content="${m.publishedTime}" />` : "",
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(m.title)}" />`,
     `<meta name="twitter:description" content="${esc(m.description)}" />`,
     `<meta name="twitter:image" content="${esc(absolute(m.image))}" />`,
+    `<meta name="twitter:image:alt" content="${esc(m.imageAlt)}" />`,
   ]
     .filter(Boolean)
     .join("\n    ");
@@ -58,8 +65,10 @@ export const buildHead = (route: Route, post: BlogPost | null): string | null =>
       title: landing.metaTitle,
       description: landing.metaDescription,
       path: landing.path,
-      image: landing.heroImage,
-      imageAlt: landing.heroImageAlt,
+      image: landing.shareImage?.src ?? landing.heroImage,
+      imageAlt: landing.shareImage?.alt ?? landing.heroImageAlt,
+      imageSize: landing.shareImage,
+      keywords: landing.metaKeywords,
       type: "website",
     });
   }
@@ -138,6 +147,7 @@ export const landingJsonLd = (page: LandingPage) => {
           url,
           provider: { "@id": `${SITE_URL}/#organizacion` },
           areaServed: [
+            { "@type": "City", name: "Barranquilla" },
             { "@type": "Country", name: "Colombia" },
             { "@type": "Place", name: "Latinoamérica" },
           ],
