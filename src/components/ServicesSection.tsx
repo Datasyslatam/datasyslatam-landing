@@ -52,7 +52,7 @@ const services = [
 ];
 
 const ServicesSection = () => (
-  <section id="servicios" className="bg-white py-12">
+  <section id="soluciones" className="bg-white py-12">
     <div className="container mx-auto px-4 max-w-7xl">
       <div className="mb-8 text-center">
         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-electric-400">NUESTRAS SOLUCIONES</p>

@@ -28,7 +28,7 @@ const HeroPremium = ({ active, total, go }: HeroPremiumProps) => {
             Creemos que la transformación digital no consiste simplemente en incorporar nuevas tecnologías. Comienza por comprender las necesidades reales de cada organización y convertirlas en soluciones que generen valor.
           </p>
           <div className="flex flex-wrap gap-4">
-            <a href="#servicios" className={heroBtnBlue}>Conocer nuestras soluciones</a>
+            <a href="#soluciones" className={heroBtnBlue}>Conocer nuestras soluciones</a>
             <a href="#contacto" className={heroBtnOutline}>Hablemos de su proyecto</a>
           </div>
         </div>
