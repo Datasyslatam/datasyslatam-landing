@@ -4,7 +4,7 @@ export const NAV_LINKS = [
   { label: "Inicio", href: "/#inicio" },
   { label: "Nosotros", href: "/#nosotros" },
   { label: "Servicios", href: "/#servicios" },
-  { label: "Propuesta", href: "/#propuesta" },
+  { label: "Soluciones", href: "/#propuesta" },
   { label: "Blog", href: "/blog" },
   { label: "Contacto", href: "/#contacto" },
 ];
