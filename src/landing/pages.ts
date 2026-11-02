@@ -56,7 +56,19 @@ export type LandingIcon =
   | "customers"
   | "shield"
   | "lock"
-  | "eye";
+  | "eye"
+  | "leaf"
+  | "hardhat"
+  | "continuity"
+  | "education";
+
+/** Campo adicional del formulario: lista desplegable si trae `options`; si no, texto libre. */
+export interface LeadField {
+  name: string;
+  label: string;
+  options?: string[];
+  placeholder?: string;
+}
 
 export interface LandingCard {
   title: string;
@@ -78,7 +90,7 @@ export interface Testimonial {
 export type LandingSection =
   | { kind: "cards"; id: string; eyebrow?: string; title: string; intro?: string; items: LandingCard[]; note?: string }
   /** `layout: "line"` las muestra como una línea de proceso horizontal en escritorio; `flow` resume el recorrido en una franja (A → B → C). */
-  | { kind: "steps"; id: string; eyebrow?: string; title: string; intro?: string; items: LandingCard[]; layout?: "line"; flow?: string[] }
+  | { kind: "steps"; id: string; eyebrow?: string; title: string; intro?: string; items: LandingCard[]; layout?: "line"; flow?: string[]; note?: string }
   | { kind: "chips"; id: string; eyebrow?: string; title: string; intro: string; chips: string[] }
   | { kind: "text"; id: string; eyebrow?: string; title: string; paragraphs: string[]; link?: { label: string; href: string } }
   /** Captura de pantalla del producto con sus puntos clave; `reverse` pone la imagen a la izquierda. */
@@ -103,8 +115,30 @@ export type LandingSection =
       title: string;
       intro?: string;
       /** `benefits` y `note` por tarjeta son para líneas de servicio con más detalle; se ven mejor con `wide` (dos columnas). */
-      items: { icon: LandingIcon; title: string; text: string; points: string[]; benefits?: string[]; note?: string; href?: string; linkLabel?: string }[];
+      items: {
+        icon: LandingIcon;
+        title: string;
+        text: string;
+        points: string[];
+        benefits?: string[];
+        note?: string;
+        href?: string;
+        linkLabel?: string;
+        /** Ancla de la tarjeta, para los accesos rápidos de `quickNav`. */
+        id?: string;
+        /** Rótulo corto sobre el título (p. ej. la edición de la norma). */
+        badge?: string;
+        /** Mensaje destacado bajo el título. */
+        kicker?: string;
+        /** Ocupa todo el ancho de la cuadrícula. */
+        featured?: boolean;
+      }[];
       wide?: boolean;
+      /** Títulos de las dos listas de cada tarjeta. Por defecto, «Ejemplos» y «Beneficios». */
+      pointsLabel?: string;
+      benefitsLabel?: string;
+      /** Accesos rápidos a cada tarjeta: pares [ancla, texto]. */
+      quickNav?: [string, string][];
       /** Aclaración debajo de las tarjetas. */
       note?: string;
     }
@@ -130,7 +164,7 @@ export type LandingSection =
       eyebrow?: string;
       title: string;
       intro?: string;
-      items: { name: string; title: string; text: string; points?: string[] }[];
+      items: { name: string; title: string; text: string; points?: string[]; href?: string; linkLabel?: string }[];
       note?: string;
     }
   /** Detalle de una línea de servicio: qué se puede desarrollar, una imagen real y sus beneficios. */
@@ -146,10 +180,11 @@ export type LandingSection =
       benefits: string[];
       /** Aclaración sobre el alcance (p. ej. de qué dependen las capacidades de un asistente de IA). */
       note?: string;
-      image: string;
-      imageAlt: string;
-      width: number;
-      height: number;
+      /** Sin imagen, el detalle ocupa una sola columna. */
+      image?: string;
+      imageAlt?: string;
+      width?: number;
+      height?: number;
       caption?: string;
       reverse?: boolean;
       link?: { label: string; href: string };
@@ -216,6 +251,8 @@ export interface LandingPage {
   /** Título y texto junto al formulario. Por defecto, «¿Tiene en mente un desafío tecnológico?». */
   leadTitle?: string;
   leadText?: string;
+  /** Campos obligatorios adicionales del formulario. */
+  leadFields?: LeadField[];
   breadcrumb: string;
   schema:
     | { type: "Service"; name: string; serviceType: string; offers?: { name: string; description: string }[] }
@@ -230,66 +267,439 @@ export interface LandingPage {
 export const LANDING_PAGES: LandingPage[] = [
   {
     path: "/servicios/consultoria-iso-9001",
-    metaTitle: "Consultoría ISO 9001:2026 en Colombia | DataSys Latam Group",
+    metaTitle: "Consultoría ISO para pymes en Colombia | DataSys Latam",
     metaDescription:
-      "Implementamos ISO 9001:2026 en Colombia y Latinoamérica: diagnóstico, transición desde 2015, auditoría interna y preparación para certificar. ¡Hablemos hoy!",
+      "Consultoría e implementación de normas ISO 9001, 14001, 45001, 27001, 22301 y 21001 para pymes en Barranquilla, Colombia y LATAM. Solicite su diagnóstico.",
     metaKeywords: [
-      "consultoria iso 9001",
-      "consultoria iso barranquilla",
-      "certificacion iso 9001 barranquilla",
-      "auditoria iso barranquilla",
-      "consultores de calidad atlantico",
-      "consultoria iso colombia",
-      "implementacion iso 9001 colombia",
-      "transicion iso 9001 2026 colombia",
-      "certificacion de calidad empresas colombia",
-      "consultoria iso para pymes colombia",
-      "consultoria iso latinoamerica",
-      "asesoria certificacion iso latam",
-      "sistemas de gestion de calidad latam",
-      "ISO 9001:2026",
+      "consultoría ISO para pymes",
+      "consultoría en sistemas de gestión",
+      "implementación ISO 9001",
+      "consultoría ISO 14001",
+      "implementación ISO 45001",
+      "consultoría ISO 27001",
+      "implementación ISO 22301",
+      "consultoría ISO 21001",
+      "sistemas integrados de gestión",
+      "estandarización de procesos empresariales",
+      "consultoría de calidad para empresas",
+      "asesoría para certificación ISO",
+      "implementación de normas ISO en Colombia",
+      "implementación de normas ISO en Barranquilla",
+      "implementación de normas ISO en Latinoamérica",
+      "consultoría de normas ISO en Colombia",
+      "consultoría de normas ISO en Barranquilla",
     ],
     shareImage: {
-      src: "/og-consultoria-iso-9001.jpg",
-      alt: "Consultoría ISO 9001:2026 de DataSys Latam Group para empresas de Barranquilla, Colombia y Latinoamérica",
+      src: "/og-consultoria-iso.jpg",
+      alt: "DataSys Latam Group: consultoría en normas ISO para pymes de Barranquilla, Colombia y Latinoamérica",
       width: 1200,
       height: 630,
     },
-    eyebrow: "Consultoría en sistemas de gestión",
-    h1: "Consultoría ISO 9001 en Colombia",
-    lead: "Implementamos su sistema de gestión de la calidad con criterio práctico y sin papeleo innecesario, para que su empresa llegue preparada a la certificación y el sistema funcione sin depender del consultor.",
+    eyebrow: "Consultoría en normas ISO para pymes",
+    h1: "Estandarice sus procesos. Fortalezca su empresa",
+    lead: "Implementamos y fortalecemos sistemas de gestión ISO para ayudarle a organizar sus procesos, gestionar riesgos, mejorar la calidad y construir una empresa más eficiente, confiable y preparada para crecer.",
     heroImage: fundador,
-    heroImageAlt: "Armando José López González, consultor de DataSys Latam Group, dictando una capacitación sobre certificación ISO",
-    primaryCta: "Solicitar un diagnóstico",
-    whatsappText: "Hola, me interesa la consultoría ISO 9001 para mi empresa.",
-    leadSubject: "Nuevo lead: Consultoría ISO 9001 (sitio web)",
-    breadcrumb: "Consultoría ISO 9001",
-    schema: { type: "Service", name: "Consultoría ISO 9001 en Colombia", serviceType: "Consultoría e Implementación ISO 9001" },
+    heroImageAlt: "Armando José López González, consultor de DataSys Latam Group, dictando una capacitación sobre sistemas de gestión ISO",
+    heroHighlights: ["Estandarizamos sus procesos", "Gestionamos controles y responsabilidades", "Mejoramos su desempeño", "Digitalizamos su sistema"],
+    primaryCta: "Solicitar diagnóstico ISO",
+    secondaryCta: { label: "Conocer nuestras normas ISO", href: "#normas-iso" },
+    whatsappText: "Hola, me interesa la consultoría en normas ISO para mi empresa.",
+    leadSubject: "Nuevo lead: Consultoría ISO (sitio web)",
+    leadNeedsLabel: "Norma ISO de interés",
+    leadNeeds: [
+      "ISO 9001 – Calidad",
+      "ISO 14001 – Gestión ambiental",
+      "ISO 45001 – Seguridad y salud en el trabajo",
+      "ISO/IEC 27001 – Seguridad de la información",
+      "ISO 22301 – Continuidad del negocio",
+      "ISO 21001 – Organizaciones educativas",
+      "Sistema integrado de gestión",
+      "No estoy seguro, necesito asesoría",
+    ],
+    leadFields: [
+      { name: "sector", label: "Sector económico", placeholder: "Ej.: manufactura, salud, educación, servicios" },
+      {
+        name: "estado",
+        label: "Estado actual del sistema de gestión",
+        options: [
+          "No tenemos un sistema de gestión implementado",
+          "Tenemos procesos documentados, pero no un sistema estructurado",
+          "Estamos implementando una norma ISO",
+          "Ya estamos certificados y necesitamos mejorar",
+          "Necesitamos prepararnos para una auditoría",
+          "Queremos integrar varias normas",
+        ],
+      },
+    ],
+    leadAskPhone: true,
+    leadSubmitLabel: "Solicitar diagnóstico ISO",
+    leadTitle: "Solicite su diagnóstico ISO",
+    leadText: "Cuéntenos en qué punto está su empresa. Le contactamos para conocer su operación y, después, le presentamos una propuesta con el alcance, las etapas y los plazos, sin compromiso.",
+    breadcrumb: "Consultoría ISO",
+    schema: {
+      type: "Service",
+      name: "Consultoría en sistemas de gestión ISO",
+      serviceType: "Consultoría e implementación de normas ISO",
+      offers: [
+        { name: "Consultoría ISO 9001", description: "Implementación y mejora de sistemas de gestión de la calidad." },
+        { name: "Consultoría ISO 14001", description: "Implementación y mejora de sistemas de gestión ambiental." },
+        { name: "Consultoría ISO 45001", description: "Implementación y mejora de sistemas de gestión de seguridad y salud en el trabajo." },
+        { name: "Consultoría ISO/IEC 27001", description: "Implementación y mejora de sistemas de gestión de seguridad de la información." },
+        { name: "Consultoría ISO 22301", description: "Implementación y mejora de sistemas de gestión de continuidad del negocio." },
+        { name: "Consultoría ISO 21001", description: "Implementación y mejora de sistemas de gestión para organizaciones educativas." },
+      ],
+    },
     sections: [
       {
-        kind: "steps",
-        id: "como-trabajamos",
-        eyebrow: "Cómo trabajamos",
-        title: "Qué incluye la consultoría ISO 9001",
-        intro: "Desde Barranquilla acompañamos a empresas de Colombia y Latinoamérica en cada etapa, de la primera evaluación a la auditoría de certificación.",
-        items: [
-          { title: "Diagnóstico de brechas", text: "Comparamos cómo opera hoy su empresa con los requisitos de la norma y definimos un alcance realista." },
-          { title: "Diseño del sistema", text: "Mapa de procesos, riesgos y oportunidades, objetivos de calidad e información documentada a la medida de su tamaño." },
-          { title: "Implementación y formación", text: "Ponemos el sistema en marcha con su equipo y lo capacitamos para que funcione sin depender del consultor." },
-          { title: "Auditoría interna", text: "Verificamos que lo planificado se cumple, corregimos hallazgos y preparamos la revisión por la dirección." },
-          { title: "Preparación para la certificación", text: "Le acompañamos al elegir un organismo certificador acreditado ante ONAC y al prepararse para la auditoría externa." },
+        kind: "problems",
+        id: "organizar-procesos",
+        eyebrow: "¿Le suena familiar?",
+        title: "¿Su empresa necesita organizar y estandarizar sus procesos?",
+        questions: [
+          "¿Sus colaboradores realizan las mismas actividades de diferentes maneras?",
+          "¿Los procesos dependen demasiado del conocimiento de determinadas personas?",
+          "¿Tiene dificultades para controlar los documentos y registros?",
+          "¿No cuenta con indicadores para evaluar el desempeño de sus procesos?",
+          "¿Se presentan errores o reprocesos que podrían prevenirse?",
+          "¿Le cuesta identificar y gestionar los riesgos de su operación?",
+          "¿Necesita mejorar la satisfacción de sus clientes?",
+          "¿Su empresa requiere fortalecer sus prácticas ambientales?",
+          "¿Necesita organizar la gestión de seguridad y salud en el trabajo?",
+          "¿Tiene que prepararse para una auditoría o certificación ISO?",
         ],
+        closing: "Una empresa organizada no depende de la improvisación. Trabaja con procesos definidos, responsabilidades claras y mecanismos de control.",
+      },
+      {
+        kind: "cta",
+        id: "diagnostico",
+        eyebrow: "El primer paso",
+        title: "Todo empieza con un diagnóstico ISO",
+        text: "Revisamos cómo opera hoy su empresa frente a los requisitos de la norma que le interesa. Si aún no sabe cuál necesita, le ayudamos a identificarla.",
+        points: [
+          "Estado actual de sus procesos frente a la norma",
+          "Brechas y prioridades identificadas",
+          "Propuesta con alcance, etapas y plazos",
+          "Sin compromiso comercial",
+        ],
+        primary: "Solicitar diagnóstico ISO",
+        secondary: "Hablar con un consultor",
+      },
+      {
+        kind: "cards",
+        id: "propuesta",
+        eyebrow: "Nuestra propuesta",
+        title: "Estandarizamos sus procesos para fortalecer la gestión y el crecimiento de su empresa",
+        intro: "Acompañamos a las pymes en la implementación, el mantenimiento y la mejora de sistemas de gestión basados en normas ISO, con soluciones adaptadas a la realidad de cada organización.",
+        items: [
+          { icon: "process", title: "Gestión", text: "Organización, estandarización y control de los procesos." },
+          { icon: "checklist", title: "Cumplimiento", text: "Identificación y gestión de los requisitos aplicables a su organización." },
+          { icon: "growth", title: "Mejora", text: "Seguimiento del desempeño, análisis de resultados y mejora continua." },
+        ],
+        note: "No vendemos manuales, procedimientos ni formatos: le acompañamos a construir un sistema de gestión que se pueda aplicar y mantener en la operación diaria.",
+      },
+      {
+        kind: "services",
+        id: "normas-iso",
+        eyebrow: "Normas ISO que implementamos",
+        title: "Seis líneas de consultoría especializada",
+        intro: "Elija la norma que le interesa. Si necesita más de una, las integramos en un solo sistema de gestión.",
+        wide: true,
+        pointsLabel: "Le ayuda a",
+        benefitsLabel: "Ejemplos de aplicación",
+        quickNav: [
+          ["iso-9001", "ISO 9001 · Calidad"],
+          ["iso-14001", "ISO 14001 · Ambiental"],
+          ["iso-45001", "ISO 45001 · Seguridad y salud"],
+          ["iso-27001", "ISO/IEC 27001 · Información"],
+          ["iso-22301", "ISO 22301 · Continuidad"],
+          ["iso-21001", "ISO 21001 · Educación"],
+        ],
+        items: [
+          {
+            id: "iso-9001",
+            featured: true,
+            icon: "checklist",
+            badge: "ISO 9001:2026",
+            title: "ISO 9001: Sistema de Gestión de la Calidad",
+            kicker: "Calidad en sus procesos, confianza en sus clientes",
+            text: "Busca que su organización entregue de manera consistente productos y servicios que cumplan lo que sus clientes esperan. Es aplicable a organizaciones de diferentes tamaños y sectores.",
+            points: [
+              "Estandarizar sus procesos",
+              "Definir responsabilidades y controles",
+              "Mejorar la gestión de productos y servicios",
+              "Identificar riesgos y oportunidades",
+              "Gestionar las necesidades y expectativas de los clientes",
+              "Medir el desempeño mediante indicadores",
+              "Gestionar no conformidades y acciones correctivas",
+              "Promover la mejora continua",
+            ],
+            benefits: [
+              "Empresas de servicios que unifican su forma de atender",
+              "Fabricantes que controlan la calidad de sus productos",
+              "Proveedores cuyos clientes piden un sistema de calidad",
+            ],
+          },
+          {
+            id: "iso-14001",
+            icon: "leaf",
+            badge: "ISO 14001:2026",
+            title: "ISO 14001: Sistema de Gestión Ambiental",
+            kicker: "Gestione su impacto ambiental de manera responsable",
+            text: "Busca que su organización conozca y gestione la forma en que sus actividades afectan el ambiente.",
+            points: [
+              "Identificar aspectos e impactos ambientales",
+              "Gestionar riesgos y oportunidades ambientales",
+              "Establecer controles operacionales",
+              "Mejorar el uso de recursos",
+              "Gestionar residuos y prácticas ambientales",
+              "Evaluar el cumplimiento de obligaciones ambientales",
+              "Establecer objetivos de desempeño ambiental",
+            ],
+            benefits: [
+              "Plantas con vertimientos, emisiones o residuos",
+              "Empresas de logística y construcción",
+              "Proveedores con exigencias ambientales de sus clientes",
+            ],
+          },
+          {
+            id: "iso-45001",
+            icon: "hardhat",
+            badge: "ISO 45001:2018",
+            title: "ISO 45001: Seguridad y Salud en el Trabajo",
+            kicker: "Fortalezca la seguridad y la salud en su entorno laboral",
+            text: "Busca prevenir lesiones y deterioro de la salud relacionados con el trabajo.",
+            points: [
+              "Identificar peligros y evaluar riesgos laborales",
+              "Establecer controles preventivos",
+              "Promover la participación de los trabajadores",
+              "Fortalecer la cultura preventiva",
+              "Gestionar incidentes y oportunidades de mejora",
+              "Establecer objetivos de seguridad y salud",
+              "Evaluar el desempeño del sistema",
+            ],
+            benefits: [
+              "Empresas con trabajo en planta, obra o en campo",
+              "Empresas que quieren ir más allá del SG-SST",
+              "Proveedores de sectores con altas exigencias",
+            ],
+            note: "En Colombia, el SG-SST del Decreto 1072 de 2015 y los estándares mínimos de la Resolución 0312 de 2019 son obligaciones legales. ISO 45001 es voluntaria y no las sustituye: implementarla no exime de cumplirlas.",
+          },
+          {
+            id: "iso-27001",
+            icon: "lock",
+            badge: "ISO/IEC 27001:2022",
+            title: "ISO/IEC 27001: Seguridad de la Información",
+            kicker: "Proteja la información que mantiene su empresa en funcionamiento",
+            text: "Busca proteger la confidencialidad, la integridad y la disponibilidad de la información.",
+            points: [
+              "Identificar riesgos de seguridad de la información",
+              "Establecer políticas y controles de seguridad",
+              "Gestionar accesos y responsabilidades",
+              "Fortalecer la gestión de incidentes",
+              "Mejorar la protección de la información empresarial",
+              "Gestionar riesgos de proveedores y servicios tecnológicos",
+              "Promover una cultura de seguridad",
+            ],
+            benefits: [
+              "Empresas de tecnología y servicios digitales",
+              "Organizaciones que manejan datos de sus clientes",
+              "Proveedores a los que se les exigen controles de seguridad",
+            ],
+            note: "Implementar un sistema de gestión no elimina todos los riesgos ni garantiza inmunidad frente a incidentes de seguridad.",
+          },
+          {
+            id: "iso-22301",
+            icon: "continuity",
+            badge: "ISO 22301:2019",
+            title: "ISO 22301: Continuidad del Negocio",
+            kicker: "Prepare su empresa para continuar operando ante situaciones inesperadas",
+            text: "Busca que su empresa esté preparada para responder a los eventos que pueden interrumpir sus operaciones.",
+            points: [
+              "Identificar actividades y procesos críticos",
+              "Analizar el impacto de las interrupciones",
+              "Evaluar riesgos para la continuidad",
+              "Definir estrategias de continuidad",
+              "Establecer planes de continuidad del negocio",
+              "Preparar procedimientos de respuesta y recuperación",
+              "Realizar ejercicios y pruebas",
+            ],
+            benefits: [
+              "Empresas que no pueden detener su servicio",
+              "Operaciones que dependen de sistemas o de un solo proveedor",
+              "Organizaciones expuestas a eventos naturales o fallas",
+            ],
+          },
+          {
+            id: "iso-21001",
+            icon: "education",
+            badge: "ISO 21001:2025",
+            title: "ISO 21001: Organizaciones Educativas",
+            kicker: "Fortalezca la gestión y la calidad de los servicios educativos",
+            text: "Busca que las organizaciones educativas respondan mejor a las necesidades de sus estudiantes y de otras partes interesadas.",
+            points: [
+              "Organizar los procesos institucionales",
+              "Identificar necesidades de estudiantes y partes interesadas",
+              "Mejorar la prestación de servicios educativos",
+              "Establecer mecanismos de evaluación",
+              "Gestionar recursos y competencias",
+              "Dar seguimiento a los resultados educativos",
+              "Promover la mejora continua",
+            ],
+            benefits: [
+              "Colegios",
+              "Instituciones de formación",
+              "Centros de capacitación",
+            ],
+          },
+        ],
+        note: "Ediciones vigentes a noviembre de 2026. ISO 45001, ISO/IEC 27001 e ISO 22301 se aplican junto con su enmienda de 2024 sobre cambio climático.",
       },
       {
         kind: "text",
-        id: "iso-9001-2026",
-        eyebrow: "Nueva edición",
-        title: "Consultoría ISO 9001:2026 y transición desde la versión 2015",
+        id: "ediciones-vigentes",
+        eyebrow: "Nuevas ediciones",
+        title: "ISO 9001:2026, ISO 14001:2026 e ISO 21001:2025: implementación y transición",
         paragraphs: [
-          "En septiembre de 2026 ISO publicó la ISO 9001:2026, sexta edición de la norma. Si su empresa empieza ahora, implementamos directamente la nueva edición para que no tenga que hacerlo dos veces.",
-          "Si ya está certificada en ISO 9001:2015, le ayudamos a planear la transición dentro del plazo que defina su organismo certificador, enfocándonos en los cambios que más valor aportan a su operación.",
+          "ISO publicó en septiembre de 2026 la ISO 9001:2026, en abril de 2026 la ISO 14001:2026 y en 2025 la ISO 21001:2025. Si su empresa empieza ahora, implementamos directamente la edición vigente para que no tenga que hacerlo dos veces.",
+          "Si ya está certificada en una edición anterior, le ayudamos a planear la transición dentro del plazo que defina su organismo certificador, enfocándonos en los cambios que más valor aportan a su operación.",
         ],
         link: { label: "Lea: ISO 9001 para pymes, por dónde empezar", href: "/blog/iso-9001-pymes-colombia-por-donde-empezar" },
+      },
+      {
+        kind: "benefits",
+        id: "que-logra",
+        eyebrow: "Beneficios",
+        title: "¿Qué logra su empresa al implementar un sistema de gestión ISO?",
+        items: [
+          "Procesos definidos y estandarizados",
+          "Responsabilidades claramente establecidas",
+          "Mayor control de las operaciones",
+          "Documentación organizada",
+          "Mejor gestión de riesgos",
+          "Indicadores para evaluar resultados",
+          "Identificación de oportunidades de mejora",
+          "Mayor trazabilidad de las actividades",
+          "Más confianza de clientes y partes interesadas",
+          "Mejor preparación para auditorías",
+          "Una cultura de mejora continua",
+        ],
+        note: "Los beneficios dependen del compromiso de la dirección, de la participación de los colaboradores y de la aplicación real del sistema de gestión.",
+      },
+      {
+        kind: "steps",
+        id: "metodologia",
+        eyebrow: "Cómo trabajamos",
+        title: "Nuestra metodología de consultoría",
+        intro: "Desde Barranquilla acompañamos a empresas de Colombia y Latinoamérica en seis etapas:",
+        layout: "line",
+        items: [
+          { title: "Diagnóstico organizacional", text: "Analizamos el estado de su empresa, sus procesos, sus necesidades y su nivel de cumplimiento frente a la norma." },
+          { title: "Planificación del sistema", text: "Definimos el alcance, los objetivos, las actividades, los responsables y el plan de implementación." },
+          { title: "Diseño y estandarización", text: "Identificamos procesos, responsabilidades, interacciones, controles y la documentación necesaria." },
+          { title: "Implementación y apropiación", text: "Acompañamos a sus equipos en la aplicación de los procedimientos, controles y herramientas." },
+          { title: "Evaluación y auditoría interna", text: "Apoyamos la evaluación de los requisitos, la identificación de hallazgos y las acciones de mejora." },
+          { title: "Preparación y mejora continua", text: "Le acompañamos en la preparación para la auditoría externa y en el fortalecimiento del sistema." },
+        ],
+        note: "La auditoría de certificación y la decisión de otorgar el certificado corresponden a un organismo certificador independiente y competente.",
+      },
+      {
+        kind: "text",
+        id: "consultoria-y-certificacion",
+        eyebrow: "Una diferencia importante",
+        title: "Consultoría y certificación son servicios distintos",
+        paragraphs: [
+          "DataSys Latam Group presta consultoría: le ayudamos a implementar, mantener y mejorar su sistema de gestión, y a prepararse para la auditoría. No emitimos certificados ni garantizamos el resultado de una certificación.",
+          "La certificación es una evaluación independiente que realiza un organismo certificador competente. En Colombia le recomendamos verificar que esté acreditado ante ONAC, y le acompañamos en esa elección.",
+        ],
+      },
+      {
+        kind: "benefits",
+        id: "adaptada-a-pymes",
+        eyebrow: "Consultoría ISO adaptada a las pymes",
+        title: "Implementar una norma ISO no tiene que convertirse en una carga para su empresa",
+        intro: "Una pyme puede avanzar progresivamente hacia un sistema de gestión organizado y sostenible. Adaptamos el alcance y la metodología de trabajo a:",
+        items: [
+          "El tamaño de su organización",
+          "Su actividad económica",
+          "El número de procesos",
+          "La complejidad de sus operaciones",
+          "Los recursos disponibles",
+          "Sus riesgos y necesidades",
+          "Sus objetivos empresariales",
+        ],
+        note: "La documentación debe ser proporcional a la naturaleza y la complejidad de sus procesos. No proponemos estructuras documentales extensas ni burocráticas.",
+      },
+      {
+        kind: "service",
+        id: "sistemas-integrados",
+        eyebrow: "Sistemas integrados de gestión",
+        title: "Varias normas ISO, un solo sistema de gestión",
+        intro: "Algunas organizaciones implementan más de una norma mediante un Sistema Integrado de Gestión (SIG), que aprovecha lo que las normas tienen en común.",
+        examplesTitle: "Ejemplos de integración",
+        examples: [
+          "ISO 9001 + ISO 14001",
+          "ISO 9001 + ISO 45001",
+          "ISO 9001 + ISO/IEC 27001",
+          "ISO 9001 + ISO 14001 + ISO 45001",
+          "Varias normas, según las necesidades de su organización",
+        ],
+        note: "Las normas no tienen exactamente los mismos requisitos: la integración debe considerar los requisitos particulares de cada una.",
+        benefitsTitle: "Beneficios de integrar sus sistemas de gestión",
+        benefits: [
+          "Procesos comunes y mejor organizados",
+          "Menos duplicidad documental",
+          "Gestión coordinada de riesgos",
+          "Auditorías internas integradas, cuando corresponde",
+          "Indicadores y objetivos articulados",
+          "Mejor aprovechamiento de los recursos",
+        ],
+      },
+      {
+        kind: "service",
+        id: "digitalizacion",
+        eyebrow: "Digitalización y tecnología",
+        title: "No solo le ayudamos a estructurar su sistema de gestión. También podemos ayudarle a digitalizar su operación",
+        intro: "Unimos gestión de calidad, tecnología y transformación digital. Elegimos las herramientas según lo que su sistema necesita.",
+        examplesTitle: "Lo que las herramientas digitales pueden facilitar",
+        examples: [
+          "Gestión documental",
+          "Control de versiones",
+          "Seguimiento de procesos",
+          "Gestión de riesgos",
+          "Registro de no conformidades",
+          "Seguimiento de acciones correctivas",
+          "Control de indicadores",
+          "Gestión de auditorías",
+          "Consulta de información",
+          "Seguimiento de objetivos y planes de mejora",
+        ],
+        benefitsTitle: "Governex, nuestra plataforma para sistemas de gestión de calidad, incluye",
+        benefits: [
+          "Mapa de procesos y caracterizaciones",
+          "Matriz de riesgos y oportunidades",
+          "Listado maestro de documentos",
+          "Programa de auditorías y hallazgos",
+          "No conformidades y acciones de mejora",
+          "Indicadores y revisión por la dirección",
+        ],
+        image: governexDashboard,
+        imageAlt: "Resumen ejecutivo de un sistema de gestión de calidad en Governex con indicadores, cumplimiento por proceso y mapa de riesgos",
+        width: 1892,
+        height: 921,
+        caption: "Governex está orientada a sistemas de gestión de calidad con ISO 9001. Para otras normas, evaluamos la herramienta adecuada en cada proyecto.",
+        link: { label: "Conozca Governex", href: "/producto/governex" },
+      },
+      {
+        kind: "levels",
+        id: "tres-niveles",
+        eyebrow: "Una oferta que crece con usted",
+        title: "De la consultoría a la gestión con datos",
+        intro: "No solo le acompañamos a implementar su sistema de gestión: también podemos ayudarle a digitalizarlo y a aprovechar la información que genera.",
+        items: [
+          { name: "Consultoría", title: "Implementación de normas ISO", text: "Estandarice y fortalezca la gestión de su empresa." },
+          { name: "Tecnología", title: "Governex", text: "Digitalice y controle su sistema de gestión de calidad.", href: "/producto/governex", linkLabel: "Ver Governex" },
+          { name: "Evolución", title: "Analítica e inteligencia artificial", text: "Aproveche la información para mejorar el seguimiento y las decisiones.", href: "/servicios/analitica-de-datos", linkLabel: "Ver analítica de datos" },
+        ],
       },
       {
         kind: "profile",
@@ -305,39 +715,95 @@ export const LANDING_PAGES: LandingPage[] = [
         imageAlt: "Armando José López González durante una capacitación sobre certificación ISO",
       },
       {
-        kind: "chips",
-        id: "otras-normas",
-        eyebrow: "Sistemas integrados",
-        title: "Consultoría ISO más allá de la calidad",
-        intro: "Si su empresa necesita integrar varios sistemas de gestión, también le acompañamos en:",
-        chips: ["ISO 14001 (ambiental)", "ISO 45001 (seguridad y salud en el trabajo)", "ISO 27001 (seguridad de la información)", "ISO 22301 (continuidad del negocio)", "ISO 21001 (organizaciones educativas)"],
+        kind: "cards",
+        id: "por-que-datasys",
+        eyebrow: "Por qué DataSys",
+        title: "¿Por qué elegir a DataSys Latam Group?",
+        intro: "Comprendemos tanto los requisitos de las normas como las necesidades operativas de las empresas.",
+        items: [
+          { icon: "fit", title: "Necesidades reales de las pymes", text: "Una consultoría a la medida de su tamaño, no una plantilla." },
+          { icon: "process", title: "Enfoque en procesos", text: "Estandarizamos procesos y responsabilidades para que el sistema funcione en el día a día." },
+          { icon: "layers", title: "Calidad, tecnología y transformación digital", text: "Integramos la gestión con las herramientas que la facilitan." },
+          { icon: "support", title: "Acompañamiento en la implementación", text: "Trabajamos con su equipo para que el sistema funcione sin depender del consultor." },
+          { icon: "checklist", title: "Preparación para auditorías", text: "Apoyamos la auditoría interna y la preparación para la auditoría externa." },
+          { icon: "growth", title: "Mejora continua y digitalización", text: "Su sistema puede seguir mejorando y digitalizarse cuando lo necesite." },
+        ],
+      },
+      {
+        kind: "cta",
+        id: "siguiente-paso",
+        title: "Es momento de fortalecer la gestión de su empresa",
+        text: "Identifiquemos qué sistema de gestión necesita su organización y cómo podemos ayudarle a estandarizar sus procesos, gestionar sus riesgos y mejorar su desempeño. En DataSys le acompañamos en el camino hacia una gestión empresarial más organizada y eficiente.",
+        primary: "Solicitar diagnóstico ISO",
+        secondary: "Hablar con un consultor",
       },
     ],
     testimonials: [],
     faq: [
       {
-        q: "¿Cuánto cuesta la consultoría ISO 9001?",
-        a: "Depende del tamaño de la empresa, del número de procesos y del punto de partida. Tras un diagnóstico inicial le entregamos una propuesta con alcance y plazos definidos.",
+        q: "¿Qué es una norma ISO y para qué sirve?",
+        a: "Es un estándar internacional que recoge buenas prácticas para gestionar un tema, como la calidad, el ambiente o la seguridad de la información. Sirve para organizar los procesos, definir controles y mejorar de forma ordenada.",
       },
       {
-        q: "¿Cuánto tiempo toma implementar ISO 9001?",
-        a: "Depende de la madurez de sus procesos, del alcance que se defina y del tiempo que el equipo directivo dedique al proyecto. El sistema debe funcionar y generar evidencia durante un periodo antes de la auditoría externa.",
+        q: "¿Qué norma ISO necesita mi empresa?",
+        a: "Depende de su actividad, de sus riesgos y de lo que le exigen sus clientes. ISO 9001 suele ser el punto de partida, pero no siempre es la prioridad. En el diagnóstico le ayudamos a identificar la que más le conviene.",
+      },
+      {
+        q: "¿Una pyme puede implementar una norma ISO?",
+        a: "Sí. Las normas ISO de sistemas de gestión se aplican a organizaciones de diferentes tamaños. Adaptamos el alcance y la documentación a su empresa para que el sistema sea útil y sostenible.",
+      },
+      {
+        q: "¿Cuál es la diferencia entre implementar y certificar un sistema de gestión?",
+        a: "Implementar es poner el sistema en funcionamiento en su empresa. Certificar es que un organismo independiente audite ese sistema y decida si cumple la norma. Puede implementar una norma sin certificarse.",
+      },
+      {
+        q: "¿Cuánto tiempo puede tomar implementar una norma ISO?",
+        a: "Depende del tamaño de su empresa, del alcance, de la complejidad de sus procesos y de su estado inicial. Después del diagnóstico le presentamos un plan con etapas y plazos para su caso.",
+      },
+      {
+        q: "¿Es posible implementar varias normas ISO al mismo tiempo?",
+        a: "Sí, mediante un sistema integrado de gestión que aprovecha los procesos comunes. Evaluamos con usted si conviene hacerlo a la vez o por etapas, y atendemos los requisitos particulares de cada norma.",
+      },
+      {
+        q: "¿Qué documentos necesita una empresa para implementar ISO 9001?",
+        a: "La norma pide información documentada como el alcance del sistema, la política y los objetivos de calidad, además de los registros que evidencian la operación. No hay una cantidad fija: depende de la naturaleza y la complejidad de sus procesos.",
+      },
+      {
+        q: "¿Es obligatorio contratar una consultoría para implementar una norma ISO?",
+        a: "No. Una empresa puede hacerlo con su propio equipo. La consultoría aporta experiencia y método para ahorrar reprocesos, y trabajamos para que el sistema funcione sin depender del consultor.",
+      },
+      {
+        q: "¿Qué sucede durante una auditoría de certificación?",
+        a: "Un organismo certificador revisa la documentación y la preparación de su sistema, y luego evalúa cómo funciona en la operación. Si encuentra no conformidades, su empresa debe atenderlas. Con esa evidencia, el organismo decide si otorga el certificado.",
+      },
+      {
+        q: "¿DataSys entrega el certificado ISO?",
+        a: "No. El certificado lo otorga un organismo de certificación independiente; le recomendamos verificar que esté acreditado ante ONAC. Nosotros le acompañamos para llegar preparado a esa auditoría, sin garantizar el resultado.",
+      },
+      {
+        q: "¿Cómo se mantienen y mejoran los sistemas de gestión después de la certificación?",
+        a: "Con auditorías internas, revisión por la dirección, seguimiento de indicadores y acciones de mejora. Además, el organismo certificador realiza auditorías periódicas de seguimiento y de renovación.",
+      },
+      {
+        q: "¿Es posible digitalizar la documentación y los procesos del sistema de gestión?",
+        a: "Sí. Puede llevar procesos, riesgos, auditorías, no conformidades e indicadores a herramientas digitales. Para sistemas de calidad contamos con Governex, nuestra plataforma, y para otras necesidades evaluamos la herramienta adecuada.",
+      },
+      {
+        q: "¿Implementan la edición vigente de cada norma?",
+        a: "Sí. Si su empresa empieza ahora, implementamos la edición vigente, como ISO 9001:2026 o ISO 14001:2026. Si ya está certificada en una edición anterior, le ayudamos a planear la transición con su organismo certificador.",
       },
       {
         q: "¿Es obligatorio certificarse en ISO 9001 en Colombia?",
         a: "No, la certificación es voluntaria. Se vuelve indispensable cuando un cliente privado la exige como condición para comprarle. En la contratación estatal, la Ley 1150 de 2007 establece que las certificaciones de calidad no pueden exigirse como requisito habilitante ni dar puntaje.",
       },
-      {
-        q: "¿Implementan la ISO 9001:2026 o la versión 2015?",
-        a: "Si su empresa empieza ahora, implementamos directamente la ISO 9001:2026, publicada en septiembre de 2026. Si ya está certificada en la versión 2015, le ayudamos a planear la transición con su organismo certificador.",
-      },
-      {
-        q: "¿Ustedes otorgan el certificado?",
-        a: "No. El certificado lo otorga un organismo de certificación independiente; le recomendamos verificar que esté acreditado ante ONAC. Nosotros le acompañamos para llegar preparado a esa auditoría.",
-      },
+      { q: "¿Cuánto cuesta la consultoría ISO?", a: PRICE_ANSWER },
     ],
     related: [
-      { label: "Governex: software para sistemas de gestión ISO", href: "/producto/governex" },
+      { label: "Haga el autodiagnóstico gratuito de 10 minutos", href: "/#autodiagnostico" },
+      { label: "Governex: software para sistemas de gestión de calidad", href: "/producto/governex" },
+      { label: "Digitalización de procesos para pymes", href: "/servicios/digitalizacion-de-procesos" },
+      { label: "Analítica de datos para empresas", href: "/servicios/analitica-de-datos" },
+      { label: "Inteligencia artificial para empresas", href: "/servicios/inteligencia-artificial-empresas" },
       { label: "Proveedores certificados ISO 9001: por qué los exigen", href: "/blog/proveedores-certificados-iso-9001-exigencias" },
       { label: "Documentar procesos sin llenarse de papeles", href: "/blog/documentar-procesos-empresa-sin-papeles" },
     ],

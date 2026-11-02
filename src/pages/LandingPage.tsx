@@ -12,6 +12,10 @@ import {
   Database,
   Eye,
   FileCheck2,
+  GraduationCap,
+  HardHat,
+  Leaf,
+  RefreshCw,
   GitBranch,
   Handshake,
   Info,
@@ -74,6 +78,10 @@ const ICONS: Record<LandingIcon, LucideIcon> = {
   shield: ShieldCheck,
   lock: Lock,
   eye: Eye,
+  leaf: Leaf,
+  hardhat: HardHat,
+  continuity: RefreshCw,
+  education: GraduationCap,
 };
 
 const Note = ({ text, className = "" }: { text: string; className?: string }) => (
@@ -163,23 +171,39 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
       return wrap(
         <>
           <SectionHeader {...section} />
+          {section.quickNav && (
+            <nav aria-label="Accesos rápidos" className="mb-8 flex flex-wrap gap-2">
+              {section.quickNav.map(([id, label]) => (
+                <a key={id} href={`#${id}`} className="rounded-full border border-electric-600/30 bg-white px-4 py-2 text-sm font-semibold text-electric-600 transition hover:bg-electric-600 hover:text-white">
+                  {label}
+                </a>
+              ))}
+            </nav>
+          )}
           <ul className={`grid gap-6 ${section.wide ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
             {section.items.map((item) => (
               <li
                 key={item.title}
-                className="flex flex-col rounded-2xl border border-gray-200 border-t-4 border-t-electric-600 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                id={item.id}
+                className={`flex flex-col rounded-2xl border border-gray-200 border-t-4 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${
+                  item.featured ? "border-t-[#FF8024] lg:col-span-2" : "border-t-electric-600"
+                }`}
               >
-                <IconBadge icon={item.icon} size="lg" />
+                <div className="flex items-start justify-between gap-3">
+                  <IconBadge icon={item.icon} size="lg" />
+                  {item.badge && <span className="rounded-full bg-navy-900 px-3 py-1 text-xs font-bold text-white">{item.badge}</span>}
+                </div>
                 <h3 className="mb-2 font-heading text-xl font-bold text-navy-900">{item.title}</h3>
+                {item.kicker && <p className="mb-2 text-sm font-semibold text-[#c2560a]">{item.kicker}</p>}
                 <p className="mb-4 text-sm leading-relaxed text-[#0b2a5e]/80">{item.text}</p>
                 {item.benefits ? (
                   <div className="mb-2 grid gap-5 sm:grid-cols-2">
                     <div>
-                      <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">Ejemplos</h4>
+                      <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">{section.pointsLabel ?? "Ejemplos"}</h4>
                       <PointList points={item.points} />
                     </div>
                     <div>
-                      <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">Beneficios</h4>
+                      <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">{section.benefitsLabel ?? "Beneficios"}</h4>
                       <PointList points={item.benefits} />
                     </div>
                   </div>
@@ -293,6 +317,11 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                     ))}
                   </ul>
                 )}
+                {item.href && item.linkLabel && (
+                  <div className="mt-auto">
+                    <CardLink href={item.href} label={item.linkLabel} />
+                  </div>
+                )}
               </li>
             ))}
           </ol>
@@ -302,7 +331,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
     case "service":
       return wrap(
         <>
-          <div className="grid items-start gap-10 lg:grid-cols-2">
+          <div className={`grid items-start gap-10 ${section.image ? "lg:grid-cols-2" : ""}`}>
             <div className={section.reverse ? "lg:order-2" : undefined}>
               <SectionHeader {...section} />
               <h3 className="mb-3 text-base font-bold text-navy-900">{section.examplesTitle}</h3>
@@ -317,7 +346,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
               {section.note && <Note text={section.note} className="mt-5" />}
               {section.link && <CardLink href={section.link.href} label={section.link.label} />}
             </div>
-            <figure className="lg:sticky lg:top-24">
+            {section.image && <figure className="lg:sticky lg:top-24">
               <img
                 src={section.image}
                 alt={section.imageAlt}
@@ -328,7 +357,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                 className="w-full rounded-2xl border border-gray-200 shadow-card"
               />
               {section.caption && <figcaption className="mt-3 text-center text-sm text-steel-500">{section.caption}</figcaption>}
-            </figure>
+            </figure>}
           </div>
           <div className="mt-10">
             <h3 className="mb-4 text-base font-bold text-navy-900">{section.benefitsTitle}</h3>
@@ -392,13 +421,13 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                 ))}
               </ol>
             )}
-            <ol className={`grid gap-6 md:grid-cols-2 lg:gap-5 ${section.items.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
+            <ol className={`grid gap-6 md:grid-cols-2 lg:gap-5 ${section.items.length === 6 ? "lg:grid-cols-3 xl:grid-cols-6" : section.items.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
               {section.items.map((item, i) => (
                 <li key={item.title} className="relative">
                   {/* Tramo de la línea hasta la etapa siguiente (solo en escritorio) */}
                   {i < section.items.length - 1 && (
                     <span
-                      className="pointer-events-none absolute left-12 top-6 hidden h-0.5 w-[calc(100%-3rem+1.25rem)] bg-gradient-to-r from-[#FF8024] to-electric-600 lg:block"
+                      className={`pointer-events-none absolute left-12 top-6 hidden h-0.5 w-[calc(100%-3rem+1.25rem)] bg-gradient-to-r from-[#FF8024] to-electric-600 ${section.items.length === 6 ? "xl:block" : "lg:block"}`}
                       aria-hidden="true"
                     />
                   )}
@@ -410,6 +439,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                 </li>
               ))}
             </ol>
+            {section.note && <Note text={section.note} className="mt-8" />}
           </>,
         );
       }
@@ -675,6 +705,7 @@ const LandingPage = ({ page }: { page: LandingData }) => (
       submitLabel={page.leadSubmitLabel}
       asideTitle={page.leadTitle}
       asideText={page.leadText}
+      extraFields={page.leadFields}
     />
 
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(landingJsonLd(page)) }} />
