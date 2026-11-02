@@ -8,7 +8,7 @@ import asistenteNovaMovil from "@/assets/banners/asistente-nova-movil.webp";
 import digitalizacionProcesos from "@/assets/banners/digitalizacion-procesos-sin-fondo.webp";
 import analiticaDatosHero from "@/assets/banners/analitica-datos-hero.webp";
 import analiticaDashboardEjecutivo from "@/assets/banners/analitica-dashboard-ejecutivo.webp";
-import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
+import inteligencia from "@/assets/banners/inteligencia-artificial-hero.webp";
 import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
 import transformacion from "@/assets/banners/transformacion-corporativo.webp";
@@ -671,8 +671,8 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Inteligencia artificial para empresas",
     lead: "Integramos IA en su operación para automatizar tareas repetitivas, analizar información y atender mejor a sus clientes, con sus datos protegidos y siempre con una persona de su equipo al mando de las decisiones.",
     heroImage: inteligencia,
-    heroImageAlt: "Profesional frente a una visualización de red neuronal que representa la inteligencia artificial aplicada a la empresa",
-    heroImagePosition: "70% center",
+    heroImageAlt: "Profesional trabajando en su computador con herramientas de inteligencia artificial para analizar datos, atender clientes y proteger la información",
+    heroImagePosition: "60% center",
     primaryCta: "Solicitar un diagnóstico",
     whatsappText: "Hola, me interesa aplicar inteligencia artificial en mi empresa.",
     leadSubject: "Nuevo lead: Inteligencia artificial (sitio web)",
