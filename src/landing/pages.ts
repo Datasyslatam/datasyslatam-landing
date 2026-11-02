@@ -5,7 +5,7 @@ import fundador from "@/assets/consultoria-fundador.webp";
 import appSoft from "@/assets/banners/app-producto-soft.webp";
 import desarrolloSoftwareIa from "@/assets/banners/desarrollo-software-ia-sin-fondo.webp";
 import asistenteNovaMovil from "@/assets/banners/asistente-nova-movil.webp";
-import digitalizacionProcesos from "@/assets/banners/digitalizacion-procesos-sin-fondo.webp";
+import digitalizacionProcesosHero from "@/assets/banners/digitalizacion-procesos-hero.webp";
 import analiticaDatosHero from "@/assets/banners/analitica-datos-hero.webp";
 import analiticaDashboardEjecutivo from "@/assets/banners/analitica-dashboard-ejecutivo.webp";
 import inteligencia from "@/assets/banners/inteligencia-artificial-hero.webp";
@@ -1153,9 +1153,9 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: "Digitalización de procesos para pymes",
     h1: "Mejoramos la forma en que las pymes realizan y controlan su trabajo",
     lead: "Le ayudamos a reducir las tareas repetitivas, organizar la información y saber qué pasa en su operación. Empezamos por un diagnóstico de sus procesos y, con base en él, le proponemos la solución adecuada para su empresa.",
-    heroImage: gestion,
-    heroImageAlt: "Hoja de cálculo de pedidos que pasa a una plataforma web de seguimiento de solicitudes y a un formulario digital en el celular",
-    heroMockup: digitalizacionProcesos,
+    heroImage: digitalizacionProcesosHero,
+    heroImageAlt: "Equipo de una empresa revisando en una pantalla el control de sus operaciones, con el mapa de un proceso y las tareas automatizadas",
+    heroImagePosition: "70% center",
     heroHighlights: ["Identificamos lo que le quita tiempo", "Digitalizamos con la herramienta adecuada", "Optimizamos el control de su operación"],
     primaryCta: "Solicitar diagnóstico",
     secondaryCta: { label: "Conocer cómo funciona", href: "#como-funciona" },
