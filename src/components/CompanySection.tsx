@@ -3,7 +3,7 @@ import companyScene from "@/assets/company-scene.webp";
 
 const points = [
   { title: "Governex:", desc: "Simplifica, acelera y asegura el Sistema de Gestión ISO con IA." },
-  { title: "Digitalización de operaciones:", desc: "Automatiza y centraliza procesos de forma ágil, inteligente y eficiente." },
+  { title: "Digitalización de procesos:", desc: "Automatiza y centraliza procesos de forma ágil, inteligente y eficiente." },
   { title: "Consultores de sistemas de gestión:", desc: "Formación a la medida, asistencia técnica, normas ISO." },
   { title: "IA y software a la medida:", desc: "Desarrollamos soluciones tecnológicas y agentes con IA diseñados según necesidades específicas." },
   { title: "Analítica de datos y Big data:", desc: "Recopila, interpreta y controla la data para tomar la mejor decisión." },
