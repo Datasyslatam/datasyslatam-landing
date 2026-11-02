@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { SUBMIT_ERROR_MESSAGES, submitWeb3Forms } from "@/lib/web3forms";
+import type { LeadField } from "@/landing/pages";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -12,6 +13,7 @@ const fadeUp = {
  * subject: asunto del correo; las páginas de servicios lo cambian para saber de dónde llegó cada solicitud.
  * needOptions: si se pasan, el formulario pregunta «¿Qué necesita?» (o needLabel) y la respuesta va en el asunto para clasificar el prospecto.
  * askPhone: pide también el teléfono, como campo obligatorio.
+ * extraFields: campos obligatorios adicionales; llegan en el correo con su propio nombre.
  */
 const ContactSection = ({
   subject = "Nuevo mensaje de contacto - DatasysLatam Group",
@@ -21,6 +23,7 @@ const ContactSection = ({
   submitLabel = "Solicitar asesoría",
   asideTitle = "¿Tiene en mente un desafío tecnológico?",
   asideText = "Cuéntenos qué necesita transformar. Nuestro equipo puede ayudarle a convertir su necesidad empresarial en una solución tecnológica que genere resultados positivos.",
+  extraFields = [],
 }: {
   subject?: string;
   needOptions?: string[];
@@ -29,6 +32,7 @@ const ContactSection = ({
   submitLabel?: string;
   asideTitle?: string;
   asideText?: string;
+  extraFields?: LeadField[];
 }) => {
   const [submitted,   setSubmitted]   = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,6 +47,9 @@ const ContactSection = ({
     if (!data.message.trim()) errs.message = "El mensaje es obligatorio.";
     if (needOptions?.length && !data.need) errs.need = "Elija una opción.";
     if (askPhone && data.phone.replace(/\D/g, "").length < 7) errs.phone = "Ingrese un teléfono válido.";
+    extraFields.forEach((field) => {
+      if (!data[field.name]?.trim()) errs[field.name] = field.options ? "Elija una opción." : "Este campo es obligatorio.";
+    });
     return errs;
   };
 
@@ -50,7 +57,9 @@ const ContactSection = ({
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const data = {
+    const extras = Object.fromEntries(extraFields.map((field) => [field.name, String(formData.get(field.name) ?? "")]));
+    const data: Record<string, string> = {
+      ...extras,
       name:    String(formData.get("name")    ?? ""),
       email:   String(formData.get("email")   ?? ""),
       company: String(formData.get("company") ?? ""),
@@ -304,6 +313,44 @@ const ContactSection = ({
                     </div>
                   )}
                 </div>
+
+                {/* Campos adicionales de cada página */}
+                {extraFields.map((field) => (
+                  <div key={field.name}>
+                    <label htmlFor={`contact-${field.name}`} className="block text-xs font-medium text-steel-300 mb-1.5 tracking-wide">
+                      {field.label} <span className="text-destructive">*</span>
+                    </label>
+                    {field.options ? (
+                      <select
+                        id={`contact-${field.name}`}
+                        name={field.name}
+                        defaultValue=""
+                        aria-invalid={!!errors[field.name]}
+                        className={`${inputBase} ${errors[field.name] ? inputErr : inputOk}`}
+                      >
+                        <option value="" disabled className="bg-navy-900">Seleccione una opción</option>
+                        {field.options.map((option) => (
+                          <option key={option} value={option} className="bg-navy-900">{option}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        id={`contact-${field.name}`}
+                        type="text"
+                        name={field.name}
+                        maxLength={150}
+                        aria-invalid={!!errors[field.name]}
+                        placeholder={field.placeholder}
+                        className={`${inputBase} ${errors[field.name] ? inputErr : inputOk}`}
+                      />
+                    )}
+                    {errors[field.name] && (
+                      <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+                        <AlertCircle size={12} /> {errors[field.name]}
+                      </p>
+                    )}
+                  </div>
+                ))}
 
                 {/* Mensaje */}
                 <div>
