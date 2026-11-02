@@ -2,8 +2,7 @@
 // sus metadatos, sus datos estructurados (Service o SoftwareApplication, migas de pan y FAQPage) y entra al sitemap.
 // Todo el contenido sale de información ya publicada en el sitio: no se inventan cifras, clientes ni testimonios.
 import fundador from "@/assets/consultoria-fundador.webp";
-import appSoft from "@/assets/banners/app-producto-soft.webp";
-import desarrolloSoftwareIa from "@/assets/banners/desarrollo-software-ia-sin-fondo.webp";
+import desarrolloSoftwareHero from "@/assets/banners/desarrollo-software-hero.webp";
 import asistenteNovaMovil from "@/assets/banners/asistente-nova-movil.webp";
 import digitalizacionProcesosHero from "@/assets/banners/digitalizacion-procesos-hero.webp";
 import analiticaDatosHero from "@/assets/banners/analitica-datos-hero.webp";
@@ -363,9 +362,9 @@ export const LANDING_PAGES: LandingPage[] = [
     eyebrow: "Software a la medida, aplicaciones web e IA",
     h1: "Creamos soluciones digitales que hacen evolucionar su empresa",
     lead: "Desde aplicaciones web hasta asistentes de inteligencia artificial y software a la medida: creamos soluciones digitales que conectan sus procesos, optimizan su operación y convierten sus ideas en herramientas funcionales.",
-    heroImage: appSoft,
-    heroImageAlt: "Aplicación web de gestión y asistente de inteligencia artificial en un celular, desarrollados por DataSys Latam Group",
-    heroMockup: desarrolloSoftwareIa,
+    heroImage: desarrolloSoftwareHero,
+    heroImageAlt: "Equipo de desarrollo de software trabajando en código, con un tablero de proyecto en pantalla y diagramas de arquitectura en la pizarra",
+    heroImagePosition: "65% center",
     heroHighlights: ["Aplicaciones web", "Asistentes de IA", "Software a la medida"],
     primaryCta: "Solicitar asesoría",
     secondaryCta: { label: "Conocer nuestros servicios", href: "#nuestros-servicios" },
