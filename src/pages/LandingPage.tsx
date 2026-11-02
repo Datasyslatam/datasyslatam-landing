@@ -16,6 +16,8 @@ import {
   Info,
   Lightbulb,
   Package,
+  Users,
+  Wallet,
   Wrench,
   Layers,
   LayoutDashboard,
@@ -64,6 +66,8 @@ const ICONS: Record<LandingIcon, LucideIcon> = {
   approval: GitBranch,
   dashboard: ChartColumn,
   idea: Lightbulb,
+  finance: Wallet,
+  customers: Users,
 };
 
 const Note = ({ text, className = "" }: { text: string; className?: string }) => (
@@ -229,6 +233,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
               <CheckPill key={item} text={item} />
             ))}
           </ul>
+          {section.note && <Note text={section.note} className="mt-8" />}
         </>,
       );
     case "levels":
@@ -246,6 +251,16 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                 <p className="mb-1 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">{item.name}</p>
                 <h3 className="mb-2 text-lg font-bold text-navy-900">{item.title}</h3>
                 <p className="text-sm leading-relaxed text-[#0b2a5e]/75">{item.text}</p>
+                {item.points && (
+                  <ul className="mt-4 space-y-2 border-t border-gray-100 pt-4">
+                    {item.points.map((point) => (
+                      <li key={point} className="flex gap-2 text-sm text-[#0b2a5e]/85">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-electric-600" aria-hidden="true" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ol>
@@ -334,6 +349,16 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
         return wrap(
           <>
             <SectionHeader {...section} />
+            {section.flow && (
+              <ol className="mb-10 flex flex-wrap items-center gap-2 sm:gap-3" aria-label="Recorrido">
+                {section.flow.map((stage, i) => (
+                  <li key={stage} className="flex items-center gap-2 sm:gap-3">
+                    <span className="rounded-full bg-navy-900 px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] text-white sm:text-sm">{stage}</span>
+                    {i < section.flow!.length - 1 && <ArrowRight className="h-4 w-4 text-[#FF8024] sm:h-5 sm:w-5" aria-hidden="true" />}
+                  </li>
+                ))}
+              </ol>
+            )}
             <ol className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 lg:gap-5">
               {section.items.map((item, i) => (
                 <li key={item.title} className="relative">
