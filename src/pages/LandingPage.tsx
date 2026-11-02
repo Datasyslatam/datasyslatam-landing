@@ -10,6 +10,7 @@ import {
   ClipboardPen,
   CodeXml,
   Database,
+  Eye,
   FileCheck2,
   GitBranch,
   Handshake,
@@ -23,12 +24,14 @@ import {
   LayoutDashboard,
   LifeBuoy,
   ListChecks,
+  Lock,
   MessagesSquare,
   MonitorSmartphone,
   MousePointerClick,
   Network,
   Quote,
   Search,
+  ShieldCheck,
   Target,
   TrendingUp,
   Workflow,
@@ -68,6 +71,9 @@ const ICONS: Record<LandingIcon, LucideIcon> = {
   idea: Lightbulb,
   finance: Wallet,
   customers: Users,
+  shield: ShieldCheck,
+  lock: Lock,
+  eye: Eye,
 };
 
 const Note = ({ text, className = "" }: { text: string; className?: string }) => (
@@ -75,6 +81,17 @@ const Note = ({ text, className = "" }: { text: string; className?: string }) =>
     <Info className="mt-0.5 h-4 w-4 shrink-0 text-electric-600" aria-hidden="true" />
     <span>{text}</span>
   </p>
+);
+
+const PointList = ({ points }: { points: string[] }) => (
+  <ul className="space-y-2">
+    {points.map((point) => (
+      <li key={point} className="flex gap-2 text-sm text-[#0b2a5e]/85">
+        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF8024]" aria-hidden="true" />
+        <span>{point}</span>
+      </li>
+    ))}
+  </ul>
 );
 
 const CheckPill = ({ text }: { text: string }) => (
@@ -139,13 +156,14 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
               <Card key={item.title} item={item} />
             ))}
           </ul>
+          {section.note && <Note text={section.note} className="mt-8" />}
         </>,
       );
     case "services":
       return wrap(
         <>
           <SectionHeader {...section} />
-          <ul className="grid gap-6 lg:grid-cols-3">
+          <ul className={`grid gap-6 ${section.wide ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
             {section.items.map((item) => (
               <li
                 key={item.title}
@@ -154,14 +172,23 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                 <IconBadge icon={item.icon} size="lg" />
                 <h3 className="mb-2 font-heading text-xl font-bold text-navy-900">{item.title}</h3>
                 <p className="mb-4 text-sm leading-relaxed text-[#0b2a5e]/80">{item.text}</p>
-                <ul className="mb-2 space-y-2">
-                  {item.points.map((point) => (
-                    <li key={point} className="flex gap-2 text-sm text-[#0b2a5e]/85">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FF8024]" aria-hidden="true" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
+                {item.benefits ? (
+                  <div className="mb-2 grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">Ejemplos</h4>
+                      <PointList points={item.points} />
+                    </div>
+                    <div>
+                      <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-electric-600">Beneficios</h4>
+                      <PointList points={item.benefits} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-2">
+                    <PointList points={item.points} />
+                  </div>
+                )}
+                {item.note && <Note text={item.note} className="mb-2 mt-3" />}
                 {item.href && item.linkLabel && (
                   <div className="mt-auto">
                     <CardLink href={item.href} label={item.linkLabel} />
@@ -180,7 +207,11 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
           <ul className="grid gap-3 sm:grid-cols-2">
             {section.questions.map((q) => (
               <li key={q} className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-base text-[#0b2a5e]">
-                <CircleHelp className="mt-0.5 h-5 w-5 shrink-0 text-[#FF8024]" aria-hidden="true" />
+                {section.affirmative ? (
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#FF8024]" aria-hidden="true" />
+                ) : (
+                  <CircleHelp className="mt-0.5 h-5 w-5 shrink-0 text-[#FF8024]" aria-hidden="true" />
+                )}
                 <span>{q}</span>
               </li>
             ))}
@@ -188,6 +219,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
           <p className="mt-8 rounded-2xl border-l-4 border-[#FF8024] bg-navy-900 px-6 py-5 text-base font-medium leading-relaxed text-white md:text-lg">
             {section.closing}
           </p>
+          {section.note && <Note text={section.note} className="mt-5" />}
         </>,
       );
     case "compare":
@@ -341,6 +373,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                 {section.secondary}
               </a>
             </div>
+            {section.footnote && <p className="mx-auto mt-8 max-w-2xl text-base font-medium italic leading-relaxed text-white/85">{section.footnote}</p>}
           </div>
         </section>
       );
@@ -359,7 +392,7 @@ const Section = ({ section, index, whatsappText }: { section: LandingSection; in
                 ))}
               </ol>
             )}
-            <ol className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+            <ol className={`grid gap-6 md:grid-cols-2 lg:gap-5 ${section.items.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
               {section.items.map((item, i) => (
                 <li key={item.title} className="relative">
                   {/* Tramo de la línea hasta la etapa siguiente (solo en escritorio) */}
