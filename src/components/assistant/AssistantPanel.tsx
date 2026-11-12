@@ -17,7 +17,7 @@ import {
 import logoImg from "@/assets/logo-datasyslatam.webp";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { submitWeb3Forms, SUBMIT_ERROR_MESSAGES } from "@/lib/web3forms";
-import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/data";
+import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/hash";
 import { askAssistant, transcriptText, type AssistantAction, type ChatMessage } from "./api";
 import RichText from "./RichText";
 import NovaAvatar from "./NovaAvatar";

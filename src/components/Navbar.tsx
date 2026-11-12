@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import logoImg from "@/assets/logo-datasyslatam.webp";
 import { NAV_LINKS } from "./navLinks";
@@ -66,7 +66,7 @@ const Navbar = () => {
       {/* Menu movil */}
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             key="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -88,7 +88,7 @@ const Navbar = () => {
                 </a>
               </li>
             </ul>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </nav>

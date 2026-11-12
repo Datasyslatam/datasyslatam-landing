@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
@@ -141,27 +141,27 @@ const HeroSection = () => {
   return wrap(
     <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900">
       <AnimatePresence mode="sync">
-        <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }}>
+        <m.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }}>
           <ResponsiveImage src={banner.image} mobileSrc={banner.imageMobile} alt="" aria-hidden decoding="async" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-navy-900/95 via-navy-900/75 to-navy-900/30" />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-navy-900/20" />
-        </motion.div>
+        </m.div>
       </AnimatePresence>
       <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/40 to-transparent hidden lg:block" />
       <div className="relative z-10 container mx-auto px-4 max-w-6xl pt-32 pb-24">
         <div className="max-w-2xl">
           <AnimatePresence mode="wait" custom={direction}>
-            <motion.p key={active + "-eyebrow"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.4, ease: "easeOut" }} className="label-corp text-electric-400 mb-4">
+            <m.p key={active + "-eyebrow"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.4, ease: "easeOut" }} className="label-corp text-electric-400 mb-4">
               {banner.eyebrow}
-            </motion.p>
-            <motion.h1 key={active + "-title"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }} className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl text-white leading-none tracking-tight mb-6">
+            </m.p>
+            <m.h1 key={active + "-title"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }} className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl text-white leading-none tracking-tight mb-6">
               {banner.title.split("\n").map((line, i) => (<span key={i} className="block">{hl(line)}</span>))}
-            </motion.h1>
-            <motion.p key={active + "-text"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }} className="text-base md:text-lg text-steel-200 leading-relaxed max-w-lg">
+            </m.h1>
+            <m.p key={active + "-text"} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }} className="text-base md:text-lg text-steel-200 leading-relaxed max-w-lg">
               {hl(banner.text)}
-            </motion.p>
+            </m.p>
           </AnimatePresence>
-          <motion.div className="flex flex-wrap gap-4 mt-10" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}>
+          <m.div className="flex flex-wrap gap-4 mt-10" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}>
             <a href="#servicios" className={heroBtnBlue}>
               Ver servicios
               <ChevronRight size={16} />
@@ -169,7 +169,7 @@ const HeroSection = () => {
             <a href="#contacto" className={heroBtnOutline}>
               Hablar con un experto
             </a>
-          </motion.div>
+          </m.div>
         </div>
         <div className="flex items-center gap-4 mt-12">
           <button type="button" onClick={() => go(-1)} aria-label="Anterior" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">

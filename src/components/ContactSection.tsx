@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { SUBMIT_ERROR_MESSAGES, submitWeb3Forms } from "@/lib/web3forms";
 import type { LeadField } from "@/landing/pages";
@@ -132,7 +132,7 @@ const ContactSection = ({
       <div className="relative z-10 container mx-auto px-4 max-w-6xl">
 
         {/* Encabezado */}
-        <motion.div
+        <m.div
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
@@ -150,7 +150,7 @@ const ContactSection = ({
               Nuestro equipo está disponible para evaluar sus necesidades y proponer una solución a medida.
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Divisor */}
         <div className="border-t border-navy-700/60 mb-8" />
@@ -158,7 +158,7 @@ const ContactSection = ({
         <div className="grid lg:grid-cols-5 gap-8">
 
           {/* Info lateral */}
-          <motion.div
+          <m.div
             variants={fadeUp}
             initial="hidden"
             whileInView="show"
@@ -170,10 +170,10 @@ const ContactSection = ({
               <h3 className="text-2xl font-bold text-white">{asideTitle}</h3>
               <p className="text-sm leading-relaxed text-white/70">{asideText}</p>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Formulario */}
-          <motion.div
+          <m.div
             variants={fadeUp}
             initial="hidden"
             whileInView="show"
@@ -391,7 +391,7 @@ const ContactSection = ({
                 </button>
               </form>
             )}
-          </motion.div>
+          </m.div>
 
         </div>
       </div>

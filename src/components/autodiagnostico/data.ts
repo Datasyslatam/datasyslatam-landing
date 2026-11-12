@@ -1,8 +1,7 @@
 // Autodiagnóstico de orden empresarial: 12 preguntas, 3 por cada etapa del método
 // Ordenar → Estandarizar → Automatizar → Decidir con datos.
 
-/** Cualquier enlace a este hash abre el autodiagnóstico (también sirve como URL para campañas). */
-export const AUTODIAGNOSTICO_HASH = "#autodiagnostico";
+export { AUTODIAGNOSTICO_HASH } from "./hash";
 
 export interface Stage {
   number: 1 | 2 | 3 | 4;

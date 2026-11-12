@@ -4,7 +4,7 @@ import { buildDate, posts } from "virtual:blog-posts";
 import SiteChrome from "@/components/SiteChrome";
 import BlogCard from "@/components/blog/BlogCard";
 import { heroBtnOrange } from "@/components/heroButtons";
-import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/data";
+import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/hash";
 import { BLOG_DESCRIPTION } from "@/blog/seo";
 import { AREAS, findAuthor } from "@/blog/authors";
 import type { BlogArea, BlogPostMeta } from "@/blog/types";

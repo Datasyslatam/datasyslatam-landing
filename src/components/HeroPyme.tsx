@@ -4,7 +4,7 @@ import heroBgMovil from "@/assets/hero-procesos-datasys-movil.webp";
 import ResponsiveImage from "./ResponsiveImage";
 import { heroBtnBlue, heroBtnOrange } from "./heroButtons";
 import { whatsappUrl } from "@/lib/whatsapp";
-import { AUTODIAGNOSTICO_HASH } from "./autodiagnostico/data";
+import { AUTODIAGNOSTICO_HASH } from "./autodiagnostico/hash";
 
 interface HeroPymeProps {
   active: number;

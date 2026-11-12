@@ -5,6 +5,8 @@ import { blogPlugin } from "./vite-plugin-blog.ts";
 
 export default defineConfig({
   plugins: [react(), blogPlugin()],
+  // scripts/prerender.mjs lee el manifiesto para precargar el JavaScript propio de cada página (y luego lo borra).
+  build: { manifest: true },
   resolve: {
     alias: { "@": `${import.meta.dirname}/src` },
   },
