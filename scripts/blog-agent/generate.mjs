@@ -42,7 +42,7 @@ Producto propio: Governex, plataforma que simplifica el sistema de gestión ISO 
 Fundador: Armando José López González, ingeniero industrial, magíster en Gerencia de Empresas, especialista en Gerencia
 del Talento Humano, 26 años de experiencia en ingeniería y sistemas de gestión, profesional en educación de ICONTEC desde 2016
 y conferencista del posgrado en Gerencia de la Calidad de la Universidad del Norte.
-Enlaces internos permitidos: /#autodiagnostico (autodiagnóstico gratuito de 10 minutos), /#consultoria, /#servicios, /#contacto, /blog.
+Enlaces internos permitidos: /#autodiagnostico (autodiagnóstico ISO 9001 gratuito de 10 minutos), /#consultoria, /#servicios, /#contacto, /blog.
 `.trim();
 
 // ---------------------------------------------------------------------------

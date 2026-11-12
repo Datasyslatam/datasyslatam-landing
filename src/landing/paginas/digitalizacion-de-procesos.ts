@@ -341,7 +341,7 @@ const page: LandingPage = {
     },
     {
       q: "¿Puedo comenzar digitalizando solamente un proceso?",
-      a: "Sí, y suele ser lo más recomendable: empezar por el proceso que más tiempo o errores le genera, comprobar los resultados y avanzar con el siguiente. Si no sabe por dónde empezar, el autodiagnóstico gratuito de 10 minutos le muestra en qué etapa está su empresa.",
+      a: "Sí, y suele ser lo más recomendable: empezar por el proceso que más tiempo o errores le genera, comprobar los resultados y avanzar con el siguiente. Si no sabe por dónde empezar, el autodiagnóstico ISO 9001 gratuito de 10 minutos le muestra qué tan ordenados están sus procesos y qué priorizar.",
     },
     {
       q: "¿Es posible digitalizar procesos que actualmente gestiono en Excel?",

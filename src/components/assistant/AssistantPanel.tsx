@@ -222,7 +222,7 @@ const AssistantPanel = ({ onClose }: Props) => {
             onClick={() => setView("chat")}
             highlight
           />
-          <HomeCard title="Hacer el autodiagnóstico gratis" text="Sepa en 10 minutos en qué etapa está su empresa" Icon={ClipboardCheck} onClick={openAutodiagnostico} />
+          <HomeCard title="Hacer el autodiagnóstico gratis" text="Conozca en 10 minutos su nivel en ISO 9001" Icon={ClipboardCheck} onClick={openAutodiagnostico} />
           <HomeCard title="Hablar por WhatsApp" text="Un asesor le atiende directamente" Icon={MessageCircle} href={whatsappLink} />
           <HomeCard title="Agendar una reunión" text="Cuéntenos su necesidad y cuándo le sirve" Icon={CalendarDays} onClick={() => openForm("agendar")} />
           <HomeCard title="Leer el blog" text="Guías prácticas sobre ISO, procesos y tecnología" Icon={BookOpen} href="/blog" internal onNavigate={onClose} />

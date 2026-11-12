@@ -251,3 +251,29 @@
     display: none;
   }
 }
+
+/* Informe del autodiagnóstico en PDF (AutodiagnosticoDialog): al imprimir solo se ve la copia del informe. */
+@media screen {
+  .autodiag-print {
+    display: none;
+  }
+}
+@media print {
+  body.autodiag-printing > :not(.autodiag-print),
+  body.autodiag-printing dialog {
+    display: none !important;
+  }
+  body.autodiag-printing {
+    background: #fff;
+  }
+  .autodiag-print {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .autodiag-avoid-break {
+    break-inside: avoid;
+  }
+  @page {
+    margin: 14mm;
+  }
+}

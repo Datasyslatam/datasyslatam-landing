@@ -14,13 +14,15 @@ interface HeroPymeProps {
 
 const WHATSAPP_URL = whatsappUrl("Hola, quisiera ordenar y automatizar los procesos de mi empresa.");
 
-const risks = [
-  "Procesos clave sin documentar: dependen de 2 o 3 personas.",
-  "Información repartida entre Excel, correo y WhatsApp.",
-  "Sin indicadores para decidir a tiempo.",
+// Muestra ilustrativa del informe del autodiagnóstico ISO 9001 (no es un resultado real).
+const weakChapters = [
+  { name: "10. Mejora", percent: 0 },
+  { name: "7. Apoyo", percent: 7 },
+  { name: "8. Operación", percent: 27 },
 ];
 
-const STAGES = 4;
+const LEVELS = 5;
+const SAMPLE_LEVEL = 2;
 
 const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
   <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900 text-white">
@@ -47,7 +49,7 @@ const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
           <div className="flex flex-col items-start gap-4">
             {/* CTA principal: pulsa suavemente para llamar la atención (solo halo, sin movimiento, si el usuario lo prefiere); se detiene al pasar el cursor. */}
             <a href={AUTODIAGNOSTICO_HASH} className={`${heroBtnOrange} btn-shine animate-cta-pulse motion-reduce:animate-cta-glow hover:animate-none`}>
-              Descubra en 10 minutos qué tan ordenada está su empresa
+              Descubra en 10 minutos su nivel en ISO 9001
             </a>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={heroBtnBlue}>
               Hablar por WhatsApp
@@ -61,25 +63,31 @@ const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-steel-500">Ejemplo de resultado</p>
             <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-[#B5560B]">Autodiagnóstico</span>
           </div>
-          <h2 className="mb-4 text-lg sm:text-xl font-bold leading-snug">
-            Su empresa está en la etapa <span className="text-[#E07B1A]">1 · Ordenar</span>
+          <h2 className="mb-1 text-lg sm:text-xl font-bold leading-snug">
+            Nivel de madurez: <span className="text-[#E07B1A]">En desarrollo</span>
           </h2>
+          <p className="mb-3 text-sm font-semibold">33% de cumplimiento ISO 9001:2015</p>
           <div className="mb-5 flex gap-1.5" aria-hidden="true">
-            {Array.from({ length: STAGES }, (_, i) => (
-              <span key={i} className={"h-1.5 flex-1 rounded-full " + (i === 0 ? "bg-[#F28C28]" : "bg-gray-200")} />
+            {Array.from({ length: LEVELS }, (_, i) => (
+              <span key={i} className={"h-1.5 flex-1 rounded-full " + (i < SAMPLE_LEVEL ? "bg-[#F28C28]" : "bg-gray-200")} />
             ))}
           </div>
-          <p className="mb-3 text-sm font-bold">Sus 3 riesgos principales</p>
-          <ol className="mb-5 space-y-2.5 text-sm text-[#0b2a5e]/90">
-            {risks.map((risk, i) => (
-              <li key={risk} className="flex gap-3">
-                <span className="font-bold text-[#E07B1A]">{i + 1}</span>
-                <span>{risk}</span>
+          <p className="mb-3 text-sm font-bold">Capítulos que requieren atención</p>
+          <ul className="mb-5 space-y-2.5 text-sm text-[#0b2a5e]/90">
+            {weakChapters.map((c) => (
+              <li key={c.name}>
+                <div className="mb-1 flex justify-between gap-3">
+                  <span>{c.name}</span>
+                  <span className="font-bold text-[#E07B1A]">{c.percent}%</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-gray-200" aria-hidden="true">
+                  <div className="h-1.5 rounded-full bg-[#F28C28]" style={{ width: `${Math.max(c.percent, 2)}%` }} />
+                </div>
               </li>
             ))}
-          </ol>
+          </ul>
           <p className="border-t border-gray-200 pt-4 text-sm leading-relaxed">
-            <strong>Siguiente paso recomendado:</strong> mapa de procesos y plan de trabajo ISO 9001.
+            <strong>Siguiente paso recomendado:</strong> plan de implementación por fases, empezando por los requisitos de prioridad alta.
           </p>
         </aside>
       </div>

@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     q: "¿Cómo empiezo?",
-    a: "Haga nuestro autodiagnóstico gratuito: en menos de 10 minutos sabrá en qué etapa está su empresa, sus principales riesgos y el siguiente paso recomendado. También puede escribirnos por WhatsApp al +57 324 624 9237 o a contacto@datasyslatam.com.",
+    a: "Haga nuestro autodiagnóstico ISO 9001 gratuito: en unos 10 minutos conocerá el nivel de madurez de su sistema de gestión de la calidad, su cumplimiento por capítulo de la norma y un plan de acción priorizado. También puede escribirnos por WhatsApp al +57 324 624 9237 o a contacto@datasyslatam.com.",
   },
 ];
 

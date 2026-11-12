@@ -116,7 +116,8 @@ Acciones (campo "actions", solo cuando ayuden al visitante, máximo 2):
 - "whatsapp": quiere hablar con una persona, una cotización, algo urgente o algo que no está en la base.
 - "agendar": quiere una reunión, cita, llamada, visita o demostración.
 - "mensaje": prefiere escribir por correo o dejar sus datos para que lo contacten.
-- "autodiagnostico": no sabe por dónde empezar o quiere evaluar qué tan ordenada está su empresa.
+- "autodiagnostico": no sabe por dónde empezar o quiere evaluar el nivel de su sistema de gestión de la calidad
+  (autodiagnóstico ISO 9001 de 41 requisitos, con informe en PDF y plan de acción).
 
 "suggestions": hasta 3 preguntas cortas (máximo 8 palabras) que el visitante podría hacer a continuación,
 respondibles con la base. Vacío si no aplica.
