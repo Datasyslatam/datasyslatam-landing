@@ -354,6 +354,8 @@ export interface ActionItem {
 
 export interface DiagnosisResult {
   percent: number;
+  /** Requisitos que no se marcaron «No aplica»; con 0 no hay cumplimiento que calcular. */
+  applicable: number;
   level: Level;
   counts: Record<Answer, number>;
   chapters: ChapterScore[];
@@ -396,6 +398,7 @@ export const computeResult = (answers: Answer[]): DiagnosisResult => {
 
   return {
     percent,
+    applicable: answers.length - counts.na,
     level: levelFor(percent),
     counts,
     chapters,

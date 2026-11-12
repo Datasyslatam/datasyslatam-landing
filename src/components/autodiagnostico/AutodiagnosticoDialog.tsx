@@ -108,6 +108,15 @@ const Report = ({ result, lead, date, headingRef }: { result: DiagnosisResult; l
         </p>
       </header>
 
+      {result.applicable === 0 ? (
+        <section role="note" className="autodiag-avoid-break mb-7 rounded-xl border border-amber-300 bg-amber-50 p-5 text-sm leading-relaxed">
+          <p className="mb-1 font-bold">No es posible calcular el cumplimiento</p>
+          <p>
+            Marcó todos los requisitos como «No aplica». En un sistema de gestión de la calidad casi todos estos requisitos aplican a
+            cualquier empresa: repita el autodiagnóstico o hable con un consultor para revisarlo.
+          </p>
+        </section>
+      ) : (
       <section className="autodiag-avoid-break mb-7 rounded-xl bg-[#0b2a5e] p-5 text-white sm:p-6">
         <p className="mb-1 text-sm text-white/70">Nivel de madurez</p>
         <p className="mb-1 font-heading text-3xl font-bold text-[#FF8024]">{result.level.name}</p>
@@ -128,6 +137,7 @@ const Report = ({ result, lead, date, headingRef }: { result: DiagnosisResult; l
           ))}
         </ol>
       </section>
+      )}
 
       <ReportSection title="Distribución de respuestas">
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
@@ -209,7 +219,11 @@ const Report = ({ result, lead, date, headingRef }: { result: DiagnosisResult; l
             </ol>
           </>
         ) : (
-          <p className="text-sm">Todos los requisitos que aplican están completos. Mantenga la evidencia al día y la mejora continua.</p>
+          <p className="text-sm">
+            {result.applicable === 0
+              ? "Sin requisitos evaluados: no hay plan de acción que sugerir."
+              : "Todos los requisitos que aplican están completos. Mantenga la evidencia al día y la mejora continua."}
+          </p>
         )}
       </section>
 
@@ -232,8 +246,13 @@ const AutodiagnosticoDialog = () => {
   const [sendStatus, setSendStatus] = useState<SendStatus>("idle");
   const [sendError, setSendError] = useState("");
   const [date, setDate] = useState("");
-  const [printing, setPrinting] = useState(false);
   const sentFor = useRef<string | null>(null);
+  /** Aumenta con cada envío o al repetir: una respuesta que llega tarde de un envío anterior se descarta. */
+  const sendSeq = useRef(0);
+  /** Título de la página antes de imprimir (el PDF toma el nombre del título). */
+  const pageTitle = useRef<string | null>(null);
+  /** El clic empezó sobre el fondo: solo así un clic en el fondo cierra el diálogo. */
+  const pressedBackdrop = useRef(false);
 
   // Se abre con cualquier enlace a #autodiagnostico, también al cargar la página con ese hash.
   useEffect(() => {
@@ -265,6 +284,7 @@ const AutodiagnosticoDialog = () => {
 
   // Al llegar al resultado, se envía a DataSys Latam una sola vez por cada diagnóstico (el interesado ya lo autorizó).
   const send = async (r: DiagnosisResult) => {
+    const seq = ++sendSeq.current;
     setSendStatus("sending");
     setSendError("");
     const sent = await submitWeb3Forms({
@@ -277,13 +297,14 @@ const AutodiagnosticoDialog = () => {
       sector: lead.sector,
       tamano: lead.size,
       autorizacion_datos: `Sí. ${CONSENT_TEXT}`,
-      nivel: r.level.name,
-      cumplimiento: `${r.percent}%`,
+      nivel: r.applicable ? r.level.name : "Sin calcular (todo No aplica)",
+      cumplimiento: r.applicable ? `${r.percent}%` : "Sin calcular",
       distribucion: ANSWERS.map((a) => `${a.label}: ${r.counts[a.value]}`).join(" | "),
       por_capitulo: r.chapters.map((c) => `${c.chapter.number}. ${c.chapter.short}: ${c.percent === null ? "No aplica" : `${c.percent}%`}`).join(" | "),
       plan_de_accion: r.plan.map((p) => `[${p.priority}] ${p.clause}: ${p.action}`).join("\n") || "Sin brechas",
       respuestas: REQUIREMENTS.map((req, i) => `${req.clause} ${req.text} → ${answerLabel(answers[i] as Answer)}`).join("\n"),
     });
+    if (seq !== sendSeq.current) return;
     if (sent.ok) {
       setSendStatus("sent");
     } else {
@@ -303,32 +324,35 @@ const AutodiagnosticoDialog = () => {
     // `result` se recalcula en cada render; basta con reaccionar al llegar al paso de resultado.
   }, [step]);
 
-  // PDF: el informe se copia a una capa propia (fuera del diálogo) y se imprime solo esa capa.
-  useEffect(() => {
-    if (!printing) return;
-    const previousTitle = document.title;
-    const done = () => setPrinting(false);
+  // PDF: una copia del informe vive fuera del diálogo (oculta en pantalla) y solo esa copia se imprime. Se imprime
+  // dentro del clic, sin esperar un render, y cada clic vuelve a imprimir aunque el navegador no avise el final.
+  const endPrint = () => {
+    document.body.classList.remove("autodiag-printing");
+    if (pageTitle.current !== null) document.title = pageTitle.current;
+    pageTitle.current = null;
+  };
+
+  const printReport = () => {
+    if (pageTitle.current === null) pageTitle.current = document.title;
     document.title = PRINT_TITLE;
     document.body.classList.add("autodiag-printing");
-    window.addEventListener("afterprint", done, { once: true });
-    const frame = requestAnimationFrame(() => window.print());
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("afterprint", done);
-      document.body.classList.remove("autodiag-printing");
-      document.title = previousTitle;
-    };
-  }, [printing]);
+    window.addEventListener("afterprint", endPrint, { once: true });
+    window.print();
+  };
+
+  useEffect(() => () => endPrint(), []);
 
   // Se dispara al cerrar con Esc, con la X o al hacer clic fuera.
   const handleClose = () => {
     setOpen(false);
+    endPrint();
     if (window.location.hash === AUTODIAGNOSTICO_HASH) {
       history.replaceState(null, "", window.location.pathname + window.location.search);
     }
   };
 
   const restart = () => {
+    sendSeq.current++;
     setAnswers(emptyAnswers());
     setSendStatus("idle");
     setSendError("");
@@ -593,7 +617,7 @@ const AutodiagnosticoDialog = () => {
           )}
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
-          <button type="button" onClick={() => setPrinting(true)} className={heroBtnOrange}>
+          <button type="button" onClick={printReport} className={heroBtnOrange}>
             <Download className="h-4 w-4" /> Descargar informe (PDF)
           </button>
           <a href={whatsappUrl(whatsappText)} target="_blank" rel="noopener noreferrer" className={heroBtnBlue}>
@@ -613,8 +637,13 @@ const AutodiagnosticoDialog = () => {
         ref={dialogRef}
         aria-label="Autodiagnóstico ISO 9001"
         onClose={handleClose}
+        // Cierra solo si el clic empieza y termina en el fondo: seleccionar texto y soltar fuera no lo cierra.
+        onPointerDown={(e) => {
+          pressedBackdrop.current = e.target === dialogRef.current;
+        }}
         onClick={(e) => {
-          if (e.target === dialogRef.current) dialogRef.current?.close();
+          if (pressedBackdrop.current && e.target === dialogRef.current) dialogRef.current?.close();
+          pressedBackdrop.current = false;
         }}
         className="m-auto w-[calc(100%-2rem)] max-w-3xl overflow-hidden rounded-2xl bg-white p-0 text-navy-900 shadow-2xl backdrop:bg-navy-900/80 backdrop:backdrop-blur-sm"
       >
@@ -640,8 +669,7 @@ const AutodiagnosticoDialog = () => {
                   : renderChapter(step))}
         </div>
       </dialog>
-      {printing &&
-        result &&
+      {result &&
         createPortal(
           <div className="autodiag-print bg-white p-2 text-navy-900">
             <Report result={result} lead={lead} date={date} />
