@@ -2,6 +2,13 @@
 // sus metadatos, sus datos estructurados (Service o SoftwareApplication, migas de pan y FAQPage) y entra al sitemap.
 // Todo el contenido sale de información ya publicada en el sitio: no se inventan cifras, clientes ni testimonios.
 import fundador from "@/assets/consultoria-fundador.webp";
+import fundadorMovil from "@/assets/consultoria-fundador-movil.webp";
+import desarrolloSoftwareHeroMovil from "@/assets/banners/desarrollo-software-hero-movil.webp";
+import digitalizacionProcesosHeroMovil from "@/assets/banners/digitalizacion-procesos-hero-movil.webp";
+import analiticaDatosHeroMovil from "@/assets/banners/analitica-datos-hero-movil.webp";
+import inteligenciaMovil from "@/assets/banners/inteligencia-artificial-hero-movil.webp";
+import transformacionMovil from "@/assets/banners/transformacion-corporativo-movil.webp";
+import redesMovil from "@/assets/hero-evolucion-digital-movil.webp";
 import desarrolloSoftwareHero from "@/assets/banners/desarrollo-software-hero.webp";
 import asistenteNovaMovil from "@/assets/banners/asistente-nova-movil.webp";
 import digitalizacionProcesosHero from "@/assets/banners/digitalizacion-procesos-hero.webp";
@@ -227,6 +234,8 @@ export interface LandingPage {
   lead: string;
   /** Foto de fondo del héroe (se funde con el azul hacia el texto) y miniatura al compartir la página. */
   heroImage: string;
+  /** Versión liviana de la foto del héroe para el celular (*-movil.webp). */
+  heroImageMobile?: string;
   heroImageAlt: string;
   /** Punto de la foto que debe quedar a la vista al recortarla (object-position de CSS). Por defecto, el centro. */
   heroImagePosition?: string;
@@ -299,6 +308,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Estandarice sus procesos. Fortalezca su empresa",
     lead: "Implementamos y fortalecemos sistemas de gestión ISO para ayudarle a organizar sus procesos, gestionar riesgos, mejorar la calidad y construir una empresa más eficiente, confiable y preparada para crecer.",
     heroImage: fundador,
+    heroImageMobile: fundadorMovil,
     heroImageAlt: "Armando José López González, consultor de DataSys Latam Group, dictando una capacitación sobre sistemas de gestión ISO",
     heroHighlights: ["Estandarizamos sus procesos", "Gestionamos controles y responsabilidades", "Mejoramos su desempeño", "Digitalizamos su sistema"],
     primaryCta: "Solicitar diagnóstico ISO",
@@ -835,6 +845,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Creamos soluciones digitales que hacen evolucionar su empresa",
     lead: "Desde aplicaciones web hasta asistentes de inteligencia artificial y software a la medida: creamos soluciones digitales que conectan sus procesos, optimizan su operación y convierten sus ideas en herramientas funcionales.",
     heroImage: desarrolloSoftwareHero,
+    heroImageMobile: desarrolloSoftwareHeroMovil,
     heroImageAlt: "Equipo de desarrollo de software trabajando en código, con un tablero de proyecto en pantalla y diagramas de arquitectura en la pizarra",
     heroImagePosition: "65% center",
     heroHighlights: ["Aplicaciones web", "Asistentes de IA", "Software a la medida"],
@@ -1161,6 +1172,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Inteligencia artificial para hacer más eficiente su empresa",
     lead: "Integramos IA en su operación para automatizar tareas repetitivas, analizar información y atender mejor a sus clientes, con sus datos protegidos y siempre con una persona de su equipo al mando de las decisiones.",
     heroImage: inteligencia,
+    heroImageMobile: inteligenciaMovil,
     heroImageAlt: "Profesional trabajando en su computador con herramientas de inteligencia artificial para analizar datos, atender clientes y proteger la información",
     heroImagePosition: "60% center",
     heroHighlights: ["Automatizamos tareas repetitivas", "Asistimos a su equipo y a sus clientes", "Integramos IA en sus sistemas", "Potenciamos sus decisiones"],
@@ -1615,6 +1627,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Sus datos tienen respuestas. Le ayudamos a descubrirlas",
     lead: "Convierta los datos de su empresa en información estratégica. Analizamos sus ventas, compras, inventarios y operaciones para crear indicadores y tableros de control que le permitan comprender su negocio y tomar mejores decisiones.",
     heroImage: analiticaDatosHero,
+    heroImageMobile: analiticaDatosHeroMovil,
     heroImageAlt: "Gerente de una empresa revisando en su computador un tablero de indicadores con ventas, metas e inventarios",
     heroImagePosition: "35% center",
     heroHighlights: ["Organizamos sus datos", "Analizamos su información", "Facilitamos sus decisiones"],
@@ -1977,6 +1990,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Mejoramos la forma en que las pymes realizan y controlan su trabajo",
     lead: "Le ayudamos a reducir las tareas repetitivas, organizar la información y saber qué pasa en su operación. Empezamos por un diagnóstico de sus procesos y, con base en él, le proponemos la solución adecuada para su empresa.",
     heroImage: digitalizacionProcesosHero,
+    heroImageMobile: digitalizacionProcesosHeroMovil,
     heroImageAlt: "Equipo de una empresa revisando en una pantalla el control de sus operaciones, con el mapa de un proceso y las tareas automatizadas",
     heroImagePosition: "70% center",
     heroHighlights: ["Identificamos lo que le quita tiempo", "Digitalizamos con la herramienta adecuada", "Optimizamos el control de su operación"],
@@ -2328,6 +2342,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Transformación digital para pymes",
     lead: "Diseñamos con usted una hoja de ruta clara y por fases para modernizar su operación con tecnología: primero lo que más retorno genera, sin comprar herramientas que su empresa todavía no necesita.",
     heroImage: transformacion,
+    heroImageMobile: transformacionMovil,
     heroImageAlt: "Ciudad iluminada con trazos de luz que representan la evolución digital de una empresa",
     primaryCta: "Solicitar un diagnóstico",
     whatsappText: "Hola, quiero una hoja de ruta de transformación digital para mi empresa.",
@@ -2419,6 +2434,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Gobernanza de TI para empresas",
     lead: "Alineamos la tecnología con los objetivos de su negocio: sabrá en qué invierte, quién responde por cada sistema, cómo está protegida su información y si cumple lo que la ley y sus clientes le exigen.",
     heroImage: redes,
+    heroImageMobile: redesMovil,
     heroImageAlt: "Red de conexiones luminosas que representa sistemas de información protegidos y bajo control",
     primaryCta: "Solicitar un diagnóstico",
     whatsappText: "Hola, me interesa la gobernanza de TI y la seguridad de la información para mi empresa.",

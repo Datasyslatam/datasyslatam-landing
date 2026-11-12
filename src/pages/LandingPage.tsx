@@ -44,6 +44,7 @@ import {
 import SiteChrome from "@/components/SiteChrome";
 import ContactSection from "@/components/ContactSection";
 import { heroBtnOrange, heroBtnOutline } from "@/components/heroButtons";
+import ResponsiveImage from "@/components/ResponsiveImage";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { landingJsonLd } from "@/blog/seo";
 import type { LandingCard, LandingIcon, LandingPage as LandingData, LandingSection } from "@/landing/pages";
@@ -571,8 +572,9 @@ const LandingPage = ({ page }: { page: LandingData }) => (
       ) : (
         <>
           <div className="absolute inset-0 lg:left-[38%]">
-            <img
+            <ResponsiveImage
               src={page.heroImage}
+              mobileSrc={page.heroImageMobile}
               alt={page.heroImageAlt}
               width={1200}
               height={800}
