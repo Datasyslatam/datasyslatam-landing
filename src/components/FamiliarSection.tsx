@@ -117,7 +117,7 @@ const FamiliarSection = () => (
       >
         <div>
           <p className="text-lg font-bold text-[#0b2a5e]">¿Se identificó con alguna?</p>
-          <p className="text-sm text-steel-500">Descubra en 10 minutos qué tan ordenada está su empresa y cuál es el siguiente paso.</p>
+          <p className="text-sm text-steel-500">Descubra en 10 minutos el nivel de su sistema de gestión ISO 9001 y su plan de acción.</p>
         </div>
         <a href={AUTODIAGNOSTICO_HASH} className={`${heroBtnOrange} shrink-0`}>
           Hacer el autodiagnóstico gratis

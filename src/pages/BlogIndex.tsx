@@ -219,7 +219,7 @@ const BlogIndex = () => {
             {posts.length === 0 ? (
               <div className="rounded-2xl bg-white p-8 text-center shadow-sm">
                 <p className="mb-2 text-lg font-bold text-navy-900">Muy pronto publicaremos nuestros primeros artículos.</p>
-                <p className="mb-6 text-sm text-[#0b2a5e]/75">Mientras tanto, descubra en 10 minutos qué tan ordenada está su empresa.</p>
+                <p className="mb-6 text-sm text-[#0b2a5e]/75">Mientras tanto, descubra en 10 minutos el nivel de su sistema de gestión ISO 9001.</p>
                 <a href={AUTODIAGNOSTICO_HASH} className={heroBtnOrange}>
                   Hacer el autodiagnóstico gratis
                 </a>
@@ -270,9 +270,9 @@ const CtaCard = () => (
     <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#FF8024]/15 text-[#e06a10]">
       <ClipboardCheck className="h-6 w-6" aria-hidden="true" />
     </span>
-    <p className="mb-2 font-heading text-xl font-bold text-navy-900">¿Qué tan ordenada está su empresa?</p>
+    <p className="mb-2 font-heading text-xl font-bold text-navy-900">¿En qué nivel está su sistema de calidad?</p>
     <p className="mb-6 text-sm leading-relaxed text-[#0b2a5e]/75">
-      Responda el autodiagnóstico gratuito y en 10 minutos sabrá en qué etapa está, sus principales riesgos y el siguiente paso.
+      Responda el autodiagnóstico ISO 9001 gratuito y en 10 minutos tendrá su nivel de madurez, el cumplimiento por capítulo y un plan de acción.
     </p>
     <a href={AUTODIAGNOSTICO_HASH} className={`${heroBtnOrange} mt-auto`}>
       Hacer el autodiagnóstico

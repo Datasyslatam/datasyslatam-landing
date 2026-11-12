@@ -170,7 +170,7 @@ const llms = [
   "",
   "> Empresa de Barranquilla (Colombia) que ayuda a micro, pequeñas y medianas empresas de Colombia y Latinoamérica a ordenar sus procesos con criterio ISO, automatizarlos con software e inteligencia artificial y decidir con datos. Primero ordenamos, después automatizamos.",
   "",
-  `Contacto: contacto@datasyslatam.com · WhatsApp +57 324 624 9237 · Barranquilla, Colombia. Autodiagnóstico gratuito de 10 minutos: ${SITE_URL}/#autodiagnostico`,
+  `Contacto: contacto@datasyslatam.com · WhatsApp +57 324 624 9237 · Barranquilla, Colombia. Autodiagnóstico ISO 9001 gratuito de 10 minutos: ${SITE_URL}/#autodiagnostico`,
   "",
   "## Servicios",
   ...landingSummaries.filter((p) => !p.product).map((p) => llmsLink(p.path, p.title, p.description)),

@@ -105,7 +105,7 @@ const BlogPost = ({ post }: { post: BlogPostData }) => {
 
           <aside className="mt-12 rounded-2xl bg-[#0b2a5e]/5 p-6">
             <p className="mb-1 text-lg font-bold text-navy-900">¿Quiere aplicar esto en su empresa?</p>
-            <p className="mb-5 text-sm text-[#0b2a5e]/80">Descubra en 10 minutos qué tan ordenada está su empresa y cuál es el siguiente paso, o hable con nuestro equipo.</p>
+            <p className="mb-5 text-sm text-[#0b2a5e]/80">Descubra en 10 minutos el nivel de su sistema de gestión ISO 9001 y su plan de acción, o hable con nuestro equipo.</p>
             <div className="flex flex-wrap gap-3">
               <a href={AUTODIAGNOSTICO_HASH} className={heroBtnOrange}>Hacer el autodiagnóstico gratis</a>
               <a href={whatsappUrl(`Hola, leí el artículo "${post.title}" y quisiera más información.`)} target="_blank" rel="noopener noreferrer" className={heroBtnBlue}>

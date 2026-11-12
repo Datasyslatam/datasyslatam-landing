@@ -64,7 +64,7 @@ const page: LandingPage = {
       eyebrow: "Primer paso",
       title: "¿No sabe por dónde empezar su transformación digital?",
       paragraphs: [
-        "El autodiagnóstico gratuito le muestra en menos de 10 minutos en qué etapa de la ruta Ordenar → Estandarizar → Automatizar → Decidir con datos está su empresa, cuáles son sus principales riesgos y cuál es el siguiente paso recomendado.",
+        "El primer paso es ordenar los procesos. El autodiagnóstico ISO 9001 gratuito le muestra en unos 10 minutos el nivel de madurez de su sistema de gestión, el cumplimiento por capítulo de la norma y un plan de acción priorizado para empezar.",
       ],
       link: { label: "Hacer el autodiagnóstico gratuito", href: "/#autodiagnostico" },
     },

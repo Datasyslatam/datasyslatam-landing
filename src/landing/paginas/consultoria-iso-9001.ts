@@ -540,7 +540,7 @@ const page: LandingPage = {
     { q: "¿Cuánto cuesta la consultoría ISO?", a: PRICE_ANSWER },
   ],
   related: [
-    { label: "Haga el autodiagnóstico gratuito de 10 minutos", href: "/#autodiagnostico" },
+    { label: "Haga el autodiagnóstico ISO 9001 gratuito de 10 minutos", href: "/#autodiagnostico" },
     { label: "Governex: software para sistemas de gestión de calidad", href: "/producto/governex" },
     { label: "Digitalización de procesos para pymes", href: "/servicios/digitalizacion-de-procesos" },
     { label: "Analítica de datos para empresas", href: "/servicios/analitica-de-datos" },
