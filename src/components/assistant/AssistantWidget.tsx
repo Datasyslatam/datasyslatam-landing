@@ -1,10 +1,12 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import NovaAvatar from "./NovaAvatar";
+import ChunkErrorBoundary from "../ChunkErrorBoundary";
+import { withChunkReload } from "@/lib/chunkReload";
 
 // El panel (y su lógica) se descarga solo cuando el visitante abre el asistente: no pesa en la carga inicial.
 const loadPanel = () => import("./AssistantPanel");
-const AssistantPanel = lazy(loadPanel);
+const AssistantPanel = lazy(withChunkReload(loadPanel));
 
 /** Botón flotante del asistente del sitio; reemplaza al antiguo botón de WhatsApp, que ahora vive dentro del panel. */
 const AssistantWidget = () => {
@@ -52,9 +54,11 @@ const AssistantWidget = () => {
   return (
     <>
       {open && (
-        <Suspense fallback={null}>
-          <AssistantPanel onClose={close} />
-        </Suspense>
+        <ChunkErrorBoundary feature="el asistente">
+          <Suspense fallback={null}>
+            <AssistantPanel onClose={close} />
+          </Suspense>
+        </ChunkErrorBoundary>
       )}
 
       {hint && !open && (
@@ -73,8 +77,8 @@ const AssistantWidget = () => {
         ref={launcherRef}
         type="button"
         onClick={() => (open ? close() : setOpen(true))}
-        onMouseEnter={() => void loadPanel()}
-        onFocus={() => void loadPanel()}
+        onMouseEnter={() => loadPanel().catch(() => {})}
+        onFocus={() => loadPanel().catch(() => {})}
         aria-label={open ? "Cerrar el chat con Nova" : "Abrir el chat con Nova, asistente virtual de DataSys Latam"}
         aria-expanded={open}
         className={`assistant-launcher nova-launcher fixed bottom-4 right-4 z-[111] h-14 w-14 items-center justify-center rounded-full text-white transition hover:scale-105 sm:bottom-6 sm:right-6 sm:h-[60px] sm:w-[60px] ${

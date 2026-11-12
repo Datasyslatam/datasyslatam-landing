@@ -266,6 +266,10 @@
   body.autodiag-printing {
     background: #fff;
   }
+  /* Si se imprime la página por otro medio, la copia del informe no se agrega. */
+  body:not(.autodiag-printing) .autodiag-print {
+    display: none;
+  }
   .autodiag-print {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;

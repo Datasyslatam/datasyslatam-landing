@@ -1,9 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { AUTODIAGNOSTICO_HASH } from "./hash";
+import ChunkErrorBoundary from "../ChunkErrorBoundary";
+import { withChunkReload } from "@/lib/chunkReload";
 
 // El cuestionario (y su lógica) se descarga la primera vez que alguien lo abre: no pesa en la carga inicial.
+// Si la descarga falla (p. ej. tras un despliegue), se recarga la página una vez; la precarga al pasar el mouse no recarga.
 const loadDialog = () => import("./AutodiagnosticoDialog");
-const AutodiagnosticoDialog = lazy(loadDialog);
+const AutodiagnosticoDialog = lazy(withChunkReload(loadDialog));
 
 const isAutodiagnosticoLink = (target: EventTarget | null) =>
   target instanceof Element && !!target.closest(`a[href$="${AUTODIAGNOSTICO_HASH}"]`);
@@ -22,7 +25,7 @@ const AutodiagnosticoLazy = () => {
       if (window.location.hash === AUTODIAGNOSTICO_HASH) setMounted(true);
     };
     const prefetch = (e: Event) => {
-      if (isAutodiagnosticoLink(e.target)) void loadDialog();
+      if (isAutodiagnosticoLink(e.target)) loadDialog().catch(() => {});
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -36,9 +39,11 @@ const AutodiagnosticoLazy = () => {
   }, [mounted]);
 
   return mounted ? (
-    <Suspense fallback={null}>
-      <AutodiagnosticoDialog />
-    </Suspense>
+    <ChunkErrorBoundary feature="el autodiagnóstico">
+      <Suspense fallback={null}>
+        <AutodiagnosticoDialog />
+      </Suspense>
+    </ChunkErrorBoundary>
   ) : null;
 };
 
