@@ -1,5 +1,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import heroBg from "@/assets/hero-procesos-datasys.webp";
+import heroBgMovil from "@/assets/hero-procesos-datasys-movil.webp";
+import ResponsiveImage from "./ResponsiveImage";
 import { heroBtnBlue, heroBtnOrange } from "./heroButtons";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { AUTODIAGNOSTICO_HASH } from "./autodiagnostico/data";
@@ -24,7 +26,7 @@ const HeroPyme = ({ active, total, go }: HeroPymeProps) => (
   <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900 text-white">
     {/* En escritorio la foto cubre el lado derecho y se funde con el azul hacia el texto; en móvil queda de fondo. */}
     <div className="absolute inset-0 lg:left-[35%]" aria-hidden="true">
-      <img src={heroBg} alt="" width={1670} height={941} decoding="async" className="h-full w-full object-cover object-[90%_center]" />
+      <ResponsiveImage src={heroBg} mobileSrc={heroBgMovil} alt="" width={1600} height={902} decoding="async" className="h-full w-full object-cover object-[90%_center]" />
       <div className="absolute inset-y-0 left-0 hidden w-1/3 bg-gradient-to-r from-navy-900 to-transparent lg:block" />
     </div>
     <div className="pointer-events-none absolute inset-0 bg-navy-900/85 lg:bg-transparent lg:bg-gradient-to-r lg:from-navy-900 lg:via-navy-900/70 lg:to-navy-900/0" />

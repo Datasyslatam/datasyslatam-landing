@@ -6,9 +6,17 @@ import tecnologia from "@/assets/banners/tecnologia-corporativo.webp";
 import inteligencia from "@/assets/banners/inteligencia-corporativo.webp";
 import gestion from "@/assets/banners/gestion-corporativo.webp";
 import transformacion from "@/assets/banners/transformacion-corporativo.webp";
+import tecnologiaMovil from "@/assets/banners/tecnologia-corporativo-movil.webp";
+import inteligenciaMovil from "@/assets/banners/inteligencia-corporativo-movil.webp";
+import gestionMovil from "@/assets/banners/gestion-corporativo-movil.webp";
+import transformacionMovil from "@/assets/banners/transformacion-corporativo-movil.webp";
+import heroBg from "@/assets/hero-procesos-datasys.webp";
+import heroBgMovil from "@/assets/hero-procesos-datasys-movil.webp";
+import empresario from "@/assets/hero-empresario.webp";
 import HeroPremium from "./HeroPremium";
 import HeroPyme from "./HeroPyme";
 import { heroBtnBlue, heroBtnOutline } from "./heroButtons";
+import ResponsiveImage, { MOBILE_IMAGE_QUERY } from "./ResponsiveImage";
 
 // Diapositivas propias antes de los banners: 0 = <HeroPyme />, 1 = <HeroPremium />.
 const CUSTOM_SLIDES = 2;
@@ -20,24 +28,28 @@ const banners = [
     eyebrow: "03 — Tecnología aplicada",
     text: "En DatasysLatam Group Comprendemos primero el desafío para diseñar después la solución, integrando metodologías de innovación como Design Thinking.",
     image: tecnologia,
+    imageMobile: tecnologiaMovil,
   },
   {
     title: "**Gestión proactiva**\n__asistida__\ncon IA",
     eyebrow: "04 — Gestión asistida",
     text: "Transita de una administración reactiva a una gestión proactiva asistida con IA, vive la experiencia de formular y definir los requerimientos de la norma ISO con IA generativa.",
     image: inteligencia,
+    imageMobile: inteligenciaMovil,
   },
   {
     title: "**Gestión**\nque __construye__\nexcelencia",
     eyebrow: "05 — Gestión de excelencia",
     text: "Nuestra plataforma convierte la gestión diaria en evidencia de excelencia, garantizando el cumplimiento y la mejora continua de tu empresa.",
     image: gestion,
+    imageMobile: gestionMovil,
   },
   {
     title: "**Transformación**\n__digital__ con\npropósito",
     eyebrow: "06 — Transformación digital",
     text: "Convertimos procesos tradicionales en ecosistemas digitales inteligentes, preparados para evolucionar junto con las organizaciones.",
     image: transformacion,
+    imageMobile: transformacionMovil,
   },
 ];
 
@@ -76,6 +88,17 @@ const HeroSection = () => {
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.25 });
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // Cuando la página termina de cargar, descarga en segundo plano las fotos de las demás diapositivas (la versión
+  // liviana en el celular) para que cada cambio de diapositiva se vea de inmediato.
+  useEffect(() => {
+    const mobile = window.matchMedia(MOBILE_IMAGE_QUERY).matches;
+    const urls = [mobile ? heroBgMovil : heroBg, empresario, ...banners.map((b) => (mobile ? b.imageMobile : b.image))];
+    const preload = () => urls.forEach((url) => (new Image().src = url));
+    if (document.readyState === "complete") preload();
+    else window.addEventListener("load", preload, { once: true });
+    return () => window.removeEventListener("load", preload);
   }, []);
 
   // Se reinicia en cada cambio de diapositiva para que la navegación manual tenga el intervalo completo.
@@ -119,7 +142,7 @@ const HeroSection = () => {
     <section id="inicio" className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-navy-900">
       <AnimatePresence mode="sync">
         <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }}>
-          <img src={banner.image} alt="" aria-hidden decoding="async" className="w-full h-full object-cover object-center" />
+          <ResponsiveImage src={banner.image} mobileSrc={banner.imageMobile} alt="" aria-hidden decoding="async" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-navy-900/95 via-navy-900/75 to-navy-900/30" />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-navy-900/20" />
         </motion.div>
