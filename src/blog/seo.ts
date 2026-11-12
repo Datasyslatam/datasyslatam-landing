@@ -1,6 +1,6 @@
 import type { Route } from "@/routes";
 import type { BlogPost } from "./types";
-import { findLanding, type LandingPage } from "@/landing/pages";
+import type { LandingPage } from "@/landing/pages";
 
 export const SITE_URL = "https://datasyslatam.com";
 const SITE_NAME = "DataSys Latam Group";
@@ -58,8 +58,7 @@ const renderTags = (m: PageMeta) =>
  * Etiquetas de <head> propias de cada página del blog. Devuelve null en el inicio,
  * que conserva las de index.html.
  */
-export const buildHead = (route: Route, post: BlogPost | null): string | null => {
-  const landing = route.type === "landing" ? findLanding(route.path) : null;
+export const buildHead = (route: Route, post: BlogPost | null, landing: LandingPage | null): string | null => {
   if (landing) {
     return renderTags({
       title: landing.metaTitle,

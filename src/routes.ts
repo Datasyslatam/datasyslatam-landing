@@ -1,4 +1,4 @@
-import { findLanding } from "./landing/pages.ts";
+import { isLandingPath } from "./landing/pages.ts";
 
 export type Route =
   | { type: "home" }
@@ -11,7 +11,7 @@ export type Route =
 export const resolveRoute = (pathname: string): Route => {
   const path = pathname.replace(/\/+$/, "") || "/";
   if (path === "/" || path === "/index.html") return { type: "home" };
-  if (findLanding(path)) return { type: "landing", path };
+  if (isLandingPath(path)) return { type: "landing", path };
   if (path === "/blog") return { type: "blog-index" };
   const match = /^\/blog\/([a-z0-9]+(?:-[a-z0-9]+)*)$/.exec(path);
   if (match) return { type: "blog-post", slug: match[1] };

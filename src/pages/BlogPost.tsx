@@ -2,7 +2,7 @@ import { ChevronDown, Clock, ExternalLink } from "lucide-react";
 import { posts } from "virtual:blog-posts";
 import SiteChrome from "@/components/SiteChrome";
 import { heroBtnBlue, heroBtnOrange } from "@/components/heroButtons";
-import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/data";
+import { AUTODIAGNOSTICO_HASH } from "@/components/autodiagnostico/hash";
 import { articleJsonLd } from "@/blog/seo";
 import { formatDate } from "@/blog/format";
 import { AREAS, findAuthor } from "@/blog/authors";

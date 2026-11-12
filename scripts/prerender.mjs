@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = `${root}dist`;
 const ssrDir = `${root}dist-ssr`;
 
-const { render, posts, loadPost, landingPaths, landingSummaries } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
+const { render, posts, loadPost, landingPaths, landingSummaries, routeModules } = await import(pathToFileURL(`${ssrDir}/entry-server.js`).href);
 
 const template = await readFile(`${dist}/index.html`, "utf8");
 const placeholder = '<div id="root"></div>';
@@ -24,10 +24,36 @@ const routes = ["/", ...landingPaths, "/blog", ...posts.map((p) => `/blog/${p.sl
 const missing = landingSummaries.filter((p) => !p.product && !template.includes(`"url": "${SITE_URL}${p.path}"`));
 if (missing.length) throw new Error(`Agregue al hasOfferCatalog de index.html: ${missing.map((p) => p.path).join(", ")}`);
 
+// Las páginas de servicios, el blog y el 404 cargan su JavaScript aparte del principal (src/loadPage.tsx). Para que no
+// esperen a que el principal se ejecute, cada HTML lo pide desde el inicio con <link rel="modulepreload">.
+const manifestFile = `${dist}/.vite/manifest.json`;
+const manifest = JSON.parse(await readFile(manifestFile, "utf8"));
+const preloadTags = (route, page) => {
+  const files = new Set();
+  const visit = (key) => {
+    const chunk = manifest[key];
+    if (!chunk) throw new Error(`No se encontró ${key} en el manifiesto de Vite`);
+    if (chunk.isEntry || files.has(chunk.file)) return;
+    files.add(chunk.file);
+    (chunk.imports ?? []).forEach(visit);
+  };
+  routeModules(route).forEach(visit);
+  // Vite ya precarga desde index.html los módulos compartidos con el principal: no se repiten.
+  return [...files]
+    .filter((file) => !page.includes(`href="/${file}"`))
+    .map((file) => `<link rel="modulepreload" crossorigin href="/${file}">`)
+    .join("\n    ");
+};
+const withPreloads = (page, route) => {
+  const tags = preloadTags(route, page);
+  return tags ? page.replace("</head>", `    ${tags}\n  </head>`) : page;
+};
+
 for (const route of routes) {
   const { html, head } = await render(route);
   let page = template.replace(placeholder, `<div id="root">${html}</div>`);
   if (head) page = page.replace(headBlock, head);
+  page = withPreloads(page, route);
   const file = route === "/" ? `${dist}/index.html` : `${dist}${route}/index.html`;
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, page);
@@ -37,11 +63,16 @@ for (const route of routes) {
 const notFound = await render("/pagina-no-encontrada");
 await writeFile(
   `${dist}/404.html`,
-  template
-    .replace(placeholder, `<div id="root">${notFound.html}</div>`)
-    .replace(headBlock, "<title>Página no encontrada | DataSys Latam Group</title>")
-    .replace(/<meta name="robots" content="[^"]*" \/>/, '<meta name="robots" content="noindex" />'),
+  withPreloads(
+    template
+      .replace(placeholder, `<div id="root">${notFound.html}</div>`)
+      .replace(headBlock, "<title>Página no encontrada | DataSys Latam Group</title>")
+      .replace(/<meta name="robots" content="[^"]*" \/>/, '<meta name="robots" content="noindex" />'),
+    "/pagina-no-encontrada",
+  ),
 );
+// El manifiesto solo sirve para el prerender: no se publica.
+await rm(`${dist}/.vite`, { recursive: true, force: true });
 
 const escXml = (value) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

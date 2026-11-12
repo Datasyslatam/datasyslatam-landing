@@ -1,32 +1,16 @@
-import { MotionConfig } from "framer-motion";
-import Index from "./pages/Index.tsx";
-import BlogIndex from "./pages/BlogIndex.tsx";
-import BlogPost from "./pages/BlogPost.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import LandingPage from "./pages/LandingPage.tsx";
-import { findLanding } from "./landing/pages.ts";
-import type { Route } from "./routes.ts";
-import type { BlogPost as BlogPostData } from "./blog/types.ts";
+import type { ReactNode } from "react";
+import { LazyMotion, MotionConfig, domAnimation } from "framer-motion";
 
-interface AppProps {
-  route: Route;
-  /** Artículo ya cargado cuando la ruta es /blog/<slug>; null si no existe. */
-  post: BlogPostData | null;
-}
-
-const App = ({ route, post }: AppProps) => (
+/**
+ * Envoltura común de todas las páginas (la página la elige loadPage.tsx).
+ * Las animaciones usan los componentes livianos `m` de framer-motion con solo las funciones que el sitio necesita
+ * (domAnimation): `strict` avisa si alguien vuelve a usar `motion`, que cargaría la librería completa.
+ */
+const App = ({ children }: { children: ReactNode }) => (
   <MotionConfig reducedMotion="user">
-    {route.type === "home" ? (
-      <Index />
-    ) : route.type === "landing" && findLanding(route.path) ? (
-      <LandingPage page={findLanding(route.path)!} />
-    ) : route.type === "blog-index" ? (
-      <BlogIndex />
-    ) : route.type === "blog-post" && post ? (
-      <BlogPost post={post} />
-    ) : (
-      <NotFound />
-    )}
+    <LazyMotion features={domAnimation} strict>
+      {children}
+    </LazyMotion>
   </MotionConfig>
 );
 
