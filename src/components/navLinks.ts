@@ -1,11 +1,13 @@
 // Enlaces absolutos ("/#...") para que funcionen también desde las páginas del blog;
 // en el inicio el navegador solo se desplaza hasta la sección.
+// Van en el mismo orden en que aparecen las secciones en el inicio, para que el indicador de sección activa
+// avance de izquierda a derecha al bajar.
 export const NAV_LINKS = [
   { label: "Inicio", href: "/#inicio" },
   { label: "Asesoría", href: "/#consultoria" },
-  { label: "Nosotros", href: "/#nosotros" },
   { label: "Soluciones", href: "/#soluciones" },
   { label: "Servicios", href: "/#servicios" },
+  { label: "Nosotros", href: "/#nosotros" },
   { label: "Productos", href: "/#productos" },
   { label: "Blog", href: "/blog" },
   { label: "Contacto", href: "/#contacto" },

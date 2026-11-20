@@ -78,6 +78,10 @@ const HeroSection = () => {
   const [direction, setDirection] = useState(1);
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  // Se detiene mientras el foco está dentro del héroe (teclado, lector de pantalla o tras usar las flechas), para que
+  // la diapositiva no cambie bajo el botón que el visitante está por usar (WCAG 2.2.2). No se pausa al pasar el
+  // cursor: el héroe ocupa toda la pantalla y el carrusel dejaría de rotar.
+  const [paused, setPaused] = useState(false);
 
   // En el celular las diapositivas no miden lo mismo (de una pantalla a casi una pantalla y media). Si el carrusel
   // cambia mientras el visitante está más abajo, todo lo que sigue sube o baja y el salto a una sección del menú
@@ -103,13 +107,13 @@ const HeroSection = () => {
 
   // Se reinicia en cada cambio de diapositiva para que la navegación manual tenga el intervalo completo.
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || paused) return;
     const timer = window.setTimeout(() => {
       setDirection(1);
       setActive((c) => (c + 1) % TOTAL_SLIDES);
     }, INTERVAL_MS);
     return () => window.clearTimeout(timer);
-  }, [active, visible]);
+  }, [active, visible, paused]);
 
   const go = (dir: number) => {
     setDirection(dir);
@@ -133,7 +137,15 @@ const HeroSection = () => {
     }),
   };
 
-  const wrap = (slide: ReactNode) => <div ref={ref}>{slide}</div>;
+  const wrap = (slide: ReactNode) => (
+    <div
+      ref={ref}
+      onFocus={() => setPaused(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setPaused(false)}
+    >
+      {slide}
+    </div>
+  );
 
   if (active === 0) return wrap(<HeroPyme active={active} total={TOTAL_SLIDES} go={go} />);
   if (active === 1) return wrap(<HeroPremium active={active} total={TOTAL_SLIDES} go={go} />);
@@ -172,13 +184,13 @@ const HeroSection = () => {
           </m.div>
         </div>
         <div className="flex items-center gap-4 mt-12">
-          <button type="button" onClick={() => go(-1)} aria-label="Anterior" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
+          <button type="button" onClick={() => go(-1)} aria-label="Diapositiva anterior" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
             <div className="h-1.5 rounded-full bg-[#FF8024]" style={{ width: ((active + 1) / TOTAL_SLIDES) * 100 + "%" }} />
           </div>
-          <button type="button" onClick={() => go(1)} aria-label="Siguiente" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
+          <button type="button" onClick={() => go(1)} aria-label="Diapositiva siguiente" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:bg-white/10">
             <ArrowRight className="h-4 w-4" />
           </button>
           <span className="text-sm font-semibold text-white/80">{String(active + 1).padStart(2, "0")} / {String(TOTAL_SLIDES).padStart(2, "0")}</span>

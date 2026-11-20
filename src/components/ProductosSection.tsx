@@ -5,7 +5,7 @@ import logoGovernex from "@/assets/logo-governex.webp";
 import logoNovix from "@/assets/logo-novix.webp";
 
 const ProductosSection = () => (
-  <section className="bg-white py-12">
+  <section id="productos" aria-label="Nuestros productos" className="bg-white py-12">
     <div className="container mx-auto px-4 max-w-7xl">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 

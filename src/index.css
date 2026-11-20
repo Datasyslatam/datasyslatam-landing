@@ -94,6 +94,16 @@
     @apply bg-background text-foreground font-body antialiased;
   }
 
+  /*
+   * Foco visible al navegar con teclado: anillo azul oscuro con un borde blanco, que se distingue tanto en las
+   * secciones claras como en las azul marino. Los campos de formulario conservan su propio estilo de foco.
+   */
+  :where(a, button, summary, [tabindex]):focus-visible {
+    outline: 2px solid #0052cc;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
