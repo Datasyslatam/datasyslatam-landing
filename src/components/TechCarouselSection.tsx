@@ -112,7 +112,8 @@ const TechCarouselSection = () => (
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-white to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-white to-transparent" />
 
-      <div className="flex w-max animate-marquee gap-10 motion-reduce:animate-none">
+      {/* Se detiene al pasar el cursor para poder leer los nombres */}
+      <div className="flex w-max animate-marquee gap-10 hover:[animation-play-state:paused] motion-reduce:animate-none">
         {[...techs, ...techs].map((t, i) => (
           <div key={i} className="flex shrink-0 items-center gap-2.5" aria-hidden={i >= techs.length || undefined}>
             <Logo type={t.logo} color={t.color} />

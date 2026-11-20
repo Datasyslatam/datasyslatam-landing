@@ -30,7 +30,7 @@ const Footer = () => (
         </div>
 
         {/* Links */}
-        <nav aria-label="Footer navigation">
+        <nav aria-label="Pie de página">
           <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             {NAV_LINKS.map(({ label, href }) => (
               <li key={href}>
