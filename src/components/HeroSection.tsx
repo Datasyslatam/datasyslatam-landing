@@ -111,23 +111,16 @@ const slides = [
 const TOTAL_SLIDES = slides.length;
 const INTERVAL_MS = 8000;
 
-// La entrada usa fotogramas (desde → hasta) para que siempre empiece del lado correcto según la dirección.
+// Fundido cruzado: el texto que sale se desvanece y se difumina mientras, en el mismo lugar y al mismo tiempo, el que
+// entra aparece y se enfoca. Sin desplazamientos, para que el texto no salte de una diapositiva a otra.
+const FADE = { duration: 0.7, ease: "easeInOut" } as const;
 const contentVariants = {
-  center: (d: number) => ({
-    opacity: [0, 1],
-    x: [d > 0 ? 40 : -40, 0],
-    transition: { duration: 0.5, ease: "easeOut", delay: 0.2 },
-  }),
-  exit: (d: number) => ({
-    opacity: 0,
-    x: d > 0 ? -40 : 40,
-    transition: { duration: 0.3, ease: "easeIn" },
-  }),
+  center: { opacity: 1, filter: "blur(0px)", transition: FADE },
+  exit: { opacity: 0, filter: "blur(8px)", transition: FADE },
 };
 
 const HeroSection = () => {
   const [active, setActive] = useState(0);
-  const [direction, setDirection] = useState(1);
   const ref = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(true);
   // Se detiene mientras el foco está dentro del héroe (teclado, lector de pantalla o tras usar las flechas), para que
@@ -160,14 +153,12 @@ const HeroSection = () => {
   useEffect(() => {
     if (!visible || paused) return;
     const timer = window.setTimeout(() => {
-      setDirection(1);
       setActive((c) => (c + 1) % TOTAL_SLIDES);
     }, INTERVAL_MS);
     return () => window.clearTimeout(timer);
   }, [active, visible, paused]);
 
   const go = (dir: number) => {
-    setDirection(dir);
     setActive((c) => (c + dir + TOTAL_SLIDES) % TOTAL_SLIDES);
   };
 
@@ -188,28 +179,31 @@ const HeroSection = () => {
       </AnimatePresence>
       <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/40 to-transparent hidden lg:block" />
 
-      {/* El héroe ocupa justo el espacio bajo el menú fijo (72 px). El contenido se centra en el alto que sobra y la
-          barra de avance queda abajo, en el mismo lugar en las seis diapositivas. */}
+      {/* El héroe ocupa justo el espacio bajo el menú fijo (72 px) y la barra de avance queda abajo, en el mismo lugar
+          en las seis diapositivas. Las diapositivas se apilan en la misma celda y todas arrancan arriba de ella
+          (self-start): el antetítulo y el título quedan a la misma altura en todas. El bloque completo, que mide lo
+          de la diapositiva más alta, se centra en el alto que sobra. */}
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pt-10 pb-8 [@media(max-height:720px)]:pt-6 [@media(max-height:720px)]:pb-6">
-        <div className="grid flex-1">
+        <div className="flex flex-1 items-center">
+        <div className="grid w-full">
           {slides.map((slide, i) => {
             const isActive = i === active;
             return (
               <m.div
                 key={i}
-                custom={direction}
                 variants={contentVariants}
                 initial={false}
                 animate={isActive ? "center" : "exit"}
                 aria-hidden={!isActive || undefined}
                 // inert: las diapositivas ocultas no reciben el foco del teclado ni clics mientras se desvanecen.
                 {...(isActive ? {} : { inert: "" })}
-                className={`[grid-area:1/1] self-center ${isActive ? "" : "pointer-events-none"}`}
+                className={`[grid-area:1/1] self-start ${isActive ? "" : "pointer-events-none"}`}
               >
                 {slide.content}
               </m.div>
             );
           })}
+        </div>
         </div>
 
         <div className="mt-8 flex items-center gap-4 [@media(max-height:720px)]:mt-5">
