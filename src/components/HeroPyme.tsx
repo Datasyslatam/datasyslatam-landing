@@ -33,8 +33,10 @@ export const PymeBackground = () => (
 export const PymeContent = () => (
   <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
     <div className="max-w-2xl">
+      {/* En el celular el antetítulo completo pasaba a dos líneas y bajaba el título respecto a las demás diapositivas. */}
       <p className="label-corp text-electric-400 mb-4">
-        01 — Para micro, pequeñas y medianas empresas
+        <span className="sm:hidden">01 — Para pymes</span>
+        <span className="hidden sm:inline">01 — Para micro, pequeñas y medianas empresas</span>
       </p>
       <h1 className="font-heading font-bold text-4xl sm:text-5xl xl:text-6xl text-white leading-[1.05] tracking-tight mb-6">
         Su empresa ya creció. Ahora hagamos que{" "}
